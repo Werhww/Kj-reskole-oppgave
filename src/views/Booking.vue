@@ -16,6 +16,7 @@ export default {
   methods: {
     test () {
       console.log(this.Fornavn)
+      console.log(this.Etternavn)
       console.log(this.Alder)
     }
   }
@@ -23,7 +24,7 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { ref } from "vue"
+
 
 </script>
 
@@ -34,10 +35,14 @@ import { ref } from "vue"
   <h1>Kontaktinformasjon</h1>
   <div class="personal-info">
     <Input placeholder="Fornavn" v-model="Fornavn" type="text"/>
-    <Input placeholder="Fornavn" v-model="Etternavn" type="text"/>
+    <Input placeholder="Etternavn" v-model="Etternavn" type="text"/>
     <select v-model="Alder">
       <option v-for="i in 100" :value="i">{{ i }} År</option>
     </select>
+  </div>
+  <div class="contact-info">
+    <Input placeholder="Epost" v-model="Epost" type="email"/>
+    <Input placeholder="Telefon" v-model="Telefon" type="number"/>
   </div>
 
   <button>Test</button>
@@ -60,7 +65,7 @@ h1 {
 
 .personal-info {
   display: flex;
-  flex: 1 1 160px;
   gap: 5.5rem;
 }
+
 </style>

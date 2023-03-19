@@ -1,6 +1,6 @@
 <script lang="ts">
 export default {
-  props: ['modelValue', 'placeholder', 'type'],
+  props: ['modelValue', 'placeholder', 'type', 'width'],
   emits: ['update:modelValue'],
   computed: {
     value: {
@@ -17,7 +17,7 @@ export default {
 
 <template>
 <div>
-    <input class="input" v-model="value" :placeholder="placeholder" :type="type" />
+    <input class="input" v-model="value" :placeholder="placeholder" :type="type"/>
     <div class="underline"></div>
 </div>
 </template>
@@ -27,10 +27,10 @@ div {
     display: flex;
     flex-direction: column;
     transition: 0.5s;
+    width: 21.875rem;
 }
 
 .input {
-    width: 100%;
     opacity: 60%;
     height: 2.5rem;
     font-size: 2.25rem;
@@ -41,7 +41,6 @@ div {
 }
 
 .underline {
-    width: 100%;
     height: 5px;
     opacity: 60%;
     background-color: var(--green);
