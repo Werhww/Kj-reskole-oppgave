@@ -38,11 +38,18 @@ export default {
   <div class="personal-info">
     <Input placeholder="Fornavn" v-model="Fornavn" type="text" width="21.875rem" color="var(--green)"/>
     <Input placeholder="Etternavn" v-model="Etternavn" type="text" width="21.875rem" color="var(--green)"/>
-    <Input v-model="Alder" type="date" width="21.875rem" color="green"/>
+    <Input v-model="Alder" type="date" width="21.875rem" color="var(--green)"/>
   </div>
   <div class="contact-info">
     <Input placeholder="Epost" v-model="Epost" type="email" width="37.5rem" color="var(--red)"/>
     <Input placeholder="Telefon" v-model="Telefon" type="number" width="25rem" color="var(--red)"/>
+  </div>
+  <h1>Hva har du gjort?</h1>
+  <div class="already-done">
+    <div class="trafical">
+      <input type="checkbox" id="trafical">
+      <label for="trafical"></label>
+    </div>
   </div>
 
   <button>Test</button>
@@ -73,6 +80,12 @@ h1 {
 }
 
 .contact-info {
+  display: flex;
+  flex-direction: row;
+  gap: 14rem;
+}
+
+.already-done{
   display: flex;
   flex-direction: row;
   gap: 14rem;
