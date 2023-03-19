@@ -17,8 +17,8 @@ import { RouterLink } from 'vue-router'
         </div>
         <div class="colume2">
             <a href="#topAnchor">Til Top</a>
-            <RouterLink to="/Bruker">Min side</RouterLink>
-            <RouterLink to="/omoss">Booking</RouterLink>
+            <RouterLink to="/user">Min side</RouterLink>
+            <RouterLink to="/booking">Booking</RouterLink>
         </div>
     </div>
 </footer>

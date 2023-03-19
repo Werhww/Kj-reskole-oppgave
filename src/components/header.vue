@@ -7,8 +7,8 @@ import { RouterLink } from 'vue-router'
     <RouterLink to="/"><img src="../assets/logo.svg" class="logo"></RouterLink>
     <nav>
         <div>
-            <RouterLink to="/omoss" class="booking">Booking</RouterLink>
-            <RouterLink to="/Bruker" class="account">Min Side</RouterLink>
+            <RouterLink to="/booking" class="booking">Booking</RouterLink>
+            <RouterLink to="/user" class="account">Min Side</RouterLink>
         </div>
     </nav>
 </header>

@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
-import OmOss from '../views/OmOss.vue'
-import Bruker from '../views/Bruker.vue'
+import Booking from '../views/Booking.vue'
+import User from '../views/User.vue'
 
 const routes = [
     {
@@ -10,14 +10,14 @@ const routes = [
       component: Home
     },
     {
-      path: '/omoss',
-      name: 'omoss',
-      component: OmOss
+      path: '/booking',
+      name: 'Booking',
+      component: Booking
     }, 
     {
-      path: '/Bruker',
+      path: '/user',
       name: 'Bruker',
-      component: Bruker
+      component: User
     }
   ]
 
