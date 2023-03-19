@@ -18,6 +18,8 @@ export default {
       console.log(this.Fornavn)
       console.log(this.Etternavn)
       console.log(this.Alder)
+      console.log(this.Epost)
+      console.log(this.Telefon)
     }
   }
 }
@@ -34,15 +36,13 @@ export default {
 >
   <h1>Kontaktinformasjon</h1>
   <div class="personal-info">
-    <Input placeholder="Fornavn" v-model="Fornavn" type="text"/>
-    <Input placeholder="Etternavn" v-model="Etternavn" type="text"/>
-    <select v-model="Alder">
-      <option v-for="i in 100" :value="i">{{ i }} År</option>
-    </select>
+    <Input placeholder="Fornavn" v-model="Fornavn" type="text" width="21.875rem" color="var(--green)"/>
+    <Input placeholder="Etternavn" v-model="Etternavn" type="text" width="21.875rem" color="var(--green)"/>
+    <Input v-model="Alder" type="date" width="21.875rem" color="green"/>
   </div>
   <div class="contact-info">
-    <Input placeholder="Epost" v-model="Epost" type="email"/>
-    <Input placeholder="Telefon" v-model="Telefon" type="number"/>
+    <Input placeholder="Epost" v-model="Epost" type="email" width="37.5rem" color="var(--red)"/>
+    <Input placeholder="Telefon" v-model="Telefon" type="number" width="25rem" color="var(--red)"/>
   </div>
 
   <button>Test</button>
@@ -66,6 +66,16 @@ h1 {
 .personal-info {
   display: flex;
   gap: 5.5rem;
+}
+
+.age {
+  width:21.875rem;
+}
+
+.contact-info {
+  display: flex;
+  flex-direction: row;
+  gap: 14rem;
 }
 
 </style>

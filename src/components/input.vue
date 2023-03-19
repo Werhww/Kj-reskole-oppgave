@@ -1,6 +1,6 @@
 <script lang="ts">
 export default {
-  props: ['modelValue', 'placeholder', 'type', 'width'],
+  props: ['modelValue', 'placeholder', 'type', 'width', 'color'],
   emits: ['update:modelValue'],
   computed: {
     value: {
@@ -27,14 +27,14 @@ div {
     display: flex;
     flex-direction: column;
     transition: 0.5s;
-    width: 21.875rem;
+    width: v-bind(width);
 }
 
 .input {
     opacity: 60%;
     height: 2.5rem;
     font-size: 2.25rem;
-    color: var(--green);
+    color: v-bind(color);
     background-color: transparent;
     border: none;
     outline: none;
@@ -43,7 +43,7 @@ div {
 .underline {
     height: 5px;
     opacity: 60%;
-    background-color: var(--green);
+    background-color: v-bind(color);
     border-radius: 1rem;
 }
 
@@ -53,5 +53,12 @@ div {
 
 .input::placeholder {
   color: var(--green);
+}
+
+/* Chrome, Safari, Edge, Opera */
+.input::-webkit-outer-spin-button,
+.input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 </style>
