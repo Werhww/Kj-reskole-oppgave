@@ -156,7 +156,7 @@ main {
 }
 
 .tilbud-item{
-  flex: 1 1 185px;
+  flex: 1 1 175px;
 }
 
 
@@ -191,6 +191,8 @@ main {
 
 .bestill-text > p {
   font-size: 1.25rem;
+  width: 28rem;
+  align-self: start;
 }
 
 .bestill-text > button {
