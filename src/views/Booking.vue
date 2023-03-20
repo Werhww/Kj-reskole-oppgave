@@ -10,7 +10,8 @@ export default {
       Etternavn: '',
       Alder: 0,
       Epost: '',
-      Telefon: 0, 
+      Telefon: 0,
+      Traica
     }
   },
   methods: {
@@ -26,7 +27,9 @@ export default {
 </script>
 
 <script setup lang="ts">
-
+const toggelOpacity = (e:any) => {
+  e.target.parentElement.style.opacity = 1
+}
 
 </script>
 
@@ -46,9 +49,13 @@ export default {
   </div>
   <h1>Hva har du gjort?</h1>
   <div class="already-done">
-    <div class="trafical">
-      <input type="checkbox" id="trafical">
-      <label for="trafical"></label>
+    <div class="already-done-container trafical"  @click="toggelOpacity($event)">
+      <img src="../assets/carClass.svg" >
+      <p>Trafikalt grunnkurs</p>
+    </div>
+    <div class="already-done-container"  @click="toggelOpacity($event)">
+      <img src="../assets/darkNight.svg" >
+      <p>Mørkekjøring</p>
     </div>
   </div>
 
@@ -88,7 +95,31 @@ h1 {
 .already-done{
   display: flex;
   flex-direction: row;
-  gap: 14rem;
+  gap: 11.875rem;
+}
+
+.already-done-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: end;
+  gap: 1rem;
+  opacity: 60%;
+  transition: 0.3s;
+}
+
+.already-done-container img{
+  width: 31.25rem;
+}
+
+.already-done-container p{
+  font-size: 2.25rem;
+  color: var(--green);
+}
+
+.already-done-container:hover {
+  opacity: 100%;
+  cursor: pointer;
 }
 
 </style>
