@@ -11,7 +11,8 @@ export default {
       Alder: 0,
       Epost: '',
       Telefon: 0,
-      Traica
+      Trafical: false,
+      Night_Training: false,
     }
   },
   methods: {
@@ -21,15 +22,28 @@ export default {
       console.log(this.Alder)
       console.log(this.Epost)
       console.log(this.Telefon)
+    },
+
+    toggelOpacity (e:any) {
+      const element = e.target.parentElement
+      const classList = element.classList
+      let trained = element.getAttribute('data-trained-type')
+      if(trained) {
+        console.log(trained, element)        
+        if(trained == "trafical") {
+          this.Trafical?classList.remove('active'):classList.add('active')
+          this.Trafical?this.Trafical = false:this.Trafical = true
+        } else if(trained == "nightTraning") {
+          this.Night_Training?classList.remove('active'):classList.add('active')
+          this.Night_Training?this.Night_Training = false:this.Night_Training = true
+        }
+      }
     }
   }
 }
 </script>
 
 <script setup lang="ts">
-const toggelOpacity = (e:any) => {
-  e.target.parentElement.style.opacity = 1
-}
 
 </script>
 
@@ -47,13 +61,13 @@ const toggelOpacity = (e:any) => {
     <Input placeholder="Epost" v-model="Epost" type="email" width="37.5rem" color="var(--red)"/>
     <Input placeholder="Telefon" v-model="Telefon" type="number" width="25rem" color="var(--red)"/>
   </div>
-  <h1>Hva har du gjort?</h1>
+  <h1 >Hva har du gjort?</h1>
   <div class="already-done">
-    <div class="already-done-container trafical"  @click="toggelOpacity($event)">
+    <div class="already-done-container trafical"  @click="toggelOpacity($event)" data-trained-type="trafical">
       <img src="../assets/carClass.svg" >
       <p>Trafikalt grunnkurs</p>
     </div>
-    <div class="already-done-container"  @click="toggelOpacity($event)">
+    <div class="already-done-container "  @click="toggelOpacity($event)" data-trained-type="nightTraning">
       <img src="../assets/darkNight.svg" >
       <p>Mørkekjøring</p>
     </div>
@@ -120,6 +134,10 @@ h1 {
 .already-done-container:hover {
   opacity: 100%;
   cursor: pointer;
+}
+
+.active {
+  opacity: 100%;
 }
 
 </style>
