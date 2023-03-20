@@ -8,16 +8,16 @@ const offers = [
     offer: 'Personbil (B)',
   },
   {
-    imgLink: '/src/assets/offers/A.svg',
-    offer: 'Motorsykkel (A)',
-  },
-  {
     imgLink: '/src/assets/offers/A1.svg',
-    offer: 'Motorsykkel (A1)',
+    offer: 'Lett Motorsykkel (A1)',
   },
   {
     imgLink: '/src/assets/offers/A2.svg',
-    offer: 'Motorsykkel (A2)',
+    offer: 'Mellomtung Motorsykkel (A2)',
+  },
+  {
+    imgLink: '/src/assets/offers/A.svg',
+    offer: 'Tung Motorsykkel (A)',
   },
 ]
 
