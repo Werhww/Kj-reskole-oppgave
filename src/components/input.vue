@@ -24,27 +24,27 @@ export default {
 
 <style scoped>
 div {
-    display: flex;
-    flex-direction: column;
-    transition: 0.5s;
-    width: v-bind(width);
+  display: flex;
+  flex-direction: column;
+  transition: 0.5s;
+  width: v-bind(width);
 }
 
 .input {
-    opacity: 60%;
-    height: 2.5rem;
-    font-size: 2.25rem;
-    color: v-bind(color);
-    background-color: transparent;
-    border: none;
-    outline: none;
+  opacity: 60%;
+  height: 2.5rem;
+  font-size: 2.25rem;
+  color: v-bind(color);
+  background-color: transparent;
+  border: none;
+  outline: none;
 }
 
 .underline {
-    height: 5px;
-    opacity: 60%;
-    background-color: v-bind(color);
-    border-radius: 1rem;
+  height: 5px;
+  opacity: 60%;
+  background-color: v-bind(color);
+  border-radius: 1rem;
 }
 
 .input:focus + .underline, .input:focus {
@@ -52,7 +52,7 @@ div {
 }
 
 .input::placeholder {
-  color: var(--green);
+  color: v-bind(color);
 }
 
 /* Chrome, Safari, Edge, Opera */

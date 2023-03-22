@@ -3,6 +3,7 @@ import Offer from "@/components/offer.vue"
 import Input from "@/components/input.vue"
 
 export default {
+  expose: ['License_Container'],
   components: { Input },
   data() {
     return {
@@ -11,7 +12,7 @@ export default {
       Etternavn: '',
       Alder: 0,
       Epost: '',
-      Telefon: 0,
+      Telefon: '98-876-543',
 
       /* Traning alredy done */
       Trafical: false,
@@ -21,7 +22,7 @@ export default {
       Personal_Car: false,
       Light_motocycle: false,
       Medium_heavy_motocycle: false,
-      Heavy_motocycle: false
+      Heavy_motocycle: false,
     }
   },
   methods: {
@@ -33,13 +34,15 @@ export default {
       console.log(this.Telefon)
     },
 
-    toggelOpacity (e:any) {
+    /* Toggel alredy done training */
+    toggelTrained (e:any) {
       const element = e.target.parentElement
       const classList = element.classList
+
       console.log(element)
-      let trained = element.getAttribute('data-trained-type')
+      const trained = element.getAttribute('data-trained-type')
       if(trained) {
-        console.log(trained, element)        
+        console.log(trained)        
         if(trained == "trafical") {
           this.Trafical?classList.remove('active'):classList.add('active')
           this.Trafical?this.Trafical = false:this.Trafical = true
@@ -49,22 +52,59 @@ export default {
         }
         return
       }
-      let license = element.getAttribute('data-license')
-      if(license) {
-        console.log(license, element)        
-        if(license == "B") {
-          this.Personal_Car?classList.remove('active'):classList.add('active')
-          this.Personal_Car?this.Personal_Car = false:this.Personal_Car = true
+    },
 
-        } else if(license == "A1") {
-          this.Light_motocycle?classList.remove('active'):classList.add('active')
-          this.Light_motocycle?this.Light_motocycle = false:this.Light_motocycle = true
-        } 
+    /* Toggel license */
+    toggelLicense (e:any) {
+      var element = e.target.parentElement
+      var classList = element.classList
+
+      if(!classList.value) {
+        var element = e.target.parentElement.parentElement
+        var classList = element.classList
       }
 
-    }
+      const license = element.getAttribute('data-license')
+      if(license) {
+        if(license == "B") {
+          this.Personal_Car?this.everyLicenseFalse():this.everyLicenseFalse();this.Personal_Car = true
+          this.Personal_Car?classList.add('active'):classList.remove('active')
+        } else if(license == "A1") {
+          this.Light_motocycle?this.everyLicenseFalse():this.everyLicenseFalse();this.Light_motocycle = true
+          this.Light_motocycle?classList.add('active'):classList.remove('active')
+        } else if(license == "A2") {
+          this.Medium_heavy_motocycle?this.everyLicenseFalse():this.everyLicenseFalse();this.Medium_heavy_motocycle = true
+          this.Medium_heavy_motocycle?classList.add('active'):classList.remove('active')
+        } else if(license == "A") {
+          this.Heavy_motocycle?this.everyLicenseFalse():this.everyLicenseFalse();this.Heavy_motocycle = true
+          this.Heavy_motocycle?classList.add('active'):classList.remove('active')
+        } 
+      }
+    },
+
+    everyLicenseFalse() {
+      const license = this.$refs['License_Container'] as HTMLDivElement
+
+      console.log(license.childNodes)
+
+      const licenseArray = Array.from(license.childNodes)
+
+      console.log(licenseArray[5])
+
+      for (let i = 1; i < 5; i++) {
+        const element:any = licenseArray[i];
+        console.log(element)
+        element.classList.remove('active')
+      }
+      
+      this.Personal_Car = false
+      this.Light_motocycle = false
+      this.Medium_heavy_motocycle = false
+      this.Heavy_motocycle = false
+    },
   }
 }
+
 </script>
 
 <script setup lang="ts">
@@ -91,6 +131,9 @@ const offers = [
   },
 ]
 
+const cancel = () => {
+ window.location.href = '/'
+}
 </script>
 
 <template>
@@ -113,21 +156,25 @@ const offers = [
   
   <h1>Hva har du gjort?</h1>
   <div class="already-done">
-    <div class="already-done-container trafical"  @click="toggelOpacity($event)" data-trained-type="trafical">
-      <img src="../assets/carClass.svg" >
+    <div class="already-done-container trafical"  @click="toggelTrained($event)" data-trained-type="trafical">
+      <img src="../assets/carClass.svg" alt="Trafikalt Grunnkurs">
       <p>Trafikalt grunnkurs</p>
     </div>
-    <div class="already-done-container "  @click="toggelOpacity($event)" data-trained-type="nightTraning">
-      <img src="../assets/darkNight.svg" >
+    <div class="already-done-container "  @click="toggelTrained($event)" data-trained-type="nightTraning">
+      <img src="../assets/darkNight.svg" alt="Mørkekjøring">
       <p>Mørkekjøring</p>
     </div>
   </div>
   <h1>Hva skal du lære?</h1>
-  <div class="want-to-learn">
-    <Offer v-for="item in offers" :img-link="item.imgLink" :offer="item.offer" class="want-to-learn-item"  :data-license="item.meta_data" @click="toggelOpacity($event)"/> 
+  <div class="want-to-learn" ref="License_Container">
+    <Offer v-for="item in offers" :img-link="item.imgLink" :offer="item.offer" class="want-to-learn-item"  :data-license="item.meta_data" @click="toggelLicense($event)"/> 
   </div>
 
-  <button>Test</button>
+  <div class="Buttons">
+    <button type="button" class="cancel" @click="cancel">Avbryt</button>
+    <button type="submit" class="submit">Send Inn</button>
+  </div>
+  
 </form>
 </template>
 
@@ -137,6 +184,8 @@ form {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  margin-top: 6.25rem;
+  gap: 5rem;
 }
 
 h1 {
@@ -211,5 +260,31 @@ h1 {
 
 .active {
   opacity: 100%;
+}
+
+.Buttons {
+  display: flex;
+  gap: 35rem;
+}
+
+.Buttons button{
+  border: none;
+  border-radius: 1.25rem;
+  color: white;
+  cursor: pointer;
+
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 3rem;
+}
+
+.cancel {
+  padding: 0.3rem 6rem 0.3rem 1.5rem;
+  background-color: var(--red);
+}
+
+.submit {
+  padding: 0.3rem 1.5rem 0.3rem 5rem;
+  background-color: var(--green);
 }
 </style>

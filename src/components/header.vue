@@ -20,7 +20,7 @@ import { RouterLink } from 'vue-router'
     display: flex;
     justify-content: center;
     padding: 1rem 0 0 0;
-    gap: 44.375rem;
+    gap: 46rem;
 }
 
 .logo {
