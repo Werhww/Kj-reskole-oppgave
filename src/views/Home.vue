@@ -242,7 +242,7 @@ main {
   }
 
 
-  .container1 > div > p {
+  .container1 > div > p, .bestill-text, .bestill-text > p {
     width: 19.875rem;
   }
 
@@ -252,10 +252,6 @@ main {
 
   .bestill {
     gap: 0;
-  }
-
-  .bestill-text {
-    width: 19.875rem;
   }
 
   .bestill > img {
@@ -304,14 +300,13 @@ main {
     gap: 0;
   }
 
-
-  .container1 > div > p {
+  .bestill > img {
     width: 19.875rem;
-    font-size: 1rem;
   }
 
-  .container1 > img {
-    width: 19.875rem;
+
+  .container1 > div > p, .bestill-text > p {
+    font-size: 1rem;
   }
 
   /* Tilbud */
@@ -327,21 +322,12 @@ main {
 
   .bestill-text {
     gap: .5rem;
-    width: 19.875rem;
-  }
-
-  .bestill-text > p {
-    font-size: 1rem;
   }
 
   .bestill-text > button {
     border-radius: .5rem;
     font-size: 0.875rem;
     padding: .5rem 3rem .5rem 3rem;
-  }
-
-  .bestill > img {
-    width: 19.875rem;
   }
 }
 </style>

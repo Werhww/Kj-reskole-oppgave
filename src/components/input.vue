@@ -62,3 +62,17 @@ div {
   margin: 0;
 }
 </style>
+
+<style scoped>
+@media only screen and (max-width: 1100px) {
+  .input {
+    font-size: 2rem;
+  }
+}
+
+@media only screen and (max-width: 1000px) {
+  .input {
+    font-size: 1.5rem;
+  }
+}
+</style>

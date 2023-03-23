@@ -58,6 +58,25 @@ import { RouterLink } from 'vue-router'
 
 <!-- Media Queries -->
 <style scoped>
+@media only screen and (max-width: 1250px) {
+    .header {
+        gap: 38rem;
+    }    
+}
+
+@media only screen and (max-width: 1100px) {
+    .header {
+        gap: 34rem;
+    }    
+}
+
+@media only screen and (max-width: 1050px) {
+    .header {
+        gap: 26rem;
+    }    
+}
+
+
 @media only screen and (max-width: 900px) {
     .header {
         gap: 15rem;

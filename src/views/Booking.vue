@@ -1,6 +1,7 @@
 <script lang="ts">
 import Offer from "@/components/offer.vue"
 import Input from "@/components/input.vue"
+import { V_SHOW } from "@vue/compiler-dom";
 
 export default {
   expose: ['License_Container'],
@@ -32,6 +33,12 @@ export default {
       console.log(this.Alder)
       console.log(this.Epost)
       console.log(this.Telefon)
+      console.log(this.Trafical + " Trafical")
+      console.log(this.Night_Training + " Night_Training")
+      console.log(this.Personal_Car + " Personal_Car")
+      console.log(this.Light_motocycle + " Light_motocycle")
+      console.log(this.Medium_heavy_motocycle + " Medium_heavy_motocycle")
+      console.log(this.Heavy_motocycle + " Heavy_motocycle")
     },
 
     /* Toggel alredy done training */
@@ -39,10 +46,8 @@ export default {
       const element = e.target.parentElement
       const classList = element.classList
 
-      console.log(element)
       const trained = element.getAttribute('data-trained-type')
-      if(trained) {
-        console.log(trained)        
+      if(trained) {      
         if(trained == "trafical") {
           this.Trafical?classList.remove('active'):classList.add('active')
           this.Trafical?this.Trafical = false:this.Trafical = true
@@ -67,17 +72,13 @@ export default {
       const license = element.getAttribute('data-license')
       if(license) {
         if(license == "B") {
-          this.Personal_Car?this.everyLicenseFalse():this.everyLicenseFalse();this.Personal_Car = true
-          this.Personal_Car?classList.add('active'):classList.remove('active')
+          this.Personal_Car?this.everyLicenseFalse():this.everyLicenseFalse();this.Personal_Car = true;classList.add('active')
         } else if(license == "A1") {
-          this.Light_motocycle?this.everyLicenseFalse():this.everyLicenseFalse();this.Light_motocycle = true
-          this.Light_motocycle?classList.add('active'):classList.remove('active')
+          this.Light_motocycle?this.everyLicenseFalse():this.everyLicenseFalse();this.Light_motocycle = true;classList.add('active')
         } else if(license == "A2") {
-          this.Medium_heavy_motocycle?this.everyLicenseFalse():this.everyLicenseFalse();this.Medium_heavy_motocycle = true
-          this.Medium_heavy_motocycle?classList.add('active'):classList.remove('active')
+          this.Medium_heavy_motocycle?this.everyLicenseFalse():this.everyLicenseFalse();this.Medium_heavy_motocycle = true;classList.add('active')
         } else if(license == "A") {
-          this.Heavy_motocycle?this.everyLicenseFalse():this.everyLicenseFalse();this.Heavy_motocycle = true
-          this.Heavy_motocycle?classList.add('active'):classList.remove('active')
+          this.Heavy_motocycle?this.everyLicenseFalse():this.everyLicenseFalse();this.Heavy_motocycle = true;classList.add('active')
         } 
       }
     },
@@ -85,15 +86,10 @@ export default {
     everyLicenseFalse() {
       const license = this.$refs['License_Container'] as HTMLDivElement
 
-      console.log(license.childNodes)
-
       const licenseArray = Array.from(license.childNodes)
-
-      console.log(licenseArray[5])
 
       for (let i = 1; i < 5; i++) {
         const element:any = licenseArray[i];
-        console.log(element)
         element.classList.remove('active')
       }
       
@@ -132,7 +128,7 @@ const offers = [
 ]
 
 const cancel = () => {
- window.location.href = '/'
+  window.location.href = '/'
 }
 </script>
 
@@ -143,13 +139,13 @@ const cancel = () => {
   <div class="container1">
     <h1>Kontaktinformasjon</h1>
     <div class="personal-info">
-      <Input placeholder="Fornavn" v-model="Fornavn" type="text" width="21.875rem" color="var(--green)"/>
-      <Input placeholder="Etternavn" v-model="Etternavn" type="text" width="21.875rem" color="var(--green)"/>
-      <Input v-model="Alder" type="date" width="21.875rem" color="var(--green)"/>
+      <Input placeholder="Fornavn" v-model="Fornavn" type="text" color="var(--green)" class="personal-info-input"/>
+      <Input placeholder="Etternavn" v-model="Etternavn" type="text" color="var(--green)" class="personal-info-input"/>
+      <Input v-model="Alder" type="date" color="var(--green)" class="personal-info-input"/>
     </div>
     <div class="contact-info">
-      <Input placeholder="Epost" v-model="Epost" type="email" width="37.5rem" color="var(--red)"/>
-      <Input placeholder="Telefon" v-model="Telefon" type="number" width="25rem" color="var(--red)"/>
+      <Input placeholder="Epost" v-model="Epost" type="email" color="var(--red)" class="contact-info-epost"/>
+      <Input placeholder="Telefon" v-model="Telefon" type="number" color="var(--red)" class="contact-info-tlf"/>
     </div>
   </div>
   
@@ -206,14 +202,22 @@ h1 {
   gap: 5.5rem;
 }
 
-.age {
-  width:21.875rem;
+.personal-info-input {
+  width: 21.875rem;
 }
 
 .contact-info {
   display: flex;
   flex-direction: row;
   gap: 14rem;
+}
+
+.contact-info-epost {
+  width: 37.5rem;
+}
+
+.contact-info-tlf {
+ width: 25rem;
 }
 
 .already-done{
@@ -264,7 +268,8 @@ h1 {
 
 .Buttons {
   display: flex;
-  gap: 35rem;
+  justify-content: space-between;
+  width: 70%;
 }
 
 .Buttons button{
@@ -274,7 +279,7 @@ h1 {
   cursor: pointer;
 
   font-family: 'Inter', sans-serif;
-  font-weight: 700;
+  font-weight: 500;
   font-size: 3rem;
 }
 
@@ -286,5 +291,123 @@ h1 {
 .submit {
   padding: 0.3rem 1.5rem 0.3rem 5rem;
   background-color: var(--green);
+}
+</style>
+
+<style scoped>
+@media only screen and (max-width: 1300px) {
+  .personal-info-input {
+    width: 17rem;
+  }
+
+  .contact-info-epost {
+    width: 28rem;
+  }
+
+  .contact-info-tlf {
+    width: 20rem;
+  }
+
+  .already-done-container img{
+    width: 25rem;
+  }
+
+  .Buttons {
+    width: 95%;
+  }
+}
+
+@media only screen and (max-width: 1000px) {
+  .personal-info {
+    gap: 3rem;
+  }
+
+  .personal-info-input {
+    width: 16rem;
+  }
+
+  .contact-info {
+    gap: 7rem;
+  }
+
+  .contact-info-epost {
+    width: 28rem;
+  }
+
+  .contact-info-tlf {
+    width: 20rem;
+  }
+
+  .already-done {
+    flex-direction: column;
+    gap: 5rem;
+  }
+
+  .already-done-container img{
+    width: 35rem;
+  }
+
+  .Buttons button {
+    font-size: 2.25rem;
+  }
+}
+
+@media only screen and (max-width: 900px) {
+  .personal-info {
+    gap: 3rem;
+  }
+
+  .personal-info-input {
+    width: 13rem;
+  }
+
+  .contact-info {
+    gap: 7rem;
+  }
+
+  .contact-info-epost {
+    width: 23rem;
+  }
+
+  .contact-info-tlf {
+    width: 15rem;
+  }
+
+}
+
+
+
+@media only screen and (max-width: 700px) {
+  .personal-info, .contact-info{
+    gap: 1.875rem;
+    flex-direction: column;
+  }
+
+  .personal-info-input, .contact-info-epost, .contact-info-tlf {
+    width: 35rem;
+  }
+
+  .already-done-container img{
+    width: 20rem;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .personal-info-input, .contact-info-epost, .contact-info-tlf {
+    width: 21.875rem;
+  }
+
+  .already-done-container img{
+    width: 18.75rem;
+  }
+
+  .Buttons {
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .Buttons button{
+    padding: 0;
+  }
 }
 </style>
