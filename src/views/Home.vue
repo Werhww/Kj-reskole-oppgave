@@ -54,6 +54,15 @@ const employees = [
     mail: 'guril@rask.no',
   },
 ]
+
+const prices = [
+  {
+    class: "A1, A2, A",
+    course: "Kjøretime",
+    price: "600 kr",
+    length: "45 min"
+  }
+]
 </script>
 
 <template>
@@ -69,7 +78,7 @@ const employees = [
 
     <!-- Viser alle tilbudene til kjøreskolen -->
     <div class="tilbud">
-      <a id="tilbudAnchor">Hva vi tilbyr:</a>
+      <a>Hva vi tilbyr:</a>
       <div class="tilbud-bilder">
         <Offer v-for="item in offers" :img-link="item.imgLink" :offer="item.offer" class="tilbud-item"/> 
       </div>
@@ -87,10 +96,15 @@ const employees = [
 
     <!-- Ansatte -->
     <div class="ansatte">
-      <a id="ansatteAnchor">Våre Ansatte:</a>
+      <a>Våre Ansatte:</a>
       <div class="ansatte-container">
         <Employee v-for="item in employees" :img-link="item.imgLink" :name="item.name" :tilbud="item.tilbud" :tlf="item.tlf" :mail="item.mail" class="assatte-item"/>
       </div>
+    </div>
+
+    <!-- Prices -->
+    <div>
+
     </div>
   </main>
 </template>

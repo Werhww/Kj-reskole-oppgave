@@ -1,109 +1,8 @@
-<script lang="ts">
+<script setup lang="ts">
 import Offer from "@/components/offer.vue"
 import Input from "@/components/input.vue"
-import { V_SHOW } from "@vue/compiler-dom";
+import { ref, computed, onMounted } from "vue"
 
-export default {
-  expose: ['License_Container'],
-  components: { Input },
-  data() {
-    return {
-      /* User personal information */
-      Fornavn: '',
-      Etternavn: '',
-      Alder: 0,
-      Epost: '',
-      Telefon: '98-876-543',
-
-      /* Traning alredy done */
-      Trafical: false,
-      Night_Training: false,
-
-      /* License */
-      Personal_Car: false,
-      Light_motocycle: false,
-      Medium_heavy_motocycle: false,
-      Heavy_motocycle: false,
-    }
-  },
-  methods: {
-    test () {
-      console.log(this.Fornavn)
-      console.log(this.Etternavn)
-      console.log(this.Alder)
-      console.log(this.Epost)
-      console.log(this.Telefon)
-      console.log(this.Trafical + " Trafical")
-      console.log(this.Night_Training + " Night_Training")
-      console.log(this.Personal_Car + " Personal_Car")
-      console.log(this.Light_motocycle + " Light_motocycle")
-      console.log(this.Medium_heavy_motocycle + " Medium_heavy_motocycle")
-      console.log(this.Heavy_motocycle + " Heavy_motocycle")
-    },
-
-    /* Toggel alredy done training */
-    toggelTrained (e:any) {
-      const element = e.target.parentElement
-      const classList = element.classList
-
-      const trained = element.getAttribute('data-trained-type')
-      if(trained) {      
-        if(trained == "trafical") {
-          this.Trafical?classList.remove('active'):classList.add('active')
-          this.Trafical?this.Trafical = false:this.Trafical = true
-        } else if(trained == "nightTraning") {
-          this.Night_Training?classList.remove('active'):classList.add('active')
-          this.Night_Training?this.Night_Training = false:this.Night_Training = true
-        }
-        return
-      }
-    },
-
-    /* Toggel license */
-    toggelLicense (e:any) {
-      var element = e.target.parentElement
-      var classList = element.classList
-
-      if(!classList.value) {
-        var element = e.target.parentElement.parentElement
-        var classList = element.classList
-      }
-
-      const license = element.getAttribute('data-license')
-      if(license) {
-        if(license == "B") {
-          this.Personal_Car?this.everyLicenseFalse():this.everyLicenseFalse();this.Personal_Car = true;classList.add('active')
-        } else if(license == "A1") {
-          this.Light_motocycle?this.everyLicenseFalse():this.everyLicenseFalse();this.Light_motocycle = true;classList.add('active')
-        } else if(license == "A2") {
-          this.Medium_heavy_motocycle?this.everyLicenseFalse():this.everyLicenseFalse();this.Medium_heavy_motocycle = true;classList.add('active')
-        } else if(license == "A") {
-          this.Heavy_motocycle?this.everyLicenseFalse():this.everyLicenseFalse();this.Heavy_motocycle = true;classList.add('active')
-        } 
-      }
-    },
-
-    everyLicenseFalse() {
-      const license = this.$refs['License_Container'] as HTMLDivElement
-
-      const licenseArray = Array.from(license.childNodes)
-
-      for (let i = 1; i < 5; i++) {
-        const element:any = licenseArray[i];
-        element.classList.remove('active')
-      }
-      
-      this.Personal_Car = false
-      this.Light_motocycle = false
-      this.Medium_heavy_motocycle = false
-      this.Heavy_motocycle = false
-    },
-  }
-}
-
-</script>
-
-<script setup lang="ts">
 const offers = [
   {
     imgLink: '/src/assets/offers/personbil.svg',
@@ -127,8 +26,99 @@ const offers = [
   },
 ]
 
-const cancel = () => {
+function cancel() {
   window.location.href = '/'
+}
+
+const offerList = ref<HTMLInputElement | null>(null)
+
+/* Personal info */
+const Fornavn = ref('')
+const Etternavn = ref('')
+const Alder = ref('')
+const Epost = ref('')
+const Telefon = ref('')
+
+/* Traning done */
+const Trafical:any = ref(false)
+const Night_Training:any= ref(false)
+
+/* Diffrent types off license */
+const Personal_Car = ref(false)
+const Light_motocycle = ref(false)
+const Medium_heavy_motocycle = ref(false)
+const Heavy_motocycle = ref(false)
+
+
+function test() {
+  console.log(Fornavn.value)
+  console.log(Etternavn.value)
+  console.log(Alder.value)
+  console.log(Epost.value)
+  console.log(Telefon.value)
+  console.log(Trafical.value + " Trafical")
+  console.log(Night_Training.value + " Night_Training")
+  console.log(Personal_Car.value + " Personal_Car")
+  console.log(Light_motocycle.value + " Light_motocycle")
+  console.log(Medium_heavy_motocycle.value + " Medium_heavy_motocycle")
+  console.log(Heavy_motocycle.value + " Heavy_motocycle")
+}
+
+/* Toggels all license and change them to false */
+function everyLicenseFalse () {
+  const license = offerList.value?.children
+
+  for (let i = 0; i < 4; i++) {
+    const element:any = license?.item(i);
+    element.classList.remove('active')
+  }
+  
+  Personal_Car.value = false
+  Light_motocycle.value = false
+  Medium_heavy_motocycle.value = false
+  Heavy_motocycle.value = false
+}
+
+/* Toggel Trained */
+function toggelTrained (e:any) {
+  const element = e.target.parentElement
+  const classList = element.classList
+
+  const trained = element.getAttribute('data-trained-type')
+  if(trained) {      
+    if(trained == "trafical") {
+      Trafical.value?classList.remove('active'):classList.add('active')
+      Trafical.value?Trafical.value = false:Trafical.value = true
+    } else if(trained == "nightTraning") {
+      Night_Training.value?classList.remove('active'):classList.add('active')
+      Night_Training.value?Night_Training.value = false:Night_Training.value = true
+    }
+    return
+  }
+}
+
+/* Toggel license */
+function toggelLicense (e:any) {
+  var element = e.target.parentElement
+  var classList = element.classList
+
+  if(!classList.value) {
+    var element = e.target.parentElement.parentElement
+    var classList = element.classList
+  }
+
+  const license = element.getAttribute('data-license')
+  if(license) {
+    if(license == "B") {
+      Personal_Car?everyLicenseFalse():everyLicenseFalse();Personal_Car.value = true;classList.add('active')
+    } else if(license == "A1") {
+      Light_motocycle?everyLicenseFalse():everyLicenseFalse();Light_motocycle.value = true;classList.add('active')
+    } else if(license == "A2") {
+      Medium_heavy_motocycle?everyLicenseFalse():everyLicenseFalse();Medium_heavy_motocycle.value = true;classList.add('active')
+    } else if(license == "A") {
+      Heavy_motocycle?everyLicenseFalse():everyLicenseFalse();Heavy_motocycle.value = true;classList.add('active')
+    } 
+  }
 }
 </script>
 
@@ -141,11 +131,11 @@ const cancel = () => {
     <div class="personal-info">
       <Input placeholder="Fornavn" v-model="Fornavn" type="text" color="var(--green)" class="personal-info-input"/>
       <Input placeholder="Etternavn" v-model="Etternavn" type="text" color="var(--green)" class="personal-info-input"/>
-      <Input v-model="Alder" type="date" color="var(--green)" class="personal-info-input"/>
+      <Input placeholder="Alder" v-model="Alder" onfocus="(this.type='date')" type="text" color="var(--green)" class="personal-info-input"/>
     </div>
     <div class="contact-info">
       <Input placeholder="Epost" v-model="Epost" type="email" color="var(--red)" class="contact-info-epost"/>
-      <Input placeholder="Telefon" v-model="Telefon" type="number" color="var(--red)" class="contact-info-tlf"/>
+      <Input placeholder="Telefon" v-model="Telefon" type="text" color="var(--red)" class="contact-info-tlf"/>
     </div>
   </div>
   
@@ -162,13 +152,13 @@ const cancel = () => {
     </div>
   </div>
   <h1>Hva skal du lære?</h1>
-  <div class="want-to-learn" ref="License_Container">
+  <div class="want-to-learn" ref="offerList">
     <Offer v-for="item in offers" :img-link="item.imgLink" :offer="item.offer" class="want-to-learn-item"  :data-license="item.meta_data" @click="toggelLicense($event)"/> 
   </div>
 
   <div class="Buttons">
-    <button type="button" class="cancel" @click="cancel">Avbryt</button>
     <button type="submit" class="submit">Send Inn</button>
+    <button type="button" class="cancel" @click="cancel">Avbryt</button>
   </div>
   
 </form>
@@ -280,16 +270,15 @@ h1 {
 
   font-family: 'Inter', sans-serif;
   font-weight: 500;
-  font-size: 3rem;
+  font-size: 2.25rem;
+  padding: 0.3rem 3rem 0.3rem 3rem;
 }
 
 .cancel {
-  padding: 0.3rem 6rem 0.3rem 1.5rem;
   background-color: var(--red);
 }
 
 .submit {
-  padding: 0.3rem 1.5rem 0.3rem 5rem;
   background-color: var(--green);
 }
 </style>
@@ -346,10 +335,6 @@ h1 {
   .already-done-container img{
     width: 35rem;
   }
-
-  .Buttons button {
-    font-size: 2.25rem;
-  }
 }
 
 @media only screen and (max-width: 900px) {
@@ -374,8 +359,6 @@ h1 {
   }
 
 }
-
-
 
 @media only screen and (max-width: 700px) {
   .personal-info, .contact-info{
@@ -407,7 +390,7 @@ h1 {
   }
 
   .Buttons button{
-    padding: 0;
+    padding: 0.2rem 0;
   }
 }
 </style>

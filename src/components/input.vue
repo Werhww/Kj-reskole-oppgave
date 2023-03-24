@@ -1,24 +1,27 @@
-<script lang="ts">
-export default {
-  props: ['modelValue', 'placeholder', 'type', 'width', 'color'],
-  emits: ['update:modelValue'],
-  computed: {
-    value: {
-      get() {
-        return this.modelValue
-      },
-      set(value:any) {
-        this.$emit('update:modelValue', value)
-      }
-    }
-  }
-}
-</script>
+<script setup lang="ts">
+const props = defineProps<{
+  modelValue?: string | number,
+  width?: string,
+  color?: string,
+}>()
 
+const emit = defineEmits(['update'])
+
+function updateValue(e:any) {
+  return e.target.value
+}
+
+</script>
 <template>
 <div>
-    <input class="input" v-model="value" :placeholder="placeholder" :type="type"/>
-    <div class="underline"></div>
+  <input 
+    class="input" 
+    :value="modelValue"
+    @input="$emit('update:modelValue', updateValue($event))"
+    v-bind="$attrs"
+  />
+
+  <div class="underline"></div>
 </div>
 </template>
 

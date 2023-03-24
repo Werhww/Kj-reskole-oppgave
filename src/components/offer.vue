@@ -1,7 +1,8 @@
-<script lang="ts">
-export default {
-  props: ['imgLink', 'offer'],
-}
+<script setup lang="ts">
+const props = defineProps<{
+  imgLink?: string,
+  offer?: string,
+}>()
 </script>
 
 <template>
