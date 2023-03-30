@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Employee from '@/components/employee.vue'
 import Offer from '@/components/offer.vue'
+import Prices from '@/components/prices.vue'
 
 const offers = [
   {
@@ -55,12 +56,68 @@ const employees = [
   },
 ]
 
-const prices = [
+const general_prices = [
   {
-    class: "A1, A2, A",
-    course: "Kjøretime",
-    price: "600 kr",
-    length: "45 min"
+    name: "Trafikalt grunnkurs (Sommerhalvåret - med førstehjelp)",
+    price: "1.850",
+  },
+  {
+    name: "Trafikalt grunnkurs (Vinterhalvåret - med mørkekjøring og førstehjelp)",
+    price: "3.700",
+  },
+  {
+    name: "Trafikant i mørket (mørkekjøring)",
+    price: "1.850",
+  },
+  {
+    name: "Førstehjelpkurs",
+    price: "850",
+  }
+]
+
+const personalCar_prices = [
+  {
+    name: "Kjøretime",
+    price: "740",
+  },
+  {
+    name: "Grunnkurs",
+    price: "1550",
+  },
+  {
+    name: "Sikkerhetskurs på bane (glattkjøring)",
+    price: "4.550",
+  },
+  {
+    name: "Sikkerhetskurs på vei",
+    price: "4.900",
+  },
+  {
+    name: "Trinnvurdering trinn 2 - 3",
+    price: "2.550",
+  }
+]
+
+const motorcycle_prices = [
+{
+    name: "Kjøretime",
+    price: "990",
+  },
+  {
+    name: "MC - Grunnkurs",
+    price: "1550",
+  },
+  {
+    name: "Sikkerhetskurs på bane",
+    price: "5.235",
+  },
+  {
+    name: "Sikkerhetskurs på vei",
+    price: "4.900",
+  },
+  {
+    name: "Trinnvurdering trinn 2 - 3",
+    price: "2.000",
   }
 ]
 </script>
@@ -78,7 +135,7 @@ const prices = [
 
     <!-- Viser alle tilbudene til kjøreskolen -->
     <div class="tilbud">
-      <a>Hva vi tilbyr:</a>
+      <h2>Hva vi tilbyr:</h2>
       <div class="tilbud-bilder">
         <Offer v-for="item in offers" :img-link="item.imgLink" :offer="item.offer" class="tilbud-item"/> 
       </div>
@@ -96,24 +153,78 @@ const prices = [
 
     <!-- Ansatte -->
     <div class="ansatte">
-      <a>Våre Ansatte:</a>
+      <h2>Våre Ansatte:</h2>
       <div class="ansatte-container">
         <Employee v-for="item in employees" :img-link="item.imgLink" :name="item.name" :tilbud="item.tilbud" :tlf="item.tlf" :mail="item.mail" class="assatte-item"/>
       </div>
     </div>
 
-    <!-- Prices -->
-    <div>
+    <div class="prices_container">
+      <!--General Prices -->
+      <div class="price">
+        <h2>Generelle kurs</h2>
+        <div>
+          <Prices v-for="i in general_prices" :name="i.name" :price="i.price"/>
+        </div>
+      </div>
 
+      <!--Personal car Prices -->
+      <div class="price">
+        <h2>Prisliste klasse B – personbil (manuell og automat)</h2>
+        <div>
+          <Prices v-for="i in personalCar_prices" :name="i.name" :price="i.price"/>
+        </div>
+      </div>
+
+      <!--Motorcycle Prices -->
+      <div class="price">
+        <h2>Prisliste klasse A, A1, A2</h2>
+        <div>
+          <Prices v-for="i in motorcycle_prices" :name="i.name" :price="i.price"/>
+        </div>
+      </div>
     </div>
   </main>
 </template>
 
 <style scoped>
+.prices_container{
+  display: flex;
+  flex-direction: column;
+  gap: 7.375rem;
+}
+
+.price{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2.75rem;
+}
+
+.price > div{
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
 main {
   display: flex;
   flex-direction: column;
   gap: 5rem;
+}
+
+h1 {
+  font-size: 2.25rem;
+  font-family: 'Iceberg', cursive;
+}
+
+h2 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: var(--green);
+  font-family: 'Inter', sans-serif;
+  text-align: center;
 }
 
 /* Landing content */
@@ -129,11 +240,6 @@ main {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-}
-
-.container1 > div > h1 {
-  font-size: 2.25rem;
-  font-family: 'Iceberg', cursive;
 }
 
 .container1 > div > h1 > span {
@@ -157,11 +263,6 @@ main {
   gap: 1.5rem;
 }
 
-.tilbud > a {
-  font-size: 2.25rem;
-  font-weight: 700;
-  color: var(--green);
-}
 
 .tilbud-bilder {
   display: flex;
@@ -193,8 +294,6 @@ main {
 
 .bestill-text > h1 {
   align-self: flex-start;
-  font-size: 2.25rem;
-  font-family: 'Iceberg', cursive;
 }
 
 .bestill-text > h1 > span {
@@ -230,12 +329,6 @@ main {
   gap: 1.5rem;
 }
 
-.ansatte a {
-  font-size: 2.25rem;
-  font-weight: 700;
-  color: var(--green);
-}
-
 .ansatte-container {
   display: flex;
   flex-wrap: wrap;
@@ -246,7 +339,6 @@ main {
   flex: 1 1 300px;
 }
 </style>
-
 
 <!-- Media Queries -->
 <style scoped>
