@@ -16,6 +16,7 @@ div {
     display: flex;
     background-color: v-bind(color);
     padding: 0.375rem 4.125rem;
+    border-radius: 5rem;
 }
 
 div p {

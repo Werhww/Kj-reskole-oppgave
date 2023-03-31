@@ -16,7 +16,7 @@ const placholder = {
                 <H1>Kurs</H1>
                 <RouterLink to="/courses#list">List / Betaling</RouterLink>
             </div>
-            <div></div> 
+            <div><!-- Underline --></div> 
         </div>
         <div class="cours_content">
             <span>
@@ -39,7 +39,7 @@ const placholder = {
                 <H1>Gjennomført</H1>
                 <RouterLink to="/courses#achievements">Alle prestasjonene</RouterLink>
             </div>
-            <div></div> 
+            <div><!-- Underline --></div> 
         </div>
         <div class="achv_content">
             <span>
@@ -108,7 +108,6 @@ const placholder = {
     height: 5px;
     background-color: var(--red);
     border-radius: 5rem;
-
 }
 
 .achv_title, .achv_title a {
