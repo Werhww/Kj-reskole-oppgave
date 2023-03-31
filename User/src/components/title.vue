@@ -10,7 +10,7 @@ const props = defineProps<{
 <template>
 <div class="title">
     <div class="top">
-        <div>
+        <div :id="anchorID">
             <H1>{{ text }}</H1>
             <a :id="anchorID"></a>
         </div>
