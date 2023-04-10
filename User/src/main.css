@@ -1,10 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Iceberg&family=Inter:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Iceberg&family=Inter:wght@400;500;600;700&display=swap');
 /* font-family: 'Inter', sans-serif; */ /* font-family: 'Iceberg', cursive; */
 
 :root {
     --red: #DE2A29;
     --green: #385F58;
-    --light-grey: #DBDBDB;
+    --light-grey: #F4F0F0;
     --grey: #CCCCCC;
     --dark-grey: #858585;
 }

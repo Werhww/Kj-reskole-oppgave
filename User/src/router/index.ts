@@ -18,10 +18,18 @@ const router = createRouter({
     },
     {
       path: '/courses',
-      name: 'chat',
+      name: 'courses',
       component: Courses
     },
-  ]
+  ],
+  scrollBehavior(to, from, savedPosition) {
+    if (to.hash) {
+      return {
+        el: to.hash,
+        behavior: 'smooth'
+      }
+    }
+  }
 })
 
 export default router

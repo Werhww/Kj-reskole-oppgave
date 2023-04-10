@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import calenderDay from '@/components/calenderDay.vue';
+
 const placholder = {
     gjenomførte: 5600,
     fremtidige: 3400,
@@ -14,7 +16,7 @@ const placholder = {
         <div class="cours_title title">
             <div>
                 <H1>Kurs</H1>
-                <RouterLink to="/courses#list">List / Betaling</RouterLink>
+                <RouterLink :to="{ name:'courses', hash:'#list'}">List / Betaling</RouterLink>
             </div>
             <div><!-- Underline --></div> 
         </div>
@@ -37,7 +39,7 @@ const placholder = {
         <div class="achv_title title">
             <div>
                 <H1>Gjennomført</H1>
-                <RouterLink to="/courses#achievements">Alle prestasjonene</RouterLink>
+                <RouterLink :to="{ name:'courses', hash:'#achievements'}">Alle prestasjonene</RouterLink>
             </div>
             <div><!-- Underline --></div> 
         </div>
@@ -50,9 +52,51 @@ const placholder = {
         </div>
     </div>
 </div>
+<div class="course-calender">
+    <h2>Uke 15</h2>
+    <div class="calender">
+        <img src="../assets/Arrow.svg">
+        <div class="days">
+            <calenderDay dateDay="Man. 17" course="Kjøretime (A1)" time="15.00 - 15.45" shortAddress="Areneset"  fullAddress="Areneset 8, 5350 Bergen"/>
+            <calenderDay dateDay="Man. 17" course="Kjøretime (A1)" time="15.00 - 15.45" shortAddress="Areneset"  fullAddress="Areneset 8, 5350 Bergen"/>
+            <calenderDay dateDay="Man. 17" course="Kjøretime (A1)" time="15.00 - 15.45" shortAddress="Areneset"  fullAddress="Areneset 8, 5350 Bergen"/>
+            <calenderDay dateDay="Man. 17" course="Kjøretime (A1)" time="15.00 - 15.45" shortAddress="Areneset"  fullAddress="Areneset 8, 5350 Bergen"/>
+            <calenderDay dateDay="Man. 17" course="Kjøretime (A1)" time="15.00 - 15.45" shortAddress="Areneset"  fullAddress="Areneset 8, 5350 Bergen"/>
+        </div>
+        <img src="../assets/Arrow.svg" style="rotate: 180deg;">
+    </div>
+</div>
 </main>
 </template>
 
+
+<!-- calender css -->
+<style scoped>
+h2 {
+    font-size: 2.5rem;
+    color : var(--green);
+    font-weight: 700;
+}
+
+.course-calender {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.calender {
+    display: flex;
+    align-items: center;
+}
+
+.days {
+    display: flex;
+    flex-direction: row;
+    gap: 1.875rem;
+}
+</style>
+
+<!-- top course and achivments css -->
 <style scoped>
 
 .achv_content span:last-child {
