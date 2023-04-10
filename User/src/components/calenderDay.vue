@@ -25,6 +25,7 @@ const props = defineProps<{
     gap: 0.5rem;
 
     width: 10rem;
+    min-height: 9.375rem;
 
     padding: 1rem 1.25rem 2.375rem 1.25rem;
     border: var(--grey) 2px solid;
