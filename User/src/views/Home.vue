@@ -5,15 +5,17 @@ import moment from 'moment';
 
 const week = ref(moment().isoWeek())
 const Monday = ref({
-    date: moment().week(week.value).day('Monday').format('DD'),
+    shortdate: moment().week(week.value).day('Monday').format('DD'),
+    date: moment().week(week.value).day('Monday').format('DD:MM:YYYY'),
     course: "",
     time: "",
     shortAddress: "",
     fullAddress: ""
 })
 
-const Turday = ref({
-    date: moment().week(week.value).day('Turday').format('DD'),
+const Tuesday = ref({
+    shortdate: moment().week(week.value).day('Tuesday').format('DD'),
+    date: moment().week(week.value).day('Tuesday').format('DD:MM:YYYY'),
     course: "",
     time: "",
     shortAddress: "",
@@ -21,7 +23,8 @@ const Turday = ref({
 })
 
 const Wendesday = ref({
-    date: moment().week(week.value).day('Wendesday').format('DD'),
+    shortdate: moment().week(week.value).day('Wendesday').format('DD'),
+    date: moment().week(week.value).day('Wendesday').format('DD:MM:YYYY'),
     course: "",
     time: "",
     shortAddress: "",
@@ -29,7 +32,8 @@ const Wendesday = ref({
 })
 
 const Thursday = ref({
-    date: moment().week(week.value).day('Thursday').format('DD'),
+    shortdate: moment().week(week.value).day('Thursday').format('DD'),
+    date: moment().week(week.value).day('Thursday').format('DD:MM:YYYY'),
     course: "",
     time: "",
     shortAddress: "",
@@ -37,7 +41,8 @@ const Thursday = ref({
 })
 
 const Friday = ref({
-    date: moment().week(week.value).day('Friday').format('DD'),
+    shortdate: moment().week(week.value).day('Friday').format('DD'),
+    date: moment().week(week.value).day('Friday').format('DD:MM:YYYY'),
     course: "",
     time: "",
     shortAddress: "",
@@ -45,11 +50,17 @@ const Friday = ref({
 })
 
 function changeDays() {
-    Monday.value.date = moment().week(week.value).day('Monday').format('DD')
-    Turday.value.date = moment().week(week.value).day('Turday').format('DD')
-    Wendesday.value.date = moment().week(week.value).day('Wendesday').format('DD')
-    Thursday.value.date = moment().week(week.value).day('Thursday').format('DD')
-    Friday.value.date = moment().week(week.value).day('Friday').format('DD')
+    Monday.value.date = moment().week(week.value).day('Monday').format('DD:MM:YYYY')
+    Monday.value.shortdate = moment().week(week.value).day('Monday').format('DD')
+    Tuesday.value.date = moment().week(week.value).day('Tuesday').format('DD:MM:YYYY')
+    Tuesday.value.shortdate = moment().week(week.value).day('Tuesday').format('DD')
+    Wendesday.value.date = moment().week(week.value).day('Wendesday').format('DD:MM:YYYY')
+    Wendesday.value.shortdate = moment().week(week.value).day('Wendesday').format('DD')
+    Thursday.value.date = moment().week(week.value).day('Thursday').format('DD:MM:YYYY')
+    Thursday.value.shortdate = moment().week(week.value).day('Thursday').format('DD')
+    Friday.value.date = moment().week(week.value).day('Friday').format('DD:MM:YYYY')
+    Friday.value.shortdate = moment().week(week.value).day('Friday').format('DD')
+    
 }
 
 function nextWeek() {
@@ -66,33 +77,35 @@ function prevWeek() {
 
 function asingCourseToDay() {
     clearAllDays()
+
     kjøretimer.forEach((item) => {
-        if (item.dateDay == Monday.value.date) {
+        const date = moment(item.date).format('DD:MM:YYYY')
+
+        if (date == Monday.value.date) {
             Monday.value.course = item.course
             Monday.value.time = item.time
             Monday.value.shortAddress = item.shortAddress
             Monday.value.fullAddress = item.fullAddress
 
+        } else if (date == Tuesday.value.date) {
+            Tuesday.value.course = item.course
+            Tuesday.value.time = item.time
+            Tuesday.value.shortAddress = item.shortAddress
+            Tuesday.value.fullAddress = item.fullAddress
 
-        } else if (item.dateDay == Turday.value.date) {
-            Turday.value.course = item.course
-            Turday.value.time = item.time
-            Turday.value.shortAddress = item.shortAddress
-            Turday.value.fullAddress = item.fullAddress
-
-        } else if (item.dateDay == Wendesday.value.date) {
+        } else if (date == Wendesday.value.date) {
             Wendesday.value.course = item.course
             Wendesday.value.time = item.time
             Wendesday.value.shortAddress = item.shortAddress
             Wendesday.value.fullAddress = item.fullAddress
 
-        } else if (item.dateDay == Thursday.value.date) {
+        } else if (date == Thursday.value.date) {
             Thursday.value.course = item.course
             Thursday.value.time = item.time
             Thursday.value.shortAddress = item.shortAddress
             Thursday.value.fullAddress = item.fullAddress
 
-        } else if (item.dateDay == Friday.value.date) {
+        } else if (date == Friday.value.date) {
             Friday.value.course = item.course
             Friday.value.time = item.time
             Friday.value.shortAddress = item.shortAddress
@@ -107,10 +120,10 @@ function clearAllDays() {
     Monday.value.shortAddress = ""
     Monday.value.fullAddress = ""
 
-    Turday.value.course = ""
-    Turday.value.time = ""
-    Turday.value.shortAddress = ""
-    Turday.value.fullAddress = ""
+    Tuesday.value.course = ""
+    Tuesday.value.time = ""
+    Tuesday.value.shortAddress = ""
+    Tuesday.value.fullAddress = ""
 
     Wendesday.value.course = ""
     Wendesday.value.time = ""
@@ -130,35 +143,35 @@ function clearAllDays() {
 
 const kjøretimer = [
     {
-        dateDay: '12',
+        date: '2023-04-10T19:26:03+02:00',
         course: 'Kjøretime (A1)',
         time: '15.00 - 15.45',
         shortAddress: 'Areneset',
         fullAddress: 'Areneset 8, 5350 Bergen'
     },
     {
-        dateDay: '14',
+        date: '2023-04-14T19:25:46+02:00',
         course: 'Kjøretime (A1)',
         time: '15.00 - 15.45',
         shortAddress: 'Areneset',
         fullAddress: 'Areneset 8, 5350 Bergen'
     },
     {
-        dateDay: '17',
+        date: '2023-04-17T19:26:23+02:00',
         course: 'Kjøretime (A1)',
         time: '15.00 - 15.45',
         shortAddress: 'Areneset',
         fullAddress: 'Areneset 8, 5350 Bergen'
     },
     {
-        dateDay: '18',
+        date: '2023-04-20T19:26:38+02:00',
         course: 'Kjøretime (A1)',
         time: '15.00 - 15.45',
         shortAddress: 'Areneset',
         fullAddress: 'Areneset 8, 5350 Bergen'
     },
     {
-        dateDay: '01',
+        date: '2023-04-21T19:27:02+02:00',
         course: 'Kjøretime (A1)',
         time: '15.00 - 15.45',
         shortAddress: 'Areneset',
@@ -224,11 +237,11 @@ asingCourseToDay()
     <div class="calender">
         <img src="../assets/Arrow.svg" @click="prevWeek">
         <div class="days">
-            <calenderDay :dateDay="'Man. ' + Monday.date" :course="Monday.course" :time="Monday.time" :shortAddress="Monday.shortAddress"  :fullAddress="Monday.fullAddress"/>
-            <calenderDay :dateDay="'Tir. ' + Turday.date" :course="Turday.course" :time="Turday.time" :shortAddress="Turday.shortAddress"  :fullAddress="Turday.fullAddress"/>
-            <calenderDay :dateDay="'Ons. ' + Wendesday.date" :course="Wendesday.course" :time="Wendesday.time" :shortAddress="Wendesday.shortAddress"  :fullAddress="Wendesday.fullAddress"/>
-            <calenderDay :dateDay="'Tors. ' + Thursday.date" :course="Thursday.course" :time="Thursday.time" :shortAddress="Thursday.shortAddress"  :fullAddress="Thursday.fullAddress"/>
-            <calenderDay :dateDay="'Fre. ' + Friday.date" :course="Friday.course" :time="Friday.time" :shortAddress="Friday.shortAddress"  :fullAddress="Friday.fullAddress"/>
+            <calenderDay :dateDay="'Man. ' + Monday.shortdate" :course="Monday.course" :time="Monday.time" :shortAddress="Monday.shortAddress"  :fullAddress="Monday.fullAddress"/>
+            <calenderDay :dateDay="'Tir. ' + Tuesday.shortdate" :course="Tuesday.course" :time="Tuesday.time" :shortAddress="Tuesday.shortAddress"  :fullAddress="Tuesday.fullAddress"/>
+            <calenderDay :dateDay="'Ons. ' + Wendesday.shortdate" :course="Wendesday.course" :time="Wendesday.time" :shortAddress="Wendesday.shortAddress"  :fullAddress="Wendesday.fullAddress"/>
+            <calenderDay :dateDay="'Tors. ' + Thursday.shortdate" :course="Thursday.course" :time="Thursday.time" :shortAddress="Thursday.shortAddress"  :fullAddress="Thursday.fullAddress"/>
+            <calenderDay :dateDay="'Fre. ' + Friday.shortdate" :course="Friday.course" :time="Friday.time" :shortAddress="Friday.shortAddress"  :fullAddress="Friday.fullAddress"/>
         </div>
         <img src="../assets/Arrow.svg" style="rotate: 180deg;" @click="nextWeek">
     </div>
