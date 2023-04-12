@@ -11,7 +11,7 @@ const props = defineProps<{
 <div class="title">
     <div class="top">
         <div :id="anchorID">
-            <H1>{{ text }}</H1>
+            <h1>{{ text }}</h1>
             <a :name="anchorID"></a>
         </div>
         <RouterButton text="Tilbake" :color="color" to="/"></RouterButton>
