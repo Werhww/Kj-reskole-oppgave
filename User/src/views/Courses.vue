@@ -5,13 +5,13 @@ import Achievement from "@/components/achievement.vue";
 import { ref } from "vue";
 import moment from 'moment';
 
-import { user } from "../firebase/store";
+import { commingCourses, previousCourses, achievements } from "../firebase/store";
 
-const achievements = ref(user.value.achievements);
+const Achievements = ref(achievements);
 
-const courses = ref(user.value.courses)
+const PreviousCourses = ref(previousCourses)
 
-const commingCourses = ref(user.value.commingcourses)
+const CommingCourses = ref(commingCourses)
 
 function payNow() {
     console.log("pay now")
@@ -35,7 +35,7 @@ function payNow() {
                     <p>Dato</p>
                     <p>Pris</p>
                 </span>
-                <CourseItem v-for="item in courses" :instructor="item.instructor" :place="item.fullAddress" :time="item.time" :comment="item.comment" :course-title="item.course" :amount="item.amount" :date="moment(item.date).format('DD.MM.YYYY')" :price="item.price" :paid="item.paid" />
+                <CourseItem v-for="item in PreviousCourses" :instructor="item.instructor" :place="item.fullAddress" :time="item.time" :comment="item.comment" :course-title="item.course" :amount="item.amount" :date="moment(item.date).format('DD.MM.YYYY')" :price="item.price" :paid="item.paid" />
             </div>
         </div>
         <div class="course_content">
@@ -46,7 +46,7 @@ function payNow() {
                     <p>Dato</p>
                     <p>Pris</p>
                 </span>
-                <CourseItem v-for="item in commingCourses" :instructor="item.instructor" :place="item.fullAddress" :time="item.time" :comment="item.comment" :course-title="item.course" :amount="item.amount" :date="moment(item.date).format('DD.MM.YYYY')" :price="item.price" :paid="item.paid" />
+                <CourseItem v-for="item in CommingCourses" :instructor="item.instructor" :place="item.fullAddress" :time="item.time" :comment="item.comment" :course-title="item.course" :amount="item.amount" :date="moment(item.date).format('DD.MM.YYYY')" :price="item.price" :paid="item.paid" />
             </div>
         </div>
     </section>
@@ -54,10 +54,10 @@ function payNow() {
         <Title text="Prestasjonene" color="var(--green)" anchor-i-d="achievements" />
         <div class="driveTime">
             <p>Du har kjørt</p>
-            <p>{{ achievements.driveTime }} timer</p>
+            <p>{{ Achievements.driveTime }} timer</p>
         </div>
         <div class="achievements">
-            <Achievement v-for="i in achievements.achievement" :name="i.name" :done="i.done" />
+            <Achievement v-for="i in Achievements.achievement" :name="i.name" :done="i.done" />
         </div>
     </section>
 </main>

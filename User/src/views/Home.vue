@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import calenderDay from '@/components/calenderDay.vue';
 import moment from 'moment';
-import { user } from '../firebase/store';
+import { allCourses, achievements, user } from '../firebase/store';
 
 const week = ref(moment().isoWeek())
 const Monday = ref({
@@ -79,7 +79,7 @@ function prevWeek() {
 function asingCourseToDay() {
     clearAllDays()
 
-    kjøretimer.forEach((item:any) => {
+    for(let item of courses.value) {
         const date = moment(item.date).format('DD:MM:YYYY')
 
         if (date == Monday.value.date) {
@@ -112,7 +112,7 @@ function asingCourseToDay() {
             Friday.value.shortAddress = item.shortAddress
             Friday.value.fullAddress = item.fullAddress
         }
-    })
+    }
 }
 
 function clearAllDays() {
@@ -142,55 +142,12 @@ function clearAllDays() {
     Friday.value.fullAddress = ""
 }
 
-const courses = ref(user.value.courses)
+const courses = ref(allCourses)
 
+const User = ref(user)
 
-console.log(courses.value)
+const Achievements = ref(achievements)
 
-const kjøretimer = [
-    {
-        date: '2023-04-10T19:26:03+02:00',
-        course: 'Kjøretime (A1)',
-        time: '15.00 - 15.45',
-        shortAddress: 'Areneset',
-        fullAddress: 'Areneset 8, 5350 Bergen'
-    },
-    {
-        date: '2023-04-14T19:25:46+02:00',
-        course: 'Kjøretime (A1)',
-        time: '15.00 - 15.45',
-        shortAddress: 'Areneset',
-        fullAddress: 'Areneset 8, 5350 Bergen'
-    },
-    {
-        date: '2023-04-17T19:26:23+02:00',
-        course: 'Kjøretime (A1)',
-        time: '15.00 - 15.45',
-        shortAddress: 'Areneset',
-        fullAddress: 'Areneset 8, 5350 Bergen'
-    },
-    {
-        date: '2023-04-20T19:26:38+02:00',
-        course: 'Kjøretime (A1)',
-        time: '15.00 - 15.45',
-        shortAddress: 'Areneset',
-        fullAddress: 'Areneset 8, 5350 Bergen'
-    },
-    {
-        date: '2023-04-21T19:27:02+02:00',
-        course: 'Kjøretime (A1)',
-        time: '15.00 - 15.45',
-        shortAddress: 'Areneset',
-        fullAddress: 'Areneset 8, 5350 Bergen'
-    },
-]
-
-const placholder = {
-    gjenomførte: 5600,
-    fremtidige: 3400,
-    kjørtetimer: 20,
-    presentsjoner: ['Trafikkopplæringen', 'Trafikkopplæringen', 'Mennesket i trafikken']
-}
 
 asingCourseToDay()
 </script>
@@ -209,15 +166,15 @@ asingCourseToDay()
         <div class="cours_content">
             <span>
                 <p>Gjennomførte kurs</p>
-                <p>{{ placholder.gjenomførte }} kr</p>
+                <p>{{ User.payedCoursesSum }} kr</p>
             </span>
             <span>
                 <p>Fremtidig kurs</p>
-                <p>{{ placholder.fremtidige }} kr</p>
+                <p>{{ User.commingCoursesSum }} kr</p>
             </span>
             <span>
                 <p>Total</p>
-                <p>{{ placholder.gjenomførte + placholder.fremtidige }} kr</p>
+                <p>{{ User.payedCoursesSum + User.commingCoursesSum }} kr</p>
             </span>
         </div>
     </div>
@@ -232,9 +189,9 @@ asingCourseToDay()
         <div class="achv_content">
             <span>
                 <p>Kjørtetimer</p>
-                <p>{{ placholder.kjørtetimer }} timer</p>
+                <p>{{ Achievements.driveTime }} timer</p>
             </span>
-            <span><p v-for="item in placholder.presentsjoner">{{ item }}</p></span>
+            <span><p v-for="item in Achievements.achievement">{{ item }}</p></span>
         </div>
     </div>
 </div>

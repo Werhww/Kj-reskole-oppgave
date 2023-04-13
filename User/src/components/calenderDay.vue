@@ -35,6 +35,7 @@ const props = defineProps<{
 
 p, a{
     font-size: 1.5rem;
+    text-align: center;
 }
 
 .content p:first-child{
