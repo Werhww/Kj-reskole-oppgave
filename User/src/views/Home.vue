@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import calenderDay from '@/components/calenderDay.vue';
 import moment from 'moment';
+import { user } from '../firebase/store';
 
 const week = ref(moment().isoWeek())
 const Monday = ref({
@@ -78,7 +79,7 @@ function prevWeek() {
 function asingCourseToDay() {
     clearAllDays()
 
-    kjøretimer.forEach((item) => {
+    kjøretimer.forEach((item:any) => {
         const date = moment(item.date).format('DD:MM:YYYY')
 
         if (date == Monday.value.date) {
@@ -140,6 +141,11 @@ function clearAllDays() {
     Friday.value.shortAddress = ""
     Friday.value.fullAddress = ""
 }
+
+const courses = ref(user.value.courses)
+
+
+console.log(courses.value)
 
 const kjøretimer = [
     {

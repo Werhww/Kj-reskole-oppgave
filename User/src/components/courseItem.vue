@@ -147,6 +147,10 @@ section {
     gap: 1.5rem;
 }
 
+.content > p:first-child {
+    width: 40%;
+}
+
 .content p {
     font-size: 1.5rem;
 }

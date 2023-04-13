@@ -1,100 +1,17 @@
 <script setup lang="ts">
-import Button from "@/components/button.vue";
 import Title from "@/components/title.vue";
 import CourseItem from "@/components/courseItem.vue";
 import Achievement from "@/components/achievement.vue";
+import { ref } from "vue";
+import moment from 'moment';
 
-const achievements = {
-    driveTime: "1",
-    achievement: [
-        {
-            name: "Trafikalt grunnkurs",
-            done: true
-        },
-        {
-            name: "Grunnleggende opplæringen",
-            done: true
-        },
-        {
-            name: "Sikkerhetskurs i trafikk",
-            done: true
-        },
-        {
-            name: "Trinnvurdering (trinn 2)",
-            done: false
-        },
-        {
-            name: "Trinnvurdering (trinn 3)",
-            done: false
-        },
-        {
-            name: "Sikkerhetskurs på vei",
-            done: false
-        },
-        
-        {
-            name: "Teorie prøven",
-            done: false
-        },
-        {
-            name: "Mørkekjøring",
-            done: false
-        },
-    ]
-}
+import { user } from "../firebase/store";
 
-const courses = [
-    {
-        courseTitle: "Trafikkopplæringen",
-        amount: "1",
-        date: "12.12.2021",
-        price: "1000",
-        paid: true,
+const achievements = ref(user.value.achievements);
 
-        instructor: "Jonson Jones",
-        place: "Areneset 8, 5350 Bergen",
-        time: "15.30 - 17.30",
-        comment: "Bra kjørt, det blir bykjøring neste gang"
-    },
-    {
-        courseTitle: "Trafikkopplæringen",
-        amount: "3",
-        date: "12.12.2021",
-        price: "1000",
-        paid: false
-    },
-    {
-        courseTitle: "Trafikkopplæringen",
-        amount: "1",
-        date: "12.12.2021",
-        price: "1000",
-        paid: true
-    },
-]
+const courses = ref(user.value.courses)
 
-const Commingcourses = [
-    {
-        courseTitle: "Trafikkopplæringen",
-        amount: "1",
-        date: "12.12.2021",
-        price: "1000",
-        paid: undefined
-    },
-    {
-        courseTitle: "Trafikkopplæringen",
-        amount: "3",
-        date: "12.12.2021",
-        price: "1000",
-        paid: undefined
-    },
-    {
-        courseTitle: "Trafikkopplæringen",
-        amount: "1",
-        date: "12.12.2021",
-        price: "1000",
-        paid: undefined
-    },
-]
+const commingCourses = ref(user.value.commingcourses)
 
 function payNow() {
     console.log("pay now")
@@ -118,7 +35,7 @@ function payNow() {
                     <p>Dato</p>
                     <p>Pris</p>
                 </span>
-                <CourseItem v-for="item in courses" :instructor="item.instructor" :place="item.place" :time="item.time" :comment="item.comment" :course-title="item.courseTitle" :amount="item.amount" :date="item.date" :price="item.price" :paid="item.paid" />
+                <CourseItem v-for="item in courses" :instructor="item.instructor" :place="item.fullAddress" :time="item.time" :comment="item.comment" :course-title="item.course" :amount="item.amount" :date="moment(item.date).format('DD.MM.YYYY')" :price="item.price" :paid="item.paid" />
             </div>
         </div>
         <div class="course_content">
@@ -129,7 +46,7 @@ function payNow() {
                     <p>Dato</p>
                     <p>Pris</p>
                 </span>
-                <CourseItem v-for="item in Commingcourses" :course-title="item.courseTitle" :amount="item.amount" :date="item.date" :price="item.price" :paid="item.paid" />
+                <CourseItem v-for="item in commingCourses" :instructor="item.instructor" :place="item.fullAddress" :time="item.time" :comment="item.comment" :course-title="item.course" :amount="item.amount" :date="moment(item.date).format('DD.MM.YYYY')" :price="item.price" :paid="item.paid" />
             </div>
         </div>
     </section>
@@ -229,14 +146,11 @@ h1 {
 }
 
 .course_content > div > span > p:last-child {
-padding-right: 8.25rem;
-}
-
-.course_content > div  > span > p:not(:last-child):not(:first-child) {
-padding-left: 8.5rem;
+    padding-right: 8.25rem;
 }
 
 .course_content > div  > span > p:first-child {
-padding-left: 0.4rem;
+    width: 36%;
+    padding-left: 0.4rem;
 }
 </style>
