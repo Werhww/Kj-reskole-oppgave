@@ -47,68 +47,23 @@ const achievements = ref({
 })
 
 /* all courses combined & sorter for previus courses and comming courses */
-const allCourses = ref([
-    {
-        course: 'Kjøretime (A1)',
-        time: "15.30 - 17.30",
-        date: "2023-04-10T19:26:03+02:00",
+interface CourseProps {
+    course: string,
+    time: string,
+    date: string,
 
-        shortAddress: 'Areneset',
-        fullAddress: 'Areneset 8, 5350 Bergen',
+    shortAddress: string,
+    fullAddress: string,
 
-        amount: 1,
-        price: 1000,
-        paid: true,
+    amount: number,
+    price: number,
+    paid: boolean | undefined,
 
-        instructor: "Jonson Jones",
-        comment: "Bra kjørt, det blir bykjøring neste gang"
-    },
-    {
-        course: 'Traffikalt grunnkurs',
-        time: "15.30 - 17.30",
-        date: "2023-04-13T19:26:03+02:00",
+    instructor: string,
+    comment: string
+}
 
-        shortAddress: 'Areneset',
-        fullAddress: 'Areneset 8, 5350 Bergen',
-
-        amount: 1,
-        price: 1000,
-        paid: true,
-
-        instructor: "Jonson Jones",
-        comment: "Bra kjørt, det blir bykjøring neste gang"
-    },
-    {
-        course: 'Kjøretime (A1)',
-        time: "15.30 - 17.30",
-        date: "2023-04-10T19:26:03+02:00",
-
-        shortAddress: 'Areneset',
-        fullAddress: 'Areneset 8, 5350 Bergen',
-
-        amount: 1,
-        price: 1000,
-        paid: undefined,
-
-        instructor: "Jonson Jones",
-        comment: ""
-    },
-    {
-        course: 'Traffikalt grunnkurs',
-        time: "15.30 - 17.30",
-        date: "2023-04-13T19:26:03+02:00",
-
-        shortAddress: 'Areneset',
-        fullAddress: 'Areneset 8, 5350 Bergen',
-
-        amount: 1,
-        price: 1000,
-        paid: undefined,
-
-        instructor: "Jonson Jones",
-        comment: ""
-    },
-])
+const allCourses= ref<CourseProps[]>([])
 
 const previousCourses = ref<[] | any>([])
 
@@ -144,7 +99,7 @@ setTimeout(() => {
         comment: "Bra kjørt, det blir bykjøring neste gang"
     },
     {
-        course: 'Traffikalt grunnkurs',
+        course: 'Traffikalt grunnkurs Man',
         time: "15.30 - 17.30",
         date: "2023-04-10T19:26:03+02:00",
 
@@ -189,7 +144,7 @@ setTimeout(() => {
         comment: ""
     },
     {
-        course: 'Traffikalt grunnkurs',
+        course: 'Traffikalt grunnkurs Tirsdag',
         time: "15.30 - 17.30",
         date: "2023-04-11T19:26:03+02:00",
 

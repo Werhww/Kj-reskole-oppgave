@@ -6,6 +6,11 @@ import CalenderShowedCourse from '@/components/calenderShowedCourse.vue';
 import moment from 'moment';
 import { allCourses, achievements, user } from '../firebase/store';
 
+watch(allCourses, () => {
+    asingCourseToDay()
+    console.log("allCourses changed")
+})
+
 const week = ref(moment().isoWeek())
 const Monday = ref({
     nameofday: "Mandag",
@@ -210,21 +215,21 @@ function showCourse(day:any) {
     console.log("Hello")
     console.log(day)
     if (day == "Monday") {
-        assingDayToShowedCourse(Monday.value)
+        assingDayToShowedCourse(Monday.value, )
     } else if (day == "Tuesday") {
-        assingDayToShowedCourse(Tuesday.value)
+        assingDayToShowedCourse(Tuesday.value, )
     } else if (day == "Wendesday") {
-        assingDayToShowedCourse(Wendesday.value)
+        assingDayToShowedCourse(Wendesday.value, )
     } else if (day == "Thursday") {
-        assingDayToShowedCourse(Thursday.value)
+        assingDayToShowedCourse(Thursday.value, )
     } else if (day == "Friday") {
-        assingDayToShowedCourse(Friday.value)
+        assingDayToShowedCourse(Friday.value, )
     }
 }
 
-function assingDayToShowedCourse(CourseData:any) {
+function assingDayToShowedCourse(CourseData:any, date:any) {
     ShowedCourse.value.nameofday = CourseData.nameofday
-    ShowedCourse.value.date = moment().week(week.value).day(CourseData.shortdate).format('Do MMMM')
+    ShowedCourse.value.date = moment(CourseData.date).format('Do MMMM')
     ShowedCourse.value.course = CourseData.course
     ShowedCourse.value.time = CourseData.time
     ShowedCourse.value.fullAddress = CourseData.fullAddress
@@ -263,6 +268,14 @@ function sortAchievements() {
 
 sortAchievements()
 asingCourseToDay()
+
+console.log(week)
+console.log(Monday)
+console.log(Tuesday)
+console.log(Wendesday)
+console.log(Thursday)
+console.log(Friday)
+
 </script>
 
 <template>
