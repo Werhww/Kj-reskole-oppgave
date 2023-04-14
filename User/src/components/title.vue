@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import RouterButton from "@/components/routerButton.vue";
+import Underline from "@/components/underline.vue";
 const props = defineProps<{
     anchorID: string;
     text: string;
@@ -16,7 +17,7 @@ const props = defineProps<{
         </div>
         <RouterButton text="Tilbake" :color="color" to="/"></RouterButton>
     </div>
-    <div><!-- Underline --></div>
+    <Underline :color="color"/>
 </div>
 </template>
 
@@ -25,12 +26,6 @@ const props = defineProps<{
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-}
-
-.title > div:not(:first-child) {
-    height: 5px;
-    background-color: v-bind(color);
-    border-radius: 5rem;
 }
 
 .top{

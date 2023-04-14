@@ -1,53 +1,87 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import calenderDay from '@/components/calenderDay.vue';
+import Underline from '@/components/underline.vue';
+import CalenderShowedCourse from '@/components/calenderShowedCourse.vue';
 import moment from 'moment';
 import { allCourses, achievements, user } from '../firebase/store';
 
 const week = ref(moment().isoWeek())
 const Monday = ref({
+    nameofday: "Mandag",
     shortdate: moment().week(week.value).day('Monday').format('DD'),
     date: moment().week(week.value).day('Monday').format('DD:MM:YYYY'),
     course: "",
     time: "",
     shortAddress: "",
-    fullAddress: ""
+    fullAddress: "",
+    amount: 0,
+    instructor: "",
+    comment: ""
 })
 
 const Tuesday = ref({
+    nameofday: "Tirsdag",
     shortdate: moment().week(week.value).day('Tuesday').format('DD'),
     date: moment().week(week.value).day('Tuesday').format('DD:MM:YYYY'),
     course: "",
     time: "",
     shortAddress: "",
-    fullAddress: ""
+    fullAddress: "",
+    amount: 0,
+    instructor: "",
+    comment: ""
 })
 
 const Wendesday = ref({
+    nameofday: "Onsdag",
     shortdate: moment().week(week.value).day('Wendesday').format('DD'),
     date: moment().week(week.value).day('Wendesday').format('DD:MM:YYYY'),
     course: "",
     time: "",
     shortAddress: "",
-    fullAddress: ""
+    fullAddress: "",
+    amount: 0,
+    instructor: "",
+    comment: ""
 })
 
 const Thursday = ref({
+    nameofday: "Torsdag",
     shortdate: moment().week(week.value).day('Thursday').format('DD'),
     date: moment().week(week.value).day('Thursday').format('DD:MM:YYYY'),
     course: "",
     time: "",
     shortAddress: "",
-    fullAddress: ""
+    fullAddress: "",
+    amount: 0,
+    instructor: "",
+    comment: ""
 })
 
 const Friday = ref({
+    nameofday: "Fredag",
     shortdate: moment().week(week.value).day('Friday').format('DD'),
     date: moment().week(week.value).day('Friday').format('DD:MM:YYYY'),
     course: "",
     time: "",
     shortAddress: "",
-    fullAddress: ""
+    fullAddress: "",
+    amount: 0,
+    instructor: "",
+    comment: ""
+})
+
+const ShowedCourse = ref({
+    nameofday: "",
+    showed: false,
+    course: "",
+    time: "",
+    date: "",
+    fullAddress: "",
+    amount: 0,
+    instructor: "",
+    comment: ""
 })
 
 function changeDays() {
@@ -87,30 +121,45 @@ function asingCourseToDay() {
             Monday.value.time = item.time
             Monday.value.shortAddress = item.shortAddress
             Monday.value.fullAddress = item.fullAddress
+            Monday.value.amount = item.amount
+            Monday.value.instructor = item.instructor
+            Monday.value.comment = item.comment
 
         } else if (date == Tuesday.value.date) {
             Tuesday.value.course = item.course
             Tuesday.value.time = item.time
             Tuesday.value.shortAddress = item.shortAddress
             Tuesday.value.fullAddress = item.fullAddress
+            Tuesday.value.amount = item.amount
+            Tuesday.value.instructor = item.instructor
+            Tuesday.value.comment = item.comment
 
         } else if (date == Wendesday.value.date) {
             Wendesday.value.course = item.course
             Wendesday.value.time = item.time
             Wendesday.value.shortAddress = item.shortAddress
             Wendesday.value.fullAddress = item.fullAddress
+            Wendesday.value.amount = item.amount
+            Wendesday.value.instructor = item.instructor
+            Wendesday.value.comment = item.comment
 
         } else if (date == Thursday.value.date) {
             Thursday.value.course = item.course
             Thursday.value.time = item.time
             Thursday.value.shortAddress = item.shortAddress
             Thursday.value.fullAddress = item.fullAddress
+            Thursday.value.amount = item.amount
+            Thursday.value.instructor = item.instructor
+            Thursday.value.comment = item.comment
 
         } else if (date == Friday.value.date) {
             Friday.value.course = item.course
             Friday.value.time = item.time
             Friday.value.shortAddress = item.shortAddress
             Friday.value.fullAddress = item.fullAddress
+            Friday.value.amount = item.amount
+            Friday.value.instructor = item.instructor
+            Friday.value.comment = item.comment
         }
     }
 }
@@ -120,35 +169,96 @@ function clearAllDays() {
     Monday.value.time = ""
     Monday.value.shortAddress = ""
     Monday.value.fullAddress = ""
+    Monday.value.amount = 0
+    Monday.value.instructor = ""
+    Monday.value.comment = ""
 
     Tuesday.value.course = ""
     Tuesday.value.time = ""
     Tuesday.value.shortAddress = ""
     Tuesday.value.fullAddress = ""
+    Tuesday.value.amount = 0
+    Tuesday.value.instructor = ""
+    Tuesday.value.comment = ""
 
     Wendesday.value.course = ""
     Wendesday.value.time = ""
     Wendesday.value.shortAddress = ""
     Wendesday.value.fullAddress = ""
+    Wendesday.value.amount = 0
+    Wendesday.value.instructor = ""
+    Wendesday.value.comment = ""
 
     Thursday.value.course = ""
     Thursday.value.time = ""
     Thursday.value.shortAddress = ""
     Thursday.value.fullAddress = ""
+    Thursday.value.amount = 0
+    Thursday.value.instructor = ""
+    Thursday.value.comment = ""
 
     Friday.value.course = ""
     Friday.value.time = ""
     Friday.value.shortAddress = ""
     Friday.value.fullAddress = ""
+    Friday.value.amount = 0
+    Friday.value.instructor = ""
+    Friday.value.comment = ""
 }
 
+function showCourse(day:any) {
+    if (day == "Monday") {
+        assingDayToShowedCourse(Monday.value)
+    } else if (day == "Tuesday") {
+        assingDayToShowedCourse(Tuesday.value)
+    } else if (day == "Wendesday") {
+        assingDayToShowedCourse(Wendesday.value)
+    } else if (day == "Thursday") {
+        assingDayToShowedCourse(Thursday.value)
+    } else if (day == "Friday") {
+        assingDayToShowedCourse(Friday.value)
+    }
+}
+
+function assingDayToShowedCourse(CourseData:any) {
+    ShowedCourse.value.nameofday = CourseData.nameofday
+    ShowedCourse.value.date = CourseData.date
+    ShowedCourse.value.course = CourseData.course
+    ShowedCourse.value.time = CourseData.time
+    ShowedCourse.value.fullAddress = CourseData.fullAddress
+    ShowedCourse.value.amount = CourseData.amount
+    ShowedCourse.value.instructor = CourseData.instructor
+    ShowedCourse.value.comment = CourseData.comment
+}
+
+
 const courses = ref(allCourses)
-
 const User = ref(user)
-
 const Achievements = ref(achievements)
+const ShowedAchievements = ref<any>([])
+
+watch(Achievements, (el) => {
+    sortAchievements()
+})
+
+function sortAchievements() {
+    ShowedAchievements.value = []
+    let foundAchievements = 0
+    const MaxAchievementsShown = 3
+    const allAchievements = Achievements.value.achievement
 
 
+    for(let item of allAchievements) {
+        if (item.done == false && foundAchievements < MaxAchievementsShown) {
+            ShowedAchievements.value.push(item.name)
+            foundAchievements++
+        }
+    }
+
+    console.log(ShowedAchievements.value)
+}
+
+sortAchievements()
 asingCourseToDay()
 </script>
 
@@ -161,7 +271,7 @@ asingCourseToDay()
                 <h1>Kurs</h1>
                 <RouterLink :to="{ name:'courses', hash:'#list'}">List / Betaling</RouterLink>
             </div>
-            <div><!-- Underline --></div> 
+            <Underline color="var(--red)" />
         </div>
         <div class="cours_content">
             <span>
@@ -184,14 +294,14 @@ asingCourseToDay()
                 <h1>Gjennomført</h1>
                 <RouterLink :to="{ name:'courses', hash:'#achievements'}">Alle prestasjonene</RouterLink>
             </div>
-            <div><!-- Underline --></div> 
+            <Underline color="var(--green)" />
         </div>
         <div class="achv_content">
             <span>
                 <p>Kjørtetimer</p>
                 <p>{{ Achievements.driveTime }} timer</p>
             </span>
-            <span><p v-for="item in Achievements.achievement">{{ item }}</p></span>
+            <span><p v-for="item in ShowedAchievements">{{ item }}</p></span>
         </div>
     </div>
 </div>
@@ -200,14 +310,25 @@ asingCourseToDay()
     <div class="calender">
         <img src="../assets/Arrow.svg" @click="prevWeek">
         <div class="days">
-            <calenderDay :dateDay="'Man. ' + Monday.shortdate" :course="Monday.course" :time="Monday.time" :shortAddress="Monday.shortAddress"  :fullAddress="Monday.fullAddress"/>
-            <calenderDay :dateDay="'Tir. ' + Tuesday.shortdate" :course="Tuesday.course" :time="Tuesday.time" :shortAddress="Tuesday.shortAddress"  :fullAddress="Tuesday.fullAddress"/>
-            <calenderDay :dateDay="'Ons. ' + Wendesday.shortdate" :course="Wendesday.course" :time="Wendesday.time" :shortAddress="Wendesday.shortAddress"  :fullAddress="Wendesday.fullAddress"/>
-            <calenderDay :dateDay="'Tors. ' + Thursday.shortdate" :course="Thursday.course" :time="Thursday.time" :shortAddress="Thursday.shortAddress"  :fullAddress="Thursday.fullAddress"/>
-            <calenderDay :dateDay="'Fre. ' + Friday.shortdate" :course="Friday.course" :time="Friday.time" :shortAddress="Friday.shortAddress"  :fullAddress="Friday.fullAddress"/>
+            <calenderDay :dateDay="'Man. ' + Monday.shortdate" :course="Monday.course" :time="Monday.time" :shortAddress="Monday.shortAddress"  :fullAddress="Monday.fullAddress" @click="showCourse('Monday')"/>
+            <calenderDay :dateDay="'Tir. ' + Tuesday.shortdate" :course="Tuesday.course" :time="Tuesday.time" :shortAddress="Tuesday.shortAddress"  :fullAddress="Tuesday.fullAddress" @click="showCourse('Tuesday')"/>
+            <calenderDay :dateDay="'Ons. ' + Wendesday.shortdate" :course="Wendesday.course" :time="Wendesday.time" :shortAddress="Wendesday.shortAddress"  :fullAddress="Wendesday.fullAddress" @click="showCourse('Wendesday')"/>
+            <calenderDay :dateDay="'Tors. ' + Thursday.shortdate" :course="Thursday.course" :time="Thursday.time" :shortAddress="Thursday.shortAddress"  :fullAddress="Thursday.fullAddress" @click="showCourse('Thursday')"/>
+            <calenderDay :dateDay="'Fre. ' + Friday.shortdate" :course="Friday.course" :time="Friday.time" :shortAddress="Friday.shortAddress"  :fullAddress="Friday.fullAddress" @click="showCourse('Friday')"/>
         </div>
         <img src="../assets/Arrow.svg" style="rotate: 180deg;" @click="nextWeek">
     </div>
+    <CalenderShowedCourse 
+        v-if="ShowedCourse.showed"
+        :nameofday="ShowedCourse.nameofday"
+        :date="ShowedCourse.date" 
+        :course="ShowedCourse.course"
+        :time="ShowedCourse.time"
+        :fullAddress="ShowedCourse.fullAddress"
+        :amount="ShowedCourse.amount"
+        :instructor="ShowedCourse.instructor"
+        :comment="ShowedCourse.comment"
+    />
 </div>
 </main>
 </template>
@@ -251,7 +372,7 @@ h2 {
 
 .achv_content span:last-child p {
     flex: 1 1 5rem;
-    color: var(--green);
+    color: var(--red);
     text-align: center;
 }
 
@@ -292,21 +413,9 @@ h2 {
     color: var(--red);
 }
 
-.cours_title > div:not(:first-child) {
-    height: 5px;
-    background-color: var(--red);
-    border-radius: 5rem;
-}
-
 .achv_title, .achv_title a {
     color: var(--green);
 }
-
-.achv_title > div:not(:first-child) {
-    height: 5px;
-    background-color: var(--green);
-    border-radius: 5rem;
-} 
 
 .title {
     display: flex;
