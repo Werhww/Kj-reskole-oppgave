@@ -212,24 +212,32 @@ function clearAllDays() {
 }
 
 function showCourse(day:any) {
-    console.log("Hello")
-    console.log(day)
     if (day == "Monday") {
-        assingDayToShowedCourse(Monday.value, )
+        const dateWithMonth = moment().week(week.value).day('Monday').format('LL')
+        assingDayToShowedCourse(Monday.value, dateWithMonth)
     } else if (day == "Tuesday") {
-        assingDayToShowedCourse(Tuesday.value, )
+        const dateWithMonth = moment().week(week.value).day('Tuesday').format('LL')
+        assingDayToShowedCourse(Tuesday.value, dateWithMonth)
     } else if (day == "Wendesday") {
-        assingDayToShowedCourse(Wendesday.value, )
+        const dateWithMonth = moment().week(week.value).day('Wendesday').format('LL')
+        assingDayToShowedCourse(Wendesday.value, dateWithMonth)
     } else if (day == "Thursday") {
-        assingDayToShowedCourse(Thursday.value, )
+        const dateWithMonth = moment().week(week.value).day('Thursday').format('LL')
+        assingDayToShowedCourse(Thursday.value, dateWithMonth)
     } else if (day == "Friday") {
-        assingDayToShowedCourse(Friday.value, )
+        const dateWithMonth = moment().week(week.value).day('Friday').format('LL')
+        assingDayToShowedCourse(Friday.value, dateWithMonth)
     }
 }
 
 function assingDayToShowedCourse(CourseData:any, date:any) {
+    if (CourseData.course == "") {
+        ShowedCourse.value.showed = false
+        return
+    }
+
     ShowedCourse.value.nameofday = CourseData.nameofday
-    ShowedCourse.value.date = moment(CourseData.date).format('Do MMMM')
+    ShowedCourse.value.date = date
     ShowedCourse.value.course = CourseData.course
     ShowedCourse.value.time = CourseData.time
     ShowedCourse.value.fullAddress = CourseData.fullAddress
@@ -237,10 +245,7 @@ function assingDayToShowedCourse(CourseData:any, date:any) {
     ShowedCourse.value.instructor = CourseData.instructor
     ShowedCourse.value.comment = CourseData.comment
     ShowedCourse.value.showed = true
-
-    console.log(ShowedCourse.value)
 }
-
 
 const courses = ref(allCourses)
 const User = ref(user)
@@ -268,14 +273,6 @@ function sortAchievements() {
 
 sortAchievements()
 asingCourseToDay()
-
-console.log(week)
-console.log(Monday)
-console.log(Tuesday)
-console.log(Wendesday)
-console.log(Thursday)
-console.log(Friday)
-
 </script>
 
 <template>
@@ -348,15 +345,25 @@ console.log(Friday)
 </div>
 </main>
 </template>
+<!-- Main css -->
+<style>
+main {
+    display: flex;
+    flex-direction: column;
+    gap: 4rem;
+    padding-bottom: 12rem!important;
+}
 
-
-<!-- calender css -->
-<style scoped>
 h2 {
     font-size: 2.5rem;
     color : var(--green);
     font-weight: 700;
 }
+
+</style>
+
+<!-- calender css -->
+<style scoped>
 
 .course-calender {
     display: flex;

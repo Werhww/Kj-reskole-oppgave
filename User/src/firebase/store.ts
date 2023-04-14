@@ -99,7 +99,7 @@ setTimeout(() => {
         comment: "Bra kjørt, det blir bykjøring neste gang"
     },
     {
-        course: 'Traffikalt grunnkurs Man',
+        course: 'Traffikalt grunnkurs',
         time: "15.30 - 17.30",
         date: "2023-04-10T19:26:03+02:00",
 
@@ -144,7 +144,7 @@ setTimeout(() => {
         comment: ""
     },
     {
-        course: 'Traffikalt grunnkurs Tirsdag',
+        course: 'Traffikalt grunnkurs',
         time: "15.30 - 17.30",
         date: "2023-04-11T19:26:03+02:00",
 
