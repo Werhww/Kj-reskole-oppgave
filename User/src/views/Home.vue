@@ -207,6 +207,8 @@ function clearAllDays() {
 }
 
 function showCourse(day:any) {
+    console.log("Hello")
+    console.log(day)
     if (day == "Monday") {
         assingDayToShowedCourse(Monday.value)
     } else if (day == "Tuesday") {
@@ -222,13 +224,16 @@ function showCourse(day:any) {
 
 function assingDayToShowedCourse(CourseData:any) {
     ShowedCourse.value.nameofday = CourseData.nameofday
-    ShowedCourse.value.date = CourseData.date
+    ShowedCourse.value.date = moment().week(week.value).day(CourseData.shortdate).format('Do MMMM')
     ShowedCourse.value.course = CourseData.course
     ShowedCourse.value.time = CourseData.time
     ShowedCourse.value.fullAddress = CourseData.fullAddress
     ShowedCourse.value.amount = CourseData.amount
     ShowedCourse.value.instructor = CourseData.instructor
     ShowedCourse.value.comment = CourseData.comment
+    ShowedCourse.value.showed = true
+
+    console.log(ShowedCourse.value)
 }
 
 
@@ -254,8 +259,6 @@ function sortAchievements() {
             foundAchievements++
         }
     }
-
-    console.log(ShowedAchievements.value)
 }
 
 sortAchievements()
