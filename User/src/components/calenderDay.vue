@@ -24,13 +24,15 @@ const props = defineProps<{
     align-items: center;
     gap: 0.5rem;
 
-    width: 10rem;
+    min-width: 10rem;
     min-height: 9.375rem;
 
     padding: 1rem 1.25rem 2.375rem 1.25rem;
     border: var(--grey) 2px solid;
     border-radius: 3.125rem;
     background-color: var(--light-grey);
+
+    user-select: none;
 }
 
 p, a{

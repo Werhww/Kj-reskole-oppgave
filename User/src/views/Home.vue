@@ -5,13 +5,15 @@ import Underline from '@/components/underline.vue';
 import CalenderShowedCourse from '@/components/calenderShowedCourse.vue';
 import moment from 'moment';
 import { allCourses, achievements, user } from '../firebase/store';
+import { PatchFlagNames } from '@vue/shared';
 
 watch(allCourses, () => {
     asingCourseToDay()
-    console.log("allCourses changed")
 })
 
+/* Get current and is the week counter */
 const week = ref(moment().isoWeek())
+/* Content inside every day in calander */
 const Monday = ref({
     nameofday: "Mandag",
     shortdate: moment().week(week.value).day('Monday').format('DD'),
@@ -89,6 +91,7 @@ const ShowedCourse = ref({
     comment: ""
 })
 
+/* Changes date showed in calander day */
 function changeDays() {
     Monday.value.date = moment().week(week.value).day('Monday').format('DD:MM:YYYY')
     Monday.value.shortdate = moment().week(week.value).day('Monday').format('DD')
@@ -99,10 +102,10 @@ function changeDays() {
     Thursday.value.date = moment().week(week.value).day('Thursday').format('DD:MM:YYYY')
     Thursday.value.shortdate = moment().week(week.value).day('Thursday').format('DD')
     Friday.value.date = moment().week(week.value).day('Friday').format('DD:MM:YYYY')
-    Friday.value.shortdate = moment().week(week.value).day('Friday').format('DD')
-    
+    Friday.value.shortdate = moment().week(week.value).day('Friday').format('DD') 
 }
 
+/* changes to next and previuse week */
 function nextWeek() {
     week.value = week.value + 1;
     changeDays()
@@ -115,6 +118,7 @@ function prevWeek() {
     asingCourseToDay()
 }
 
+/* Asings data to days in week */
 function asingCourseToDay() {
     clearAllDays()
 
@@ -169,6 +173,7 @@ function asingCourseToDay() {
     }
 }
 
+/* Clears all days */
 function clearAllDays() {
     Monday.value.course = ""
     Monday.value.time = ""
@@ -211,25 +216,23 @@ function clearAllDays() {
     Friday.value.comment = ""
 }
 
+/* Shows and hides extra content for days */
 function showCourse(day:any) {
+    const dateWithMonth = moment().week(week.value).day(day).format('LL')
     if (day == "Monday") {
-        const dateWithMonth = moment().week(week.value).day('Monday').format('LL')
         assingDayToShowedCourse(Monday.value, dateWithMonth)
     } else if (day == "Tuesday") {
-        const dateWithMonth = moment().week(week.value).day('Tuesday').format('LL')
         assingDayToShowedCourse(Tuesday.value, dateWithMonth)
     } else if (day == "Wendesday") {
-        const dateWithMonth = moment().week(week.value).day('Wendesday').format('LL')
         assingDayToShowedCourse(Wendesday.value, dateWithMonth)
     } else if (day == "Thursday") {
-        const dateWithMonth = moment().week(week.value).day('Thursday').format('LL')
         assingDayToShowedCourse(Thursday.value, dateWithMonth)
     } else if (day == "Friday") {
-        const dateWithMonth = moment().week(week.value).day('Friday').format('LL')
         assingDayToShowedCourse(Friday.value, dateWithMonth)
     }
 }
 
+/* Asings data to ShowedCourse */
 function assingDayToShowedCourse(CourseData:any, date:any) {
     if (CourseData.course == "") {
         ShowedCourse.value.showed = false
@@ -247,15 +250,18 @@ function assingDayToShowedCourse(CourseData:any, date:any) {
     ShowedCourse.value.showed = true
 }
 
+
 const courses = ref(allCourses)
 const User = ref(user)
 const Achievements = ref(achievements)
 const ShowedAchievements = ref<any>([])
 
+/* Watches and sorts when achievements change */
 watch(Achievements, (el) => {
     sortAchievements()
 })
 
+/* Sorts achievements */
 function sortAchievements() {
     ShowedAchievements.value = []
     let foundAchievements = 0
@@ -273,6 +279,27 @@ function sortAchievements() {
 
 sortAchievements()
 asingCourseToDay()
+
+/* Making calender draggable */
+const calanderDayX = ref(0)
+let calanderDown = false
+let calanderDownX = 0
+
+function calenderDragDown(event:any) {
+    calanderDownX = event.clientX
+    calanderDown = true
+}
+
+function calenderDragUp() {
+    calanderDown = false
+}
+
+function calanderDragMove(event:any) {
+    if(calanderDown == true) {
+        calanderDayX.value = event.clientX - calanderDownX
+    }
+}
+
 </script>
 
 <template>
@@ -319,10 +346,15 @@ asingCourseToDay()
     </div>
 </div>
 <div class="course-calender">
-    <h2>Uke {{ week }}</h2>
-    <div class="calender">
+    <div class="week">
         <img src="../assets/Arrow.svg" @click="prevWeek">
-        <div class="days">
+        <h2>Uke {{ week }}</h2>
+        <img src="../assets/Arrow.svg" style="rotate: 180deg;" @click="nextWeek">
+    </div>
+    
+    <div class="calender" @mousedown="calenderDragDown" @mouseup="calenderDragUp" @mousemove="calanderDragMove" @mouseleave="calenderDragUp">
+        <img src="../assets/Arrow.svg" @click="prevWeek">
+        <div class="days" ref="calenderContainer">
             <calenderDay :dateDay="'Man. ' + Monday.shortdate" :course="Monday.course" :time="Monday.time" :shortAddress="Monday.shortAddress"  :fullAddress="Monday.fullAddress" @click="showCourse('Monday')"/>
             <calenderDay :dateDay="'Tir. ' + Tuesday.shortdate" :course="Tuesday.course" :time="Tuesday.time" :shortAddress="Tuesday.shortAddress"  :fullAddress="Tuesday.fullAddress" @click="showCourse('Tuesday')"/>
             <calenderDay :dateDay="'Ons. ' + Wendesday.shortdate" :course="Wendesday.course" :time="Wendesday.time" :shortAddress="Wendesday.shortAddress"  :fullAddress="Wendesday.fullAddress" @click="showCourse('Wendesday')"/>
@@ -346,7 +378,7 @@ asingCourseToDay()
 </main>
 </template>
 <!-- Main css -->
-<style>
+<style scoped>
 main {
     display: flex;
     flex-direction: column;
@@ -375,6 +407,10 @@ h2 {
     display: flex;
     align-items: center;
     gap: 1.875rem;
+}
+
+.week img{
+    display: none;
 }
 
 .days {
@@ -464,4 +500,45 @@ h2 {
 }
 
 
+</style>
+
+<!-- Media Query -->
+<style scoped>
+@media only screen and (max-width: 1280px) {
+    .top {
+        flex-direction: column;
+        align-items: center;
+        gap: 1.875rem;
+    }
+
+    .top div{
+        width: 85vw;
+    }
+    
+    .course-calender {
+        gap: 1.5rem;
+    }
+
+    .calender {
+        overflow: hidden;
+        width: 100vw;
+    }
+
+    .days {
+        position: relative;
+        left: v-bind(calanderDayX + "px");
+    }
+
+    .calender img{
+        display: none;
+    }
+    
+    .week {
+        display: flex;
+        gap: 3.875rem;
+    }
+    .week img {
+        display: block;
+    }
+}
 </style>

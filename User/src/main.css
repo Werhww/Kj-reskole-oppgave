@@ -25,3 +25,9 @@ body *{
 body > div > main {
     padding: 0 7.375rem 0 7.375rem;
 }
+
+@media only screen and (max-width: 1280px) {
+    body > div > main {
+        padding: 0;
+    }
+}
