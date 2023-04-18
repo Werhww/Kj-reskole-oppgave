@@ -45,7 +45,7 @@ const props = defineProps<{
 
 <style scoped>
 section {
-    width: 80%;
+    width: 85vw;
     display: flex;
     flex-direction: column;
     gap: 0.8rem;

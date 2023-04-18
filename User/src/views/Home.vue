@@ -102,7 +102,9 @@ function changeDays() {
     Thursday.value.date = moment().week(week.value).day('Thursday').format('DD:MM:YYYY')
     Thursday.value.shortdate = moment().week(week.value).day('Thursday').format('DD')
     Friday.value.date = moment().week(week.value).day('Friday').format('DD:MM:YYYY')
-    Friday.value.shortdate = moment().week(week.value).day('Friday').format('DD') 
+    Friday.value.shortdate = moment().week(week.value).day('Friday').format('DD')
+
+    calanderDayX.value = 0
 }
 
 /* changes to next and previuse week */
@@ -255,6 +257,7 @@ const courses = ref(allCourses)
 const User = ref(user)
 const Achievements = ref(achievements)
 const ShowedAchievements = ref<any>([])
+const calenderContainer = ref<HTMLDivElement | null>(null)
 
 /* Watches and sorts when achievements change */
 watch(Achievements, (el) => {
@@ -284,19 +287,30 @@ asingCourseToDay()
 const calanderDayX = ref(0)
 let calanderDown = false
 let calanderDownX = 0
+let oldcalanderDayX = 0
 
 function calenderDragDown(event:any) {
-    calanderDownX = event.clientX
     calanderDown = true
+    calanderDownX = event.clientX
+    oldcalanderDayX = calanderDayX.value
 }
 
 function calenderDragUp() {
     calanderDown = false
+    calanderBackInFrame()
 }
 
 function calanderDragMove(event:any) {
     if(calanderDown == true) {
-        calanderDayX.value = event.clientX - calanderDownX
+        calanderDayX.value = oldcalanderDayX + (event.clientX - calanderDownX)
+    }
+}
+
+function calanderBackInFrame() {
+    if (calanderDayX.value > 0) {
+        calenderContainer.value?.scrollIntoView({behavior: "smooth", block: "start", inline: "start"})
+    } else if (calanderDayX.value < 0) {
+        calenderContainer.value?.scrollIntoView({behavior: "smooth", block: "end", inline: "end"})
     }
 }
 
@@ -354,7 +368,7 @@ function calanderDragMove(event:any) {
     
     <div class="calender" @mousedown="calenderDragDown" @mouseup="calenderDragUp" @mousemove="calanderDragMove" @mouseleave="calenderDragUp">
         <img src="../assets/Arrow.svg" @click="prevWeek">
-        <div class="days" ref="calenderContainer">
+        <div class="days" ref="calenderContainer" >
             <calenderDay :dateDay="'Man. ' + Monday.shortdate" :course="Monday.course" :time="Monday.time" :shortAddress="Monday.shortAddress"  :fullAddress="Monday.fullAddress" @click="showCourse('Monday')"/>
             <calenderDay :dateDay="'Tir. ' + Tuesday.shortdate" :course="Tuesday.course" :time="Tuesday.time" :shortAddress="Tuesday.shortAddress"  :fullAddress="Tuesday.fullAddress" @click="showCourse('Tuesday')"/>
             <calenderDay :dateDay="'Ons. ' + Wendesday.shortdate" :course="Wendesday.course" :time="Wendesday.time" :shortAddress="Wendesday.shortAddress"  :fullAddress="Wendesday.fullAddress" @click="showCourse('Wendesday')"/>
@@ -521,7 +535,7 @@ h2 {
 
     .calender {
         overflow: hidden;
-        width: 100vw;
+        width: 85vw;
     }
 
     .days {
