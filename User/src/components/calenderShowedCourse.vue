@@ -78,3 +78,22 @@ section a {
     color: var(--red);
 }
 </style>
+
+<!-- Media querys -->
+<style scoped>
+@media only screen and (max-width: 900px) {
+    h1 {
+        font-size: 2rem;
+    }
+
+    p, a {
+        font-size: 1.25rem;
+    }
+
+    section > div:last-child {
+        flex-direction: column-reverse;
+
+        gap: 1rem;
+    }
+}
+</style>

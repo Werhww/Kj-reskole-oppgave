@@ -30,3 +30,11 @@ p {
     font-family: 'Iceberg', cursive;
 }
 </style>
+
+<style scoped>
+@media only screen and (max-width: 1280px) {
+    header {
+        padding: 1.75rem 0.5rem;
+    }
+}
+</style>

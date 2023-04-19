@@ -5,7 +5,6 @@ import Underline from '@/components/underline.vue';
 import CalenderShowedCourse from '@/components/calenderShowedCourse.vue';
 import moment from 'moment';
 import { allCourses, achievements, user } from '../firebase/store';
-import { PatchFlagNames } from '@vue/shared';
 
 watch(allCourses, () => {
     asingCourseToDay()
@@ -512,6 +511,25 @@ h2 {
     }
     .week img {
         display: block;
+    }
+}
+
+@media only screen and (max-width: 900px) {
+
+    .top div{
+        width: 95vw;
+    }
+
+    .calender {
+        width: 100vw;
+    }
+
+    .title > div:not(:last-child) > h1 {
+        font-size: 2rem;
+    }
+    
+    .cours_content span p, .achv_content span p{
+        font-size: 1.25rem;
     }
 }
 </style>

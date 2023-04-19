@@ -7,13 +7,17 @@ const prop = defineProps<{
     open: boolean;
 }>()
 
+
+function onOpen() {
+    prop.openChat(prop.instructorID)
+}
 </script>
 
 <template>
 <span v-if="!open" @click="openChat(prop.instructorID)" class="notOpenChat">
     {{ name }}
 </span>
-<span v-if="open" @click="openChat(prop.instructorID)" class="openChat">
+<span v-if="open" @click="onOpen" class="openChat">
     {{ name }}
 </span>
 </template>

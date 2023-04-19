@@ -25,3 +25,17 @@ div p {
     font-weight: 700;
 }
 </style>
+
+<!-- Media querys -->
+<style scoped>
+@media only screen and (max-width: 900px) {
+    div {
+        padding: 0.375rem 2.125rem;
+        justify-content: center;
+    }
+
+    div p {
+        font-size: 1.5rem;
+    }
+}
+</style>

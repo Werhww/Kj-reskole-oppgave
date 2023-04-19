@@ -40,3 +40,11 @@ const props = defineProps<{
     color: v-bind(color);
 }
 </style>
+
+<style scoped>
+@media only screen and (max-width: 1280px) {
+    .top h1{
+        font-size: 2.5rem;
+    }
+}
+</style>
