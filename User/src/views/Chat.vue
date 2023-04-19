@@ -116,14 +116,18 @@ interface chatMessages {
 
 const currentChat = ref<chatMessages>()
 
+const personWrapper = ref<HTMLElement>()
+
 /* Opens chat messages and highlights the open chat person in the side menu */
-function openChat(instructorID:string) {
+function openChat(instructorID:string, $event:any) {
+    console.log($event.target)
+
+    const personWrapperChildren = personWrapper.value?.children
+
     for (let i = 0; i < chatPersons.value.length; i++) {
-        if (chatPersons.value[i].instructorID === instructorID) {
-            chatPersons.value[i].isActive = true
-        } else {
-            chatPersons.value[i].isActive = false
-        }
+        const person = personWrapperChildren?.item(i)
+        person?.classList.contains("openChat") ? person.classList.remove("openChat") : null
+        $event.target.classList.add("openChat")
     }
     for (let i = 0; i < allChatMessages.value.length; i++) {
         if (allChatMessages.value[i].instructorID === instructorID) {
@@ -132,9 +136,6 @@ function openChat(instructorID:string) {
         }
     }
 }
-
-
-openChat(chatPersons.value[0].instructorID)
 
 const newMessage = ref("")
 
@@ -148,17 +149,17 @@ function resize(el:any) {
     <Title text="Chat" color="var(--green)" />
     <section class="chat">
         <div class="chat_persons"> <!-- Chat persons -->
-            <ChatPersons v-for="item in chatPersons" :name="item.name" :instructor-i-d="item.instructorID" :open="item.isActive" :open-chat="openChat"/>
+            <div class="persons_wrapper" ref="personWrapper">
+                <ChatPersons v-for="item in chatPersons" :name="item.name" :instructor-i-d="item.instructorID" :open="item.isActive" :open-chat="openChat" />
+            </div>
         </div>
         <div class="horisontal_Line"><!-- Horisontal line --></div>
         <div class="chat_messages"> <!-- Chat messages -->
-            <div class="messages" v-dragscroll>
-                <div class="messages_wrapper">
-                    <ChatMessages v-for="item in currentChat?.messages" :from="item.from" :message="item.message" :datetime="item.datetime"  />
-                </div>
+            <div class="messages" v-dragscroll:nochilddrag>
+                <ChatMessages v-for="item in currentChat?.messages" :from="item.from" :message="item.message" :datetime="item.datetime" />
             </div>
             <div class="messageInput">
-                <textarea ref="messageInput" @input="resize($event)" maxlength="150" v-model="newMessage"></textarea>
+                <textarea ref="messageInput" @input="resize($event)" maxlength="150" rows="1" v-model="newMessage"></textarea>
                 <div>
                     <img src="../assets/MessageSendArrow.svg">
                     <p>{{newMessage.length}}/150</p>
@@ -194,8 +195,15 @@ main {
     height: 100%;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
     padding-right: 0.5rem;
+}
+
+.persons_wrapper {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    gap: 1.5rem;
 }
 
 .chat_messages {
@@ -207,20 +215,15 @@ main {
 }
 
 .messages {
-    flex: 1;
     width: 100%;
+    height: 88%;
     overflow: hidden;
-
     display: flex;
     flex-direction: column-reverse;
-}
-
-.messages_wrapper{
-    display: flex;
-    flex-direction: column;
     gap: 2.5rem;
     padding-bottom: 1rem;
 }
+
 
 .messageInput {
     display: flex;

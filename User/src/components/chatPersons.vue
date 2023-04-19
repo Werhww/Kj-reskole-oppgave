@@ -3,21 +3,13 @@ import { ref } from 'vue'
 const prop = defineProps<{
     name: string;
     instructorID: string;
-    openChat: (instructorID: string) => void;
+    openChat: (instructorID: string, $event:any) => void;
     open: boolean;
 }>()
-
-
-function onOpen() {
-    prop.openChat(prop.instructorID)
-}
 </script>
 
 <template>
-<span v-if="!open" @click="openChat(prop.instructorID)" class="notOpenChat">
-    {{ name }}
-</span>
-<span v-if="open" @click="onOpen" class="openChat">
+<span @click="openChat(prop.instructorID, $event)">
     {{ name }}
 </span>
 </template>
@@ -29,15 +21,14 @@ span {
     cursor: pointer;
     font-size: 1.5rem;
     font-weight: 600;
-}
-
-.openChat {
-    color: var(--green);
-    border: var(--green) 4px solid;
-}
-
-.notOpenChat {
+    transition: 0.3s ease-in-out;
     color: var(--grey);
     border: var(--grey) 4px solid;
 }
+
+.openChat {
+    color: var(--green)!important;
+    border: var(--green) 4px solid!important;
+}
+
 </style>
