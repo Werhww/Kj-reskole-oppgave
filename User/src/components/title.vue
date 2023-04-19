@@ -2,7 +2,7 @@
 import RouterButton from "@/components/routerButton.vue";
 import Underline from "@/components/underline.vue";
 const props = defineProps<{
-    anchorID: string;
+    anchorID?: string;
     text: string;
     color: string;
 }>()
