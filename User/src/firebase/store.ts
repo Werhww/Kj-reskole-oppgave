@@ -7,6 +7,7 @@ const user = ref({
 
 });
 
+/* all achievements and time driven */
 const achievements = ref({
     driveTime: 9,
     achievement: [
@@ -81,6 +82,128 @@ watch(allCourses, (item) => {
         }
     })
 })
+
+/* Chats and chats messages */
+interface instructorsProps {
+    name: string,
+    instructorID: string,
+    isActive: boolean
+}
+
+interface chatMessages {
+    instructorID: string;
+    messages: {
+        from: string;
+        message: string;
+        datetime: string;
+    }[]
+}
+
+const instructors = ref<instructorsProps[]>([
+    {
+        name: "Leo",
+        instructorID: "1246145",
+        isActive: true
+    },
+    {
+        name: "Felix",
+        instructorID: "12214545",
+        isActive: false
+    },
+    {
+        name: "Trym",
+        instructorID: "12345",
+        isActive: false
+    },
+    {
+        name: "Trym",
+        instructorID: "12345",
+        isActive: false
+    }
+])
+
+const chatMessages = ref<chatMessages[]>([
+    {
+        instructorID: "1246145",
+        messages: [
+            {
+                from: "instructor",
+                message: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+                datetime: "2023-04-19T18:01:16+02:00"
+            },
+            {
+                from: "user",
+                message: "NO3345",
+                datetime: "2023-04-19T17:01:16+02:00"
+            },
+            {
+                from: "instructor",
+                message: "Hello",
+                datetime: "2023-04-19T15:01:16+02:00"
+            },
+            {
+                from: "user",
+                message: "Hello1234",
+                datetime: "2023-04-18T11:01:16+02:00"
+            },
+            {
+                from: "instructor",
+                message: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+                datetime: "2023-04-11T09:01:16+02:00"
+            },
+        ]
+    },
+    {
+        instructorID: "12214545",
+        messages: [
+            {
+                from: "instructor",
+                message: "Who is this",
+                datetime: "2023-04-19T12:01:16+02:00"
+            },
+            {
+                from: "instructor",
+                message: "Hello",
+                datetime: "2023-04-19T12:01:16+02:00"
+            },
+            {
+                from: "user",
+                message: "Hello",
+                datetime: "2023-04-19T12:01:16+02:00"
+            },
+            {
+                from: "user",
+                message: "NO",
+                datetime: "2023-04-19T12:01:16+02:00"
+            }
+        ]
+    },
+    {
+        instructorID: "12345",
+        messages: [
+            {
+                from: "instructor",
+                message: "Who is this123",
+                datetime: "2023-04-19T12:01:16+02:00"
+            },
+            {
+                from: "instructor",
+                message: "Hellowqgqwg",
+                datetime: "2023-04-19T12:01:16+02:00"
+            },
+            {
+                from: "user",
+                message: "Helloqfeqt",
+                datetime: "2023-04-19T12:01:16+02:00"
+            },
+            {
+                from: "user",
+                message: "NOrrr",
+                datetime: "2023-04-19T12:01:16+02:00"
+            }
+        ]
+    },
+])
 
 setTimeout(() => {
     allCourses.value = [{
@@ -165,5 +288,7 @@ export {
     allCourses,
     previousCourses,
     commingCourses,
-    user
+    user,
+    instructors,
+    chatMessages
 }
