@@ -9,7 +9,7 @@ const props = defineProps<{
 <template>
 <header>
     <router-link to="/chat"><img src="../assets/chat.svg"></router-link>
-    <p>{{ userName }}</p>
+    <router-link to="/">{{ userName }}</router-link>
 </header>
 </template>
 
@@ -22,12 +22,13 @@ header {
     gap: 2.125rem;
 }
 
-p {
+header a:last-child {
     font-size: 2.5rem;
     padding: 0.625rem 4.375rem;
     background-color: var(--red);
     color: white;
     font-family: 'Iceberg', cursive;
+    text-decoration: none;
 }
 </style>
 
