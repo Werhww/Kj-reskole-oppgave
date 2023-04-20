@@ -44,7 +44,13 @@ const props = defineProps<{
 <style scoped>
 @media only screen and (max-width: 1280px) {
     .top h1{
-        font-size: 2.5rem;
+        font-size: 2rem;
+    }
+}
+
+@media only screen and (max-width: 900px) {
+    .top h1{
+        font-size: 1.5rem;
     }
 }
 </style>

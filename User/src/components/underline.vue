@@ -17,4 +17,10 @@ div {
     border-radius: 5rem;
 }
 
+
+@media only screen and (max-width: 1280px) {
+    div {
+        height: 3px;
+    }
+}
 </style>

@@ -92,4 +92,11 @@ const time = computed(() => {
 .time {
     display: flex;
 }
+
+@media only screen and (max-width: 900px) {
+
+    .message {
+        font-size: 1rem;
+    }
+}
 </style>

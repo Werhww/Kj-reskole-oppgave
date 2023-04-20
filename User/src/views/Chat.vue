@@ -19,6 +19,11 @@ const chatPersons = ref([
         name: "Trym",
         instructorID: "12345",
         isActive: false
+    },
+    {
+        name: "Trym",
+        instructorID: "12345",
+        isActive: false
     }
 ])
 
@@ -29,17 +34,7 @@ const allChatMessages = ref<chatMessages[]>([
             {
                 from: "instructor",
                 message: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-                datetime: "2023-04-11T09:01:16+02:00"
-            },
-            {
-                from: "user",
-                message: "Hello1234",
-                datetime: "2023-04-18T11:01:16+02:00"
-            },
-            {
-                from: "instructor",
-                message: "Hello",
-                datetime: "2023-04-19T15:01:16+02:00"
+                datetime: "2023-04-19T18:01:16+02:00"
             },
             {
                 from: "user",
@@ -48,8 +43,18 @@ const allChatMessages = ref<chatMessages[]>([
             },
             {
                 from: "instructor",
+                message: "Hello",
+                datetime: "2023-04-19T15:01:16+02:00"
+            },
+            {
+                from: "user",
+                message: "Hello1234",
+                datetime: "2023-04-18T11:01:16+02:00"
+            },
+            {
+                from: "instructor",
                 message: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-                datetime: "2023-04-19T18:01:16+02:00"
+                datetime: "2023-04-11T09:01:16+02:00"
             },
         ]
     },
@@ -148,10 +153,8 @@ function resize(el:any) {
 <main>
     <Title text="Chat" color="var(--green)" />
     <section class="chat">
-        <div class="chat_persons"> <!-- Chat persons -->
-            <div class="persons_wrapper" ref="personWrapper">
-                <ChatPersons v-for="item in chatPersons" :name="item.name" :instructor-i-d="item.instructorID" :open="item.isActive" :open-chat="openChat" />
-            </div>
+        <div class="chat_persons" ref="personWrapper" v-dragscroll> <!-- Chat persons -->
+            <ChatPersons v-for="item in chatPersons" :name="item.name" :instructor-i-d="item.instructorID" :open="item.isActive" :open-chat="openChat" />
         </div>
         <div class="horisontal_Line"><!-- Horisontal line --></div>
         <div class="chat_messages"> <!-- Chat messages -->
@@ -196,12 +199,6 @@ main {
     display: flex;
     flex-direction: column;
     padding-right: 0.5rem;
-}
-
-.persons_wrapper {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
     overflow: hidden;
     gap: 1.5rem;
 }
@@ -258,5 +255,39 @@ main {
 .messageInput  div img:hover{
     cursor: pointer;
     filter: invert(53%) sepia(0%) saturate(0%) hue-rotate(188deg) brightness(99%) contrast(90%);
+}
+</style>
+
+
+<!-- Media querys -->
+<style scoped>
+@media only screen and (max-width: 900px) {
+    main {
+        align-self: center;
+    }
+
+    .chat {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.3rem;
+    }
+    .horisontal_Line {
+        height: 0;
+        width: 100%;
+    }
+
+    .chat_persons {
+        width: 100%;
+        height: 13%;
+        flex-direction: row;
+        padding-right: 0;
+    }
+
+    .chat_messages {
+        width: 93%;
+        height: 60vh;
+        padding-left: 0;
+    }
+
 }
 </style>

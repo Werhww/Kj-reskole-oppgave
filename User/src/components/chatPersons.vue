@@ -19,6 +19,7 @@ span {
     padding: 0.75rem 1.875rem;
     border-radius: 2.625rem;
     cursor: pointer;
+    text-align: center;
     font-size: 1.5rem;
     font-weight: 600;
     transition: 0.3s ease-in-out;

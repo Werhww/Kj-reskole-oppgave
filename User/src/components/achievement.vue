@@ -24,4 +24,10 @@ p {
 .red {
     color: var(--red);
 }
+
+@media only screen and (max-width: 900px) {
+    p {
+        font-size: 1.25rem;
+    }
+}
 </style>

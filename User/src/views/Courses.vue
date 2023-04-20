@@ -33,7 +33,7 @@ function payNow() {
                 <span>
                     <p>Kurs</p>
                     <p>Dato</p>
-                    <p>Pris</p>
+                    <p class="info_price">Pris</p>
                 </span>
                 <CourseItem v-for="item in PreviousCourses" :instructor="item.instructor" :place="item.fullAddress" :time="item.time" :comment="item.comment" :course-title="item.course" :amount="item.amount" :date="moment(item.date).format('DD.MM.YYYY')" :price="item.price" :paid="item.paid" />
             </div>
@@ -44,7 +44,7 @@ function payNow() {
                 <span>
                     <p>Kurs</p>
                     <p>Dato</p>
-                    <p>Pris</p>
+                    <p class="info_price">Pris</p>
                 </span>
                 <CourseItem v-for="item in CommingCourses" :instructor="item.instructor" :place="item.fullAddress" :time="item.time" :comment="item.comment" :course-title="item.course" :amount="item.amount" :date="moment(item.date).format('DD.MM.YYYY')" :price="item.price" :paid="item.paid" />
             </div>
@@ -63,7 +63,7 @@ function payNow() {
 </main>
 </template>
 
-<!-- Reused code -->
+<!-- rebrukt code -->
 <style scoped>
 main {
     display: flex;
@@ -74,7 +74,7 @@ main {
 
 .container {
     display: flex;
-    flex-direction: column;
+    flex-direction: column;;
     gap: 3.125rem;
 }
 
@@ -82,25 +82,6 @@ h1 {
     font-size: 2.5rem;
     font-weight: 700;
     padding-left: 0.2rem;
-}
-</style>
-
-<!-- Second container css -->
-<style scoped>
-.driveTime {
-    display: flex;
-    flex-direction: row;
-    gap: 9.125rem;
-    color: var(--green);
-    font-size: 2.5rem;
-}
-
-.achievements {
-    display: grid;
-    grid-template-columns: auto auto auto;
-    row-gap: 2.5rem;
-
-    font-size: 1.5rem;
 }
 </style>
 
@@ -152,5 +133,75 @@ h1 {
 .course_content > div  > span > p:first-child {
     width: 36%;
     padding-left: 0.4rem;
+}
+</style>
+
+<!-- Second container css -->
+<style scoped>
+.driveTime {
+    display: flex;
+    flex-direction: row;
+    gap: 9.125rem;
+    color: var(--green);
+    font-size: 2.5rem;
+}
+
+.achievements {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    row-gap: 2.5rem;
+}
+</style>
+
+<!-- Media querys -->
+<style scoped>
+@media only screen and (max-width: 900px) {
+    main {
+        gap: 5rem;
+        padding-bottom: 5rem;
+    }
+    
+    h1 {
+        font-size: 1.75rem;
+        padding-left: 0;
+    }
+    
+    /* Kurs css */
+    .course_content > div > span {
+        display: flex;
+        justify-content: space-around;
+    }
+
+    .course_content > div  > span > p {
+        font-size: 1.25rem;
+    }
+
+    .course_content > div > span > p:last-child {
+        padding-right: 8.25rem;
+    }
+
+    .course_content > div  > span > p:first-child {
+        width: 36%;
+        padding-left: 0.4rem;
+    }
+
+    .info_price{
+        display: none;
+    }
+
+    /* Prestasjonene css */    
+    .driveTime {
+        display: flex;
+        flex-direction: row;
+        gap: 1rem;
+        color: var(--green);
+        font-size: 1.5rem;
+    }
+
+    .achievements {
+        grid-template-columns: 45% 45%;
+        column-gap: 1rem;
+        padding-left: 0.5rem;
+    }
 }
 </style>

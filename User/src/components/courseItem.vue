@@ -38,7 +38,7 @@ function toggleDropdown() {
         <div class="content">
             <p>{{ courseTitle }} ({{ amount }})</p>
             <p>{{ date }}</p>
-            <div>
+            <div class="top_Price">
                 <p>{{ price }} kr</p>
                 <img v-if="paid == undefined" class="payment_hidden" src="../assets/Course_Unpaid.svg" draggable="false">
                 <img v-else-if="paid == false" src="../assets/Course_Unpaid.svg" alt="Unpaid">
@@ -56,7 +56,12 @@ function toggleDropdown() {
                 <a :href="'https://maps.google.com/?q=' + place" target="_blank">{{ place }}</a>
                 <p>{{ time }}</p>
             </div>
-            
+            <div class="content_Price">
+                <img v-if="paid == undefined" class="payment_hidden" src="../assets/Course_Unpaid.svg" draggable="false">
+                <img v-else-if="paid == false" src="../assets/Course_Unpaid.svg" alt="Unpaid">
+                <img v-else src="../assets/Course_Paid.svg" alt="Paid">
+                <p>Pris: {{ price }} kr</p> 
+            </div>
         </div>
         <div class="comment">
             <p>Kommentar:</p>
@@ -177,5 +182,46 @@ section {
 .payment_hidden {
     opacity: 0;
     pointer-events: none;
+}
+</style>
+
+<!-- Media querys -->
+<style scoped>
+@media only screen and (max-width: 900px) {
+    .dropdown {
+        font-size: 1rem;
+    }
+
+    .content > p:first-child {
+        width: max-content;
+    }
+
+    .content p {
+        font-size: 1.25rem;
+    }
+
+    .top_Price {
+        display: none!important;
+    }
+
+    .content_Price{
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .hover {
+        display: none;
+    }
+
+    .place_time{
+        flex-direction: column-reverse;
+        gap: 0.5rem;
+    }
+
+    .comment{
+        padding-right: 0.3rem;
+        width: 40%;
+    }
 }
 </style>
