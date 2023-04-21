@@ -15,7 +15,7 @@ const props = defineProps<{
 div {
     display: flex;
     background-color: v-bind(color);
-    padding: 0.375rem 4.125rem;
+    padding: 0.375rem 4.5rem;
     border-radius: 5rem;
 }
 

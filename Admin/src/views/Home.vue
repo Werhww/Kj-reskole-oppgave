@@ -4,6 +4,7 @@ import Underline from '@/components/underline.vue';
 import Studentlist from '@/components/studentlist.vue';
 import CalenderDays from '@/components/calenderDays.vue';
 import CalenderItem from '@/components/calenderItem.vue';
+import CalenderOpenDay from '@/components/calenderOpenDay.vue';
 
 
 import { ref, onMounted, watch } from 'vue';
@@ -41,10 +42,35 @@ function prevWeek() {
 
 const calenderDays = [
     {
-        startTime: "2021-09-15T03:00:00",
-        endTime: "2021-09-15T04:30:00",
+        startTime: "2021-09-13T03:00:00",
+        endTime: "2021-09-13T04:30:00",
+
+        courseTitle: "Kurs 1",
+        amount: 2,
+        student: "Hei",
+        comment: "Kommentar",
+        shortAdress: "Kjøpmannsgata 1",
+        fullAdress: "kjøpmannsgata 1, 1234 Oslo",
+        studentId: "1234"
+    },
+    {
+        startTime: "2021-09-14T03:00:00",
+        endTime: "2021-09-14T04:30:00",
+
+        courseTitle: "Kurs 2",
+        amount: 2,
+        student: "Hei",
+        comment: "Kommentar",
+        shortAdress: "Kjøpmannsgata 1",
+        fullAdress: "kjøpmannsgata 1, 1234 Oslo",
+        studentId: "1234"
     }
 ]
+
+function openCourse(course:any) 
+{
+    console.log(course)
+}
 </script>
 
 <template>
@@ -77,28 +103,47 @@ const calenderDays = [
                 <CalenderDays date="Tor.15" />
                 <CalenderDays date="Fre.15" />
             </div>
-            <div class="calender"  v-dragscroll>
-                <div class="time">
+            <div class="calender" v-dragscroll:nochilddrag >
+                <div class="time" data-dragscroll>
                     <div v-for="i in 24">
                         <p>{{ i }}:00</p>
                         <Underline color="var(--light-grey)"/>
                     </div>
                 </div>
-                <div class="calender_content">
-                    <div class="testCalenderDay">
-                    </div>
+                <div class="calender_content" data-dragscroll>
                     <CalenderItem 
-                    v-for="day in calenderDays"
-                    
-                    :column-gap="calenderColumnGap"
-                    :column-width="calenderColumnWidth"
-                    :row-gap="calenderRowGap"
+                        v-for="day in calenderDays"
 
-                    :start-time="day.startTime"
-                    :end-time="day.endTime"
+                        :open-course="openCourse"
+                        
+                        :course-title="day.courseTitle"
+                        :amount="day.amount"
+                        :student="day.student"
+                        :comment="day.comment"
+                        :short-adress="day.shortAdress"
+                        :full-adress="day.fullAdress"
+                        :student-id="day.studentId"
+
+                        :column-gap="calenderColumnGap"
+                        :column-width="calenderColumnWidth"
+                        :row-gap="calenderRowGap"
+
+                        :start-time="day.startTime"
+                        :end-time="day.endTime"
                     />
                 </div>
             </div>
+            <CalenderOpenDay
+                courseTitle="egweg"
+                :amount= "4"
+                student="student" 
+                comment="hrllo"
+                shortAdress="adresse"
+                fullAdress="adresse"
+                studentId="125"
+                startTime="2021-09-13T03:00:00"
+                endTime="2021-09-13T04:30:00"
+            />
         </div>
     </section>
 </main>
@@ -140,23 +185,12 @@ main {
 
 <!-- Calender / bottom part -->
 <style setup>
-.testCalenderDay{
-    position: relative;
-    background-color: blue;
-    display: none;
-    width: v-bind(calenderColumnWidth + "px");
-    height: v-bind((calenderRowGap * 2) + "px");
-    left: v-bind((calenderColumnWidth + calenderColumnGap) * 3 + "px");
-    top: v-bind((calenderRowGap * 1) + 9 + "px");
-}
-
 .calender_content{
     position: absolute;
-    padding-left: 3.1rem;
     top: 0;
     left: 0;
     height: 2090px;
-    width: 96%;
+    width: 100%;
 }
 
 .time {

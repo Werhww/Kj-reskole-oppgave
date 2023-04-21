@@ -12,11 +12,29 @@ const props = defineProps<{
 
     /* Content props */
     courseTitle: string
+    amount: number
     student: string
     comment: string
     shortAdress: string
     fullAdress: string
     studentId: string
+
+    /* Function props */
+    openCourse: (
+        course: 
+        {
+            courseTitle: string
+            amount: number
+            student: string
+            comment: string
+            shortAdress: string
+            fullAdress: string
+            studentId: string
+            startTime: string
+            endTime: string
+        }
+
+    ) => void
 }>()
 
 /* Formating start time to minuts and hours to wantet format */
@@ -37,18 +55,28 @@ const endTimeShowed = moment(props.endTime).format("HH:mm")
 </script>
 
 <template>
-<div class="item">
-    <h1>{{ courseTitle }}</h1>
+<div class="item" @click="openCourse({
+    courseTitle: courseTitle,
+    amount: amount,
+    student: student,
+    comment: comment,
+    shortAdress: shortAdress,
+    fullAdress: fullAdress,
+    studentId: studentId,
+    startTime: startTime,
+    endTime: endTime
+})">
+    <h1>{{ courseTitle }} ({{ amount }})</h1>
     <div>
-        <img src="" alt="">
+        <img src="../assets/timeIcon.svg">
         <p>{{ startTimeShowed }} - {{ endTimeShowed }}</p>
     </div>
     <div>
-        <img src="" alt="">
-        <a :href="'' + fullAdress">{{ shortAdress }}</a>
+        <img src="../assets/locationIcon.svg" alt="">
+        <p>{{ shortAdress }}</p>
     </div>
     <div>
-        <img src="" alt="">
+        <img src="../assets/userIcon.svg" alt="">
         <p>{{ student }}</p>
     </div>
 </div> 
@@ -56,14 +84,44 @@ const endTimeShowed = moment(props.endTime).format("HH:mm")
 
 <style scoped>
 .item {
-    position: relative;
+    position: absolute;
     background-color: var(--light-grey);
-    border: var(--grey) 2px solid;
+    border: var(--grey) 3px solid;
     border-radius: 0.5rem;
 
     width: v-bind(columnWidth + "px");
     height: v-bind((rowGap * formatedEndTime) + "px");
-    left: v-bind((columnWidth + columnGap) * dayInWeek + "px");
+    left: v-bind((columnWidth + columnGap) * dayInWeek + 51 + "px");
     top: v-bind((rowGap * formatedStartTime) + 9 + "px");
+
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.item:hover {
+    cursor: pointer;
+    user-select: none;
+}
+
+.item h1 {
+    font-size: 1.125rem;
+    font-weight: 500;
+    padding-left: 0.5rem;
+    padding-top: 0.375rem;
+}
+
+.item > div {
+    padding-left: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.875rem;
+    color: var(--dark-grey);
+}
+
+.item > div * {
+    font-size: 0.875rem;
+    color: var(--dark-grey);
 }
 </style>
