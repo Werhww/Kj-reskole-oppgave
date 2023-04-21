@@ -1,9 +1,11 @@
 <script setup lang="ts">
-
+const props = defineProps<{
+    date: string
+}>()
 </script>
 
 <template>
-<p>{{ $route.params.studentID }}</p>
+
 </template>
 
 <style scoped>
