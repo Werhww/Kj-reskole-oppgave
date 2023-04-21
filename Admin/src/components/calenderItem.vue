@@ -3,7 +3,6 @@ import moment from 'moment'
 
 const props = defineProps<{
     /* Placement props */
-    dayInWeek: number
     startTime: string
     endTime: string
 
@@ -12,13 +11,14 @@ const props = defineProps<{
     rowGap: number
 
     /* Content props */
-    /* course: string
+    courseTitle: string
     student: string
     comment: string
     shortAdress: string
     fullAdress: string
-    studentId: string */
+    studentId: string
 }>()
+
 /* Formating start time to minuts and hours to wantet format */
 const formatedStartTimeHour = Number(moment(props.startTime).format("HH")) - 1
 const formatedStartTimeMinute = Number(moment(props.startTime).format("mm")) / 60
@@ -29,18 +29,37 @@ const formatedEndTimeHour = Number(moment(props.endTime).format("HH")) - formate
 const formatedEndTimeMinute = Number(moment(props.endTime).format("mm")) / 60
 const formatedEndTime = formatedEndTimeHour + formatedEndTimeMinute
 
+const dayInWeek = Number(moment(props.startTime).format("d")) - 1
+
+const startTimeShowed = moment(props.startTime).format("HH:mm")
+const endTimeShowed = moment(props.endTime).format("HH:mm")
+
 </script>
 
 <template>
 <div class="item">
-
+    <h1>{{ courseTitle }}</h1>
+    <div>
+        <img src="" alt="">
+        <p>{{ startTimeShowed }} - {{ endTimeShowed }}</p>
+    </div>
+    <div>
+        <img src="" alt="">
+        <a :href="'' + fullAdress">{{ shortAdress }}</a>
+    </div>
+    <div>
+        <img src="" alt="">
+        <p>{{ student }}</p>
+    </div>
 </div> 
 </template>
 
 <style scoped>
 .item {
     position: relative;
-    background-color: blue;
+    background-color: var(--light-grey);
+    border: var(--grey) 2px solid;
+    border-radius: 0.5rem;
 
     width: v-bind(columnWidth + "px");
     height: v-bind((rowGap * formatedEndTime) + "px");

@@ -29,6 +29,22 @@ watch(calenderDaysMonday, (newValue) => {
 })
 
 const currentDate = moment().format()
+
+/* changes to next and previuse week */
+function nextWeek() {
+    week.value = week.value + 1
+}
+
+function prevWeek() {
+    week.value = week.value - 1
+}
+
+const calenderDays = [
+    {
+        startTime: "2021-09-15T03:00:00",
+        endTime: "2021-09-15T04:30:00",
+    }
+]
 </script>
 
 <template>
@@ -49,9 +65,9 @@ const currentDate = moment().format()
     </section>
     <section>
         <div class="week">
-            <img src="../assets/Arrow.svg" alt="">
+            <img @click="prevWeek" src="../assets/Arrow.svg" alt="">
             <h1>Uke {{ week }}</h1>
-            <img src="../assets/Arrow.svg" alt="" style="rotate: 180deg;">
+            <img @click="nextWeek" src="../assets/Arrow.svg" alt="" style="rotate: 180deg;">
         </div>
         <div>
             <div class="days_info"  ref="calenderDaysMonday">
@@ -71,14 +87,15 @@ const currentDate = moment().format()
                 <div class="calender_content">
                     <div class="testCalenderDay">
                     </div>
-                    <CalenderItem  
+                    <CalenderItem 
+                    v-for="day in calenderDays"
+                    
                     :column-gap="calenderColumnGap"
                     :column-width="calenderColumnWidth"
                     :row-gap="calenderRowGap"
 
-                    :day-in-week="0"
-                    start-time="2021-09-15T03:00:00"
-                    end-time="2021-09-15T04:30:00"
+                    :start-time="day.startTime"
+                    :end-time="day.endTime"
                     />
                 </div>
             </div>
@@ -190,6 +207,7 @@ main {
 
 .week img{
     cursor: pointer;
+    user-select: none;
 }
 
 </style>
