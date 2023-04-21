@@ -3,6 +3,7 @@
 import Underline from '@/components/underline.vue';
 import Studentlist from '@/components/studentlist.vue';
 import CalenderDays from '@/components/calenderDays.vue';
+import CalenderItem from '@/components/calenderItem.vue';
 
 
 import { ref, onMounted, watch } from 'vue';
@@ -70,6 +71,15 @@ const currentDate = moment().format()
                 <div class="calender_content">
                     <div class="testCalenderDay">
                     </div>
+                    <CalenderItem  
+                    :column-gap="calenderColumnGap"
+                    :column-width="calenderColumnWidth"
+                    :row-gap="calenderRowGap"
+
+                    :day-in-week="0"
+                    start-time="2021-09-15T03:00:00"
+                    end-time="2021-09-15T04:30:00"
+                    />
                 </div>
             </div>
         </div>
@@ -114,11 +124,12 @@ main {
 <!-- Calender / bottom part -->
 <style setup>
 .testCalenderDay{
-    width: v-bind(calenderColumnWidth + "px");
-    height: v-bind((calenderRowGap * 1.5) + "px");
-    background-color: blue;
     position: relative;
-    left: v-bind(calenderColumnWidth + calenderColumnGap + "px");
+    background-color: blue;
+    display: none;
+    width: v-bind(calenderColumnWidth + "px");
+    height: v-bind((calenderRowGap * 2) + "px");
+    left: v-bind((calenderColumnWidth + calenderColumnGap) * 3 + "px");
     top: v-bind((calenderRowGap * 1) + 9 + "px");
 }
 
