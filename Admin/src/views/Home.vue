@@ -7,10 +7,43 @@ import CalenderItem from '@/components/calenderItem.vue';
 import CalenderOpenDay from '@/components/calenderOpenDay.vue';
 
 
-import { ref, onMounted, watch } from 'vue';
+import { ref, watch } from 'vue';
 import moment from 'moment';
+import { allCourses } from "../firebase/store";
+
+const currentDate = moment().format()
 
 const week = ref(moment().week())
+const calenderDays = ref(allCourses)
+
+interface courseProps {
+    isShowed: boolean
+
+    courseTitle: string
+    amount: number
+    student: string
+    comment: string
+    shortAdress: string
+    fullAdress: string
+    studentId: string
+    courseID: string
+    startTime: string
+    endTime: string
+}
+
+const showedCourse = ref<courseProps>({
+    isShowed: false,
+    courseTitle: "",
+    amount: 5,
+    student: "",
+    comment: "",
+    shortAdress: "",
+    fullAdress: "",
+    studentId: "",
+    courseID: "",
+    startTime: "",
+    endTime: ""
+})
 
 /* Used to get one of the info day on the top now the with of the element */
 const calenderDaysMonday = ref<HTMLDivElement | null>(null)
@@ -29,8 +62,6 @@ watch(calenderDaysMonday, (newValue) => {
     calenderColumnWidth.value = width
 })
 
-const currentDate = moment().format()
-
 /* changes to next and previuse week */
 function nextWeek() {
     week.value = week.value + 1
@@ -40,37 +71,37 @@ function prevWeek() {
     week.value = week.value - 1
 }
 
-const calenderDays = [
-    {
-        startTime: "2021-09-13T03:00:00",
-        endTime: "2021-09-13T04:30:00",
+const calenderContentWrapper = ref<HTMLDivElement | null>(null)
 
-        courseTitle: "Kurs 1",
-        amount: 2,
-        student: "Hei",
-        comment: "Kommentar",
-        shortAdress: "Kjøpmannsgata 1",
-        fullAdress: "kjøpmannsgata 1, 1234 Oslo",
-        studentId: "1234"
-    },
-    {
-        startTime: "2021-09-14T03:00:00",
-        endTime: "2021-09-14T04:30:00",
-
-        courseTitle: "Kurs 2",
-        amount: 2,
-        student: "Hei",
-        comment: "Kommentar",
-        shortAdress: "Kjøpmannsgata 1",
-        fullAdress: "kjøpmannsgata 1, 1234 Oslo",
-        studentId: "1234"
+/* Opens the course info */
+function openCourse(course:any) {
+    showedCourse.value = {
+        isShowed: true,
+        courseTitle: course.courseTitle,
+        amount: course.amount,
+        student: course.student,
+        comment: course.comment,
+        shortAdress: course.shortAdress,
+        fullAdress: course.fullAdress,
+        studentId: course.studentId,
+        courseID: course.courseID,
+        startTime: course.startTime,
+        endTime: course.endTime,
     }
-]
 
-function openCourse(course:any) 
-{
-    console.log(course)
+    removeHighlightCourse()
 }
+
+function removeHighlightCourse() {
+    const childern:any = calenderContentWrapper.value?.children
+    for (let i = 0; i < childern?.length; i++) {
+        const element = childern[i]
+        if (element.classList.contains("highlighted")) {
+            element.classList.remove("highlighted")
+        } 
+    }
+}
+
 </script>
 
 <template>
@@ -110,19 +141,21 @@ function openCourse(course:any)
                         <Underline color="var(--light-grey)"/>
                     </div>
                 </div>
-                <div class="calender_content" data-dragscroll>
+                <div class="calender_content" ref="calenderContentWrapper" data-dragscroll>
                     <CalenderItem 
                         v-for="day in calenderDays"
+                        :is-showed="false"
 
                         :open-course="openCourse"
                         
-                        :course-title="day.courseTitle"
+                        :course-title="day.course"
                         :amount="day.amount"
                         :student="day.student"
                         :comment="day.comment"
-                        :short-adress="day.shortAdress"
-                        :full-adress="day.fullAdress"
-                        :student-id="day.studentId"
+                        :short-adress="day.shortAddress"
+                        :full-adress="day.fullAddress"
+                        :student-id="day.studentID"
+                        :course-i-d="day.courseID"
 
                         :column-gap="calenderColumnGap"
                         :column-width="calenderColumnWidth"
@@ -134,15 +167,19 @@ function openCourse(course:any)
                 </div>
             </div>
             <CalenderOpenDay
-                courseTitle="egweg"
-                :amount= "4"
-                student="student" 
-                comment="hrllo"
-                shortAdress="adresse"
-                fullAdress="adresse"
-                studentId="125"
-                startTime="2021-09-13T03:00:00"
-                endTime="2021-09-13T04:30:00"
+                v-if="showedCourse.isShowed"
+
+                :courseTitle="showedCourse.courseTitle"
+                :amount="showedCourse.amount"
+                :student="showedCourse.student" 
+                :comment="showedCourse.comment"
+                :shortAdress="showedCourse.shortAdress"
+                :fullAdress="showedCourse.fullAdress"
+                :startTime="showedCourse.startTime"
+                :endTime="showedCourse.endTime"
+               
+                :studentId="showedCourse.studentId"
+                :course-i-d="showedCourse.courseID"
             />
         </div>
     </section>
@@ -159,7 +196,8 @@ h1 {
 main {
     display: flex;
     flex-direction: column;
-    gap: 3rem;
+    gap: 5rem;
+    padding-bottom: 5rem;
 }
 </style>
 
@@ -213,7 +251,8 @@ main {
 
 .calender {
     position: relative;
-    margin-top: 2.875rem;
+    margin-top: .2rem;
+    margin-bottom: 1rem;
     overflow-y: hidden;
     height: 24.375rem;
     cursor: grab;

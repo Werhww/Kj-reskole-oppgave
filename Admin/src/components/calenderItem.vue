@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import moment from 'moment'
+import { ref } from 'vue'
 
 const props = defineProps<{
     /* Placement props */
+    isShowed: boolean
+
     startTime: string
     endTime: string
 
@@ -18,6 +21,7 @@ const props = defineProps<{
     shortAdress: string
     fullAdress: string
     studentId: string
+    courseID: string
 
     /* Function props */
     openCourse: (
@@ -30,6 +34,7 @@ const props = defineProps<{
             shortAdress: string
             fullAdress: string
             studentId: string
+            courseID: string
             startTime: string
             endTime: string
         }
@@ -52,10 +57,29 @@ const dayInWeek = Number(moment(props.startTime).format("d")) - 1
 const startTimeShowed = moment(props.startTime).format("HH:mm")
 const endTimeShowed = moment(props.endTime).format("HH:mm")
 
+const element = ref<HTMLDivElement | null>(null)
+
+function selfHighlight(event:any,
+    course: {
+        courseTitle: string
+        amount: number
+        student: string
+        comment: string
+        shortAdress: string
+        fullAdress: string
+        studentId: string
+        courseID: string
+        startTime: string
+        endTime: string
+    }) {
+    props.openCourse(course)
+    element.value?.classList.add("highlighted")
+}
+
 </script>
 
 <template>
-<div class="item" @click="openCourse({
+<div class="item" ref="element" @click="selfHighlight($event ,{
     courseTitle: courseTitle,
     amount: amount,
     student: student,
@@ -63,6 +87,7 @@ const endTimeShowed = moment(props.endTime).format("HH:mm")
     shortAdress: shortAdress,
     fullAdress: fullAdress,
     studentId: studentId,
+    courseID: courseID,
     startTime: startTime,
     endTime: endTime
 })">
@@ -83,6 +108,10 @@ const endTimeShowed = moment(props.endTime).format("HH:mm")
 </template>
 
 <style scoped>
+.highlighted {
+    border: var(--green) 5px solid !important;
+}
+
 .item {
     position: absolute;
     background-color: var(--light-grey);

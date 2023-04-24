@@ -2,9 +2,10 @@
 import Underline from './underline.vue';
 import Button from './button.vue';
 import moment from 'moment'
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 
 const props = defineProps<{
+
     courseTitle: string
     amount: number
     student: string
@@ -12,12 +13,19 @@ const props = defineProps<{
     shortAdress: string
     fullAdress: string
     studentId: string
+    courseID: string
     startTime: string
     endTime: string
 }>()
 
-const formatedDateTime = moment(props.startTime).format("dddd DD MMMM HH.mm")
-const formatedEndTime = moment(props.endTime).format("HH.mm")
+
+watch(props, (newValue) => {
+    formatedDateTime.value = moment(newValue.startTime).format("dddd DD MMMM HH.mm")
+    formatedEndTime.value = moment(newValue.endTime).format("HH.mm")
+    newComment.value = newValue.comment
+})
+const formatedDateTime = ref(moment(props.startTime).format("dddd DD MMMM HH.mm"))
+const formatedEndTime = ref(moment(props.endTime).format("HH.mm"))
 
 const newComment = ref(props.comment)
 </script>
@@ -39,7 +47,7 @@ const newComment = ref(props.comment)
                 <p>Kommentar:</p>
                 <p>Lagre Kommentar</p>
             </div>
-            <textarea v-model="newComment" :maxlength="350"></textarea>
+            <textarea v-model="newComment" :maxlength="300"></textarea>
         </div>
     </div>
     <div class="buttons">
@@ -95,6 +103,7 @@ section {
     outline: none;
     transition: border 0.2s ease-in-out;
     border-radius: 0.5rem;
+    resize: none;
 }
 
 .info > div:last-child textarea:focus {
