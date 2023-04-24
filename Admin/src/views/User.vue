@@ -10,6 +10,15 @@ const user = ref({
     
 })
 
+function avmeldKurs(CourseID:string) {
+    console.log("Avmeld kurs")
+    console.log(CourseID)
+}
+
+function saveComment(CourseID:string, comment:string) {
+    console.log("Save comment")
+    console.log(CourseID, comment)
+}
 </script>
 
 <template>
@@ -17,16 +26,20 @@ const user = ref({
     <Title :text="user.name" color="var(--red)"/>
     <div>
         <CourseItem 
-            courseTitle="Test"
-            amount="1"
+            course="Test"
+            :amount="3"
             price="100"
-            instructor="Test"
+            instructor="instructøre"
             fullAddress="22351251561"   
             comment="Test"
             :paid="true"
 
-            startTime="2021-09-01T10:00:00"
-            endTime="2021-09-01T11:00:00"
+            startTime="2021-09-04T10:00:00"
+            endTime="2021-09-04T11:00:00"
+            courseID="3151233512"
+
+            :avmeldKurs="avmeldKurs"
+            :saveComment="saveComment"
         />
     </div>
 </main>

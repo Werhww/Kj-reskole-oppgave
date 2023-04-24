@@ -3,8 +3,8 @@ import { ref } from 'vue'
 import moment from 'moment';
 
 const props = defineProps<{
-    courseTitle: string;
-    amount: string;
+    course: string;
+    amount: number;
     price: string;
     paid: boolean;
     startTime?: string;
@@ -13,7 +13,14 @@ const props = defineProps<{
     /* Dropdown content */
     instructor?: string;
     fullAddress?: string;
-    comment?: string;
+    comment: string;
+
+    /* IDs */
+    courseID: string;
+
+    /* Functions */
+    avmeldKurs: (CourseID:string) => void;
+    saveComment: (CourseID:string, comment:string) => void;
 }>()
 
 const isDropdownOpen = ref(false)
@@ -35,6 +42,10 @@ const end = moment(props.endTime).format('HH.mm')
 
 const newComment = ref(props.comment)
 
+
+function openEdit() {
+    console.log("Open edit course")
+}
 </script>
 
 <template>
@@ -43,7 +54,7 @@ const newComment = ref(props.comment)
     <div class="top" @click="toggleDropdown"> 
         <!-- Content -->
         <div class="content">
-            <p>{{ courseTitle }} ({{ amount }})</p>
+            <p>{{ course }} ({{ amount }})</p>
             <p>{{ date }}</p>
             <div class="top_Price">
                 <p>{{ price }} kr</p>
@@ -77,17 +88,44 @@ const newComment = ref(props.comment)
             </div>
         </div>
         <div class="changeButtons">
-            <p>Avmeld kurs</p>
-            <p>Rediger</p>
-            <p>Lagre Kommentar</p>
+            <p @click="avmeldKurs(courseID)">Avmeld kurs</p>
+            <p @click="openEdit">Rediger</p>
+            <p @click="saveComment(courseID, newComment)">Lagre Kommentar</p>
         </div>
-        
     </div>
     <div class="underline" v-if="isDropdownOpen"><!-- Underline --></div>
 </section>
 </template>
 
+<!-- style -->
 <style scoped>
+
+.changeButtons{
+    display: flex;
+    align-self: center;
+    gap: 3.875rem;
+
+    font-size: 1.25rem;
+}
+
+.changeButtons p{
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.changeButtons p:first-child{
+    color: var(--red);
+}
+
+.changeButtons p:nth-child(2){
+    color: var(--dark-grey);
+    text-decoration: none;
+}
+
+.top_Price {
+    font-size: 1.5rem;
+}
+
 .content_Price{
     display: flex;
     flex-direction: row;
@@ -114,10 +152,22 @@ const newComment = ref(props.comment)
     gap: .5rem;
 }
 
-.changeButtons{
+.place_time{
     display: flex;
-    align-self: center;
-    gap: 3.875rem;
+    flex-direction: row;
+    gap: 1.5rem;
+}
+
+.place_time *{
+    color: var(--dark-grey);
+}
+
+.comment{
+    display: flex;
+    flex-direction: column;
+    padding-right: 3rem;
+    gap: 0.5rem;
+    width: 25%;
 }
 
 .comment > textarea {
@@ -136,77 +186,20 @@ const newComment = ref(props.comment)
 }
 
 
-.hidden{
-    display: none;
-}
-
-.hiddenOpacity{
-    opacity: 0;
-}
-
-.place_time{
-    display: flex;
-    flex-direction: row;
-    gap: 1.5rem;
-    color: var(--dark-grey);
-}
-
-.place_time *{
-    color: var(--dark-grey);
-}
-
-.comment{
-    display: flex;
-    flex-direction: column;
-    padding-right: 3rem;
-    gap: 0.5rem;
-    width: 25%;
-}
-
-.comment > p:last-child{
-    color: var(--dark-grey);
-}
-
 section {
     display: flex;
     flex-direction: column;
     gap: 0.7rem;
 }
 
-.hover{
-    position: absolute;
-    bottom: 6px;
-    left: -1rem;
-    width: 102%;
-    height: 0%;
-    transition: height 0.3s ease-in-out;
-    z-index: -1;
-    background-color: var(--light-grey);
-    border-radius: 3rem;
-    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
-}
-
-.top:hover > .hover {
-    height: 100%;
-}
-
-.top:hover > .underline{
-    opacity: 0;
-}
-
-.top:hover{
-    cursor: pointer;
-}
-
 .content {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 1.5rem;
 }
 
 .content > p:first-child {
-    width: 35%;
+    width: 30%;
 }
 
 .content > p {
@@ -236,6 +229,42 @@ section {
     opacity: 0;
     pointer-events: none;
 }
+
+.hidden{
+    display: none;
+}
+
+.hiddenOpacity{
+    opacity: 0;
+}
+
+
+/* hover effect */
+.hover{
+    position: absolute;
+    bottom: 6px;
+    left: -1rem;
+    width: 102%;
+    height: 0%;
+    transition: height 0.3s ease-in-out;
+    z-index: -1;
+    background-color: var(--light-grey);
+    border-radius: 3rem;
+    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+}
+
+.top:hover > .hover {
+    height: 100%;
+}
+
+.top:hover > .underline{
+    opacity: 0;
+}
+
+.top:hover{
+    cursor: pointer;
+}
+/* ***************************/
 </style>
 
 <!-- Media querys -->
