@@ -83,12 +83,54 @@ watch(allCourses, (item) => {
     })
 })
 
-/* Chats and chats messages */
+/* All instructors with name and ID */
 interface instructorsProps {
     name: string,
     instructorID: string,
-    isActive: boolean
 }
+
+const allInstructors = ref<instructorsProps[]>([
+    {
+        name: "Leo",
+        instructorID: "1",
+    },
+    {
+        name: "Felix",
+        instructorID: "12",
+    },
+    {
+        name: "Trym",
+        instructorID: "123",
+    },
+    {
+        name: "Jones",
+        instructorID: "1234",
+    },
+    {
+        name: "Flekal",
+        instructorID: "12345",
+    }
+])
+
+
+interface placesProps {
+    name: string,
+    fullAddress: string,
+}
+
+const allPlaces = ref<placesProps[]>([
+    {
+        name: "Kjøresenteret",
+        fullAddress: "Kjøresenteret, 7030 Trondheim"
+    },
+    {
+        name: "Kjøreskolen",
+        fullAddress: "Kjøreskolen, 7030 Trondheim"
+    }
+])
+
+
+/* Chats and chats messages */
 
 interface chatMessages {
     instructorID: string;
@@ -98,29 +140,6 @@ interface chatMessages {
         datetime: string;
     }[]
 }
-
-const instructors = ref<instructorsProps[]>([
-    {
-        name: "Leo",
-        instructorID: "1246145",
-        isActive: true
-    },
-    {
-        name: "Felix",
-        instructorID: "12214545",
-        isActive: false
-    },
-    {
-        name: "Trym",
-        instructorID: "12345",
-        isActive: false
-    },
-    {
-        name: "Trym",
-        instructorID: "12345",
-        isActive: false
-    }
-])
 
 const chatMessages = ref<chatMessages[]>([
     {
@@ -224,8 +243,8 @@ setTimeout(() => {
         student:"Jonson Jones",
 
         studentID: "1234",
-        courseID: "12345",
-        instructorID: "12345",
+        courseID: "1",
+        instructorID: "1",
     },
     {
         course: 'Traffikalt grunnkurs',
@@ -244,9 +263,9 @@ setTimeout(() => {
 
         student:"Jonson Jones",
 
-        studentID: "1234",
-        courseID: "12345",
-        instructorID: "12345",
+        studentID: "12345",
+        courseID: "12",
+        instructorID: "12",
     },
     {
         course: 'Kjøretime (A1)',
@@ -265,9 +284,9 @@ setTimeout(() => {
 
         student:"Jonson Jones",
 
-        studentID: "1234",
-        courseID: "12345",
-        instructorID: "12345",
+        studentID: "12346",
+        courseID: "123",
+        instructorID: "123",
     },
     {
         course: 'Traffikalt grunnkurs',
@@ -288,7 +307,7 @@ setTimeout(() => {
 
         studentID: "1234",
         courseID: "12345",
-        instructorID: "12345",
+        instructorID: "1234",
     },
     {
         course: 'Traffikalt grunnkurs',
@@ -318,7 +337,7 @@ export {
     allCourses,
     previousCourses,
     commingCourses,
-    user,
-    instructors,
+    allInstructors,
+    allPlaces,
     chatMessages
 }

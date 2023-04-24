@@ -13,6 +13,7 @@ const props = defineProps<{
 
 <style scoped>
 div {
+    cursor: pointer;
     display: flex;
     background-color: v-bind(color);
     padding: 0.375rem 4.5rem;
