@@ -1,6 +1,55 @@
 import { ref, watch } from "vue";
 import moment from "moment";
 
+/* Interfaces */
+interface CourseProps {
+    course: string,
+    startTime: string,
+    endTime: string,
+
+    shortAddress: string,
+    fullAddress: string,
+
+    amount: number,
+    price: number,
+    paid: boolean | undefined,
+
+    instructor: string,
+    comment: string
+
+    student: string
+
+    studentID: string
+    instructorID: string
+    courseID: string
+}
+
+interface instructorsProps {
+    name: string,
+    instructorID: string,
+}
+
+interface placesProps {
+    name: string,
+    fullAddress: string,
+}
+
+interface courseTypesProps {
+    name: string,
+    price: number,
+    Id: string
+}
+
+interface chatMessages {
+    instructorID: string;
+    messages: {
+        from: string;
+        message: string;
+        datetime: string;
+    }[]
+}
+
+
 /* all achievements and time driven */
 const achievements = ref({
     driveTime: 9,
@@ -42,53 +91,13 @@ const achievements = ref({
 })
 
 /* all courses combined & sorter for previus courses and comming courses */
-interface CourseProps {
-    course: string,
-    startTime: string,
-    endTime: string,
-
-    shortAddress: string,
-    fullAddress: string,
-
-    amount: number,
-    price: number,
-    paid: boolean | undefined,
-
-    instructor: string,
-    comment: string
-
-    student: string
-
-    studentID: string
-    instructorID: string
-    courseID: string
-}
-
 const allCourses= ref<CourseProps[]>([])
 
-const previousCourses = ref<[] | any>([])
+const previousCourses = ref<[] | any>([])/* Courses befor current date */
+const commingCourses = ref<[] | any>([])/* Courses after current date */
 
-const commingCourses = ref<[] | any>([])
-
-watch(allCourses, (item) => {
-    const now = moment().format()
-
-    item.forEach((course:any) => {
-        let test = moment(course.date).isAfter(now)
-        if (test) {
-            commingCourses.value.push(course)
-        } else if (!test) {
-            previousCourses.value.push(course)
-        }
-    })
-})
 
 /* All instructors with name and ID */
-interface instructorsProps {
-    name: string,
-    instructorID: string,
-}
-
 const allInstructors = ref<instructorsProps[]>([
     {
         name: "Leo",
@@ -112,12 +121,7 @@ const allInstructors = ref<instructorsProps[]>([
     }
 ])
 
-
-interface placesProps {
-    name: string,
-    fullAddress: string,
-}
-
+/* All places with address and name */
 const allPlaces = ref<placesProps[]>([
     {
         name: "Kjøresenteret",
@@ -129,18 +133,31 @@ const allPlaces = ref<placesProps[]>([
     }
 ])
 
+/* All course types */
+const allCourseTypes = ref<courseTypesProps[]>([
+    {
+        name: "Trafikalt grunnkurs",
+        price: 5000,
+        Id: "1"
+    },
+    {
+        name: "Grunnleggende opplæringen",
+        price: 5000,
+        Id: "2"
+    },
+    {
+        name: "Sikkerhetskurs i trafikk",
+        price: 5000,
+        Id: "3"
+    },
+    {
+        name: "Kjøretime",
+        price: 5000,
+        Id: "4"
+    }
+])
 
 /* Chats and chats messages */
-
-interface chatMessages {
-    instructorID: string;
-    messages: {
-        from: string;
-        message: string;
-        datetime: string;
-    }[]
-}
-
 const chatMessages = ref<chatMessages[]>([
     {
         instructorID: "1246145",
@@ -224,6 +241,36 @@ const chatMessages = ref<chatMessages[]>([
     },
 ])
 
+
+/* Sorter allcourses into previous and comming*/
+watch(allCourses, (item) => {
+    const now = moment().format()
+
+    item.forEach((course:any) => {
+        let test = moment(course.date).isAfter(now)
+        if (test) {
+            commingCourses.value.push(course)
+        } else {
+            course.paid = false
+            previousCourses.value.push(course)
+        }
+    })
+})
+
+
+/* Exporsts */
+export {
+    achievements,
+    allCourses,
+    previousCourses,
+    commingCourses,
+    allInstructors,
+    allPlaces,
+    allCourseTypes,
+    chatMessages
+}
+
+/* Just for dev */
 setTimeout(() => {
     allCourses.value = [{
         course: 'Kjøretime (A1)',
@@ -331,13 +378,3 @@ setTimeout(() => {
         instructorID: "12345",
     }]
 }, 1000)
-
-export {
-    achievements,
-    allCourses,
-    previousCourses,
-    commingCourses,
-    allInstructors,
-    allPlaces,
-    chatMessages
-}

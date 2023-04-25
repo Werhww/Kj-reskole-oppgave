@@ -25,6 +25,12 @@ const props = defineProps<{
         fullAddress: string,
     }[]
 
+    allCourseTypes: {
+        name: string,
+        price: number,
+        courseID: string
+    }[]
+
     /* IDs */
     courseID: string
     instructorID: string
@@ -60,7 +66,6 @@ const end = moment(props.endTime).format('HH.mm')
 /* comment value */
 const newComment = ref(props.comment)
 
-
 const editContent = ref({
     date: moment(props.startTime).format('yyyy-MM-DD'),
     instructor: props.instructor,
@@ -70,6 +75,7 @@ const editContent = ref({
     start: moment(props.startTime).format('HH:mm:ss.SSS'),
     end: moment(props.endTime).format('HH:mm:ss.SSS'),
     fullAddress: props.fullAddress,
+    courseTypeID: props.allCourseTypes?.Id,
 })
 
 const edit = ref(false)
@@ -86,6 +92,12 @@ function openEdit() {
         <!-- Content -->
         <div class="content">
             <p>{{ course }} ({{ amount }})</p>
+            <div>
+                <select class="" v-model="editContent.fullAddress">
+                    <option v-for="place in allPlaces" :value="place.fullAddress">{{ place.name }}</option>
+                </select>
+                <input type="number">
+            </div>
             <p v-if="!edit">{{ date }}</p>
             <input v-else type="date" ref="dateInput" v-model="editContent.date" class="dateEdit">
             <div class="top_Price">

@@ -5,7 +5,7 @@
 import Title from '@/components/title.vue';
 import CourseItem from '@/components/courseItem.vue';
 import Button from '@/components/button.vue';
-import { allCourses, allInstructors, allPlaces } from '@/firebase/store';
+import { allCourses, allInstructors, allPlaces, allCourseTypes } from '@/firebase/store';
 
 import moment from 'moment';
 import { ref } from 'vue'
@@ -62,6 +62,7 @@ function saveChanges(CourseID:string, editContent:any) {
 
             :allInstuctors="allInstructors"
             :allPlaces="allPlaces"
+            :allCourseTypes="allCourseTypes"
         />
     </div>
     <div class="buttons">
