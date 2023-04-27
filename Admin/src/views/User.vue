@@ -39,6 +39,9 @@ function saveChanges(CourseID:string, editContent:any) {
 <template>
 <main>
     <Title :text="user.name" color="var(--red)"/>
+    <div>
+        
+    </div>
     <div class="courses">
         <CourseItem 
             v-for="course in usersCourses"

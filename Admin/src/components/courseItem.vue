@@ -75,7 +75,7 @@ const editContent = ref({
     start: moment(props.startTime).format('HH:mm:ss.SSS'),
     end: moment(props.endTime).format('HH:mm:ss.SSS'),
     fullAddress: props.fullAddress,
-    courseTypeID: props.allCourseTypes?.Id,
+    courseTypeID: props.allCourseTypes?.courseID,
 })
 
 const edit = ref(false)
