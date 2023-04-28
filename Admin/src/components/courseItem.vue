@@ -9,6 +9,7 @@ const props = defineProps<{
     paid?: boolean | undefined
     startTime: string
     endTime: string
+    courseTypeID: string
 
     /* Dropdown content */
     instructor: string
@@ -28,7 +29,8 @@ const props = defineProps<{
     allCourseTypes: {
         name: string,
         price: number,
-        courseID: string
+        courseTypeID: string
+        DurationMinutes: number
     }[]
 
     /* IDs */
@@ -41,14 +43,17 @@ const props = defineProps<{
     saveChanges: (CourseID:string, editContent:any) => void;
 }>()
 
+const date = moment(props.startTime).format('DD.MMM')
+const start = ref(moment(props.startTime).format('HH.mm'))
+const end = ref(moment(props.endTime).format('HH.mm'))
+
 const isDropdownOpen = ref(false)
 const topUnderline = ref<HTMLInputElement | null>(null)
-const dateInput = ref<HTMLInputElement | null>(null)
 
 /* opens and hiddes extra dropdown content */
 function toggleDropdown(event:any) {
     /* Stops toggle if dateinput is clicked */
-    if(event.target == dateInput.value) return
+    if(edit.value) return
 
     isDropdownOpen.value = !isDropdownOpen.value
     isDropdownOpen.value? null : edit.value = false
@@ -59,29 +64,63 @@ function toggleDropdown(event:any) {
     }
 }
 
-const date = moment(props.startTime).format('DD.MMM')
-const start = moment(props.startTime).format('HH.mm')
-const end = moment(props.endTime).format('HH.mm')
-
 /* comment value */
 const newComment = ref(props.comment)
+const dateEdit = ref(moment(props.startTime).format('yyyy-MM-DD'))
+const startEdit = ref(moment(props.startTime).format('HH:mm:ss.SSS'))
 
 const editContent = ref({
-    date: moment(props.startTime).format('yyyy-MM-DD'),
     instructor: props.instructor,
     instructorID: props.instructorID,
     comment: newComment,
     paid: props.paid,
-    start: moment(props.startTime).format('HH:mm:ss.SSS'),
-    end: moment(props.endTime).format('HH:mm:ss.SSS'),
+    startTime: props.startTime,
+    endTime: props.endTime,
     fullAddress: props.fullAddress,
-    courseTypeID: props.allCourseTypes?.Id,
+    courseTypeID: props.courseTypeID,
+    amount: props.amount,
+    price: props.price
 })
 
 const edit = ref(false)
 
 function openEdit() {
     edit.value = !edit.value
+}
+
+/* watches changes in edit content */
+watch(editContent.value, ()=>{
+    const courseType:any = findCourseType(editContent.value.courseTypeID)
+    editContent.value.price = courseType.price * editContent.value.amount
+    calculateTime(courseType.DurationMinutes)
+    
+    console.log("changes")
+})
+
+/* Watches changes in start time */
+watch(startEdit, ()=>{
+    const courseType:any = findCourseType(editContent.value.courseTypeID)
+    calculateTime(courseType.DurationMinutes)
+})
+
+function findCourseType(courseTypeID:string) {
+    for (let i = 0; i < props.allCourseTypes.length; i++) {
+        if (props.allCourseTypes[i].courseTypeID == courseTypeID) {
+            return props.allCourseTypes[i]
+        }
+    }
+}
+
+function calculateTime(courseMinutes:number, amount:number = editContent.value.amount) {
+    const minutes = courseMinutes * amount
+
+    const startTime = moment(dateEdit.value + " " + startEdit.value)
+    const endTime = moment(startTime).add(minutes, 'minutes')
+    editContent.value.startTime = startTime.format('yyyy-MM-DDTHH:mm:ss')
+    editContent.value.endTime = endTime.format('yyyy-MM-DDTHH:mm:ss')
+
+    start.value = startTime.format('HH.mm')
+    end.value = endTime.format('HH.mm')
 }
 </script>
 
@@ -91,17 +130,17 @@ function openEdit() {
     <div class="top" @click="toggleDropdown($event)"> 
         <!-- Content -->
         <div class="content">
-            <p>{{ course }} ({{ amount }})</p>
-            <div>
-                <select class="" v-model="editContent.fullAddress">
-                    <option v-for="place in allPlaces" :value="place.fullAddress">{{ place.name }}</option>
+            <p  v-if="!edit">{{ course }} ({{ amount }})</p>
+            <div v-else>
+                <select class="" v-model="editContent.courseTypeID">
+                    <option v-for="course in allCourseTypes" :value="course.courseTypeID">{{ course.name }}</option>
                 </select>
-                <input type="number">
+                <input type="number" v-model="editContent.amount">
             </div>
             <p v-if="!edit">{{ date }}</p>
-            <input v-else type="date" ref="dateInput" v-model="editContent.date" class="dateEdit">
+            <input v-else type="date" v-model="dateEdit" class="dateEdit">
             <div class="top_Price">
-                <p>{{ price }} kr</p>
+                <p>{{ editContent.price }} kr</p>
                 <img v-if="paid == true" src="../assets/Course_Paid.svg" alt="Paid">
                 <img v-else-if="paid == false" src="../assets/Course_Unpaid.svg" alt="Unpaid">
                 <img v-else class="payment_hidden" src="../assets/Course_Unpaid.svg" draggable="false">
@@ -125,13 +164,13 @@ function openEdit() {
                     </select>
                     <p v-if="!edit">{{ start }} - {{ end }}</p>
                     <div v-else>
-                        <input type="time" v-model="editContent.start">
+                        <input type="time" v-model="startEdit">
                         <p>-</p>
-                        <input type="time" v-model="editContent.end">
+                        <p>{{ end }}</p>
                     </div>
                 </div>
                 <div class="content_Price">
-                    <p>{{ price }} kr</p> 
+                    <p>{{ editContent.price }} kr</p> 
                     <img v-if="paid == undefined" class="payment_hidden" src="../assets/Course_Unpaid.svg" draggable="false">
                     <img v-else-if="paid == false" src="../assets/Course_Unpaid.svg" alt="Unpaid">
                     <img v-else src="../assets/Course_Paid.svg" alt="Paid">
@@ -149,7 +188,10 @@ function openEdit() {
         </div>
         <div class="changeButtons" v-else>
             <p @click="openEdit">Avbryt</p>
-            <p @click="saveChanges(courseID, editContent)">Lagre</p>
+            <p @click="()=>{
+                saveChanges(courseID, editContent)
+                openEdit()
+            }">Lagre</p>
         </div>
     </div>
     <div class="underline" v-if="isDropdownOpen"><!-- Underline --></div>
@@ -159,30 +201,11 @@ function openEdit() {
 <style scoped>
 .placeEdit {
     font-size: 1.25rem;
-    border: var(--green) 3px solid;
-    border-radius: 0.4rem;
-    background-color: transparent;
-    border: none;
-    outline: none;
-    
     width: 20rem;
 }
 
 .instructorEdit {
     font-size: 1.25rem;
-    border: var(--green) 3px solid;
-    border-radius: 0.4rem;
-    background-color: transparent;
-    border: none;
-    outline: none;
-}
-
-.instructorEdit:hover {
-    border: var(--green) 3px solid;
-    border-radius: 0.4rem;
-    background-color: transparent;
-    border: none;
-    outline: none;
 }
 
 .dateEdit {

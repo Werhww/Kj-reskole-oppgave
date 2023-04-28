@@ -22,6 +22,7 @@ interface CourseProps {
     studentID: string
     instructorID: string
     courseID: string
+    courseTypeID: string
 }
 
 interface instructorsProps {
@@ -37,7 +38,8 @@ interface placesProps {
 interface courseTypesProps {
     name: string,
     price: number,
-    Id: string
+    courseTypeID: string
+    DurationMinutes: number
 }
 
 interface chatMessages {
@@ -49,46 +51,6 @@ interface chatMessages {
     }[]
 }
 
-
-/* all achievements and time driven */
-const achievements = ref({
-    driveTime: 9,
-    achievement: [
-        {
-            name: "Trafikalt grunnkurs",
-            done: true
-        },
-        {
-            name: "Grunnleggende opplæringen",
-            done: true
-        },
-        {
-            name: "Sikkerhetskurs i trafikk",
-            done: true
-        },
-        {
-            name: "Trinnvurdering (trinn 2)",
-            done: false
-        },
-        {
-            name: "Trinnvurdering (trinn 3)",
-            done: false
-        },
-        {
-            name: "Sikkerhetskurs på vei",
-            done: false
-        },
-        
-        {
-            name: "Teorie prøven",
-            done: false
-        },
-        {
-            name: "Mørkekjøring",
-            done: false
-        },
-    ]
-})
 
 /* all courses combined & sorter for previus courses and comming courses */
 const allCourses= ref<CourseProps[]>([])
@@ -137,23 +99,27 @@ const allPlaces = ref<placesProps[]>([
 const allCourseTypes = ref<courseTypesProps[]>([
     {
         name: "Trafikalt grunnkurs",
-        price: 5000,
-        Id: "1"
+        price: 4500,
+        courseTypeID: "1",
+        DurationMinutes: 540
     },
     {
         name: "Grunnleggende opplæringen",
-        price: 5000,
-        Id: "2"
+        price: 3000,
+        courseTypeID: "2",
+        DurationMinutes: 230
     },
     {
         name: "Sikkerhetskurs i trafikk",
-        price: 5000,
-        Id: "3"
+        price: 2000,
+        courseTypeID: "3",
+        DurationMinutes: 540
     },
     {
         name: "Kjøretime",
-        price: 5000,
-        Id: "4"
+        price: 950,
+        courseTypeID: "4",
+        DurationMinutes: 45    
     }
 ])
 
@@ -260,7 +226,6 @@ watch(allCourses, (item) => {
 
 /* Exporsts */
 export {
-    achievements,
     allCourses,
     previousCourses,
     commingCourses,
@@ -292,6 +257,7 @@ setTimeout(() => {
         studentID: "1234",
         courseID: "1",
         instructorID: "1",
+        courseTypeID: "4",
     },
     {
         course: 'Traffikalt grunnkurs',
@@ -313,6 +279,7 @@ setTimeout(() => {
         studentID: "12345",
         courseID: "12",
         instructorID: "12",
+        courseTypeID: "4",
     },
     {
         course: 'Kjøretime (A1)',
@@ -334,6 +301,7 @@ setTimeout(() => {
         studentID: "12346",
         courseID: "123",
         instructorID: "123",
+        courseTypeID: "4",
     },
     {
         course: 'Traffikalt grunnkurs',
@@ -355,6 +323,7 @@ setTimeout(() => {
         studentID: "1234",
         courseID: "12345",
         instructorID: "1234",
+        courseTypeID: "4",
     },
     {
         course: 'Traffikalt grunnkurs',
@@ -376,5 +345,6 @@ setTimeout(() => {
         studentID: "1234",
         courseID: "12345",
         instructorID: "12345",
+        courseTypeID: "4",
     }]
 }, 1000)
