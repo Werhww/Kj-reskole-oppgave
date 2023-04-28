@@ -19,11 +19,18 @@ function editUser() {
 }   
 
 function editUserCancel() {
-    console.log(oldAchievementsData)
-
     user.value = oldUserData
     achievements.value = oldAchievementsData
     isUserEdit.value = true
+
+    oldUserData = JSON.parse(JSON.stringify(user.value))
+    oldAchievementsData = JSON.parse(JSON.stringify(achievements.value))
+
+}
+
+function saveEditsToUser() {
+    isUserEdit.value = true
+    /* Firestore save funcion */
 }
 
 const user = ref({
@@ -79,19 +86,25 @@ const usersCourses = ref(allCourses)
 function avmeldKurs(CourseID:string) {
     console.log("Avmeld kurs")
     console.log(CourseID)
+
+    /* Firebase change function */
 }
 
 function saveCourseComment(CourseID:string, comment:string) {
     console.log("Save comment")
     console.log(CourseID, comment)
+    
+    /* Firebase change function */
 }
 
 function saveCourseChange(CourseID:string, editContent:any) {
     console.log("Save changes")
     console.log(CourseID, editContent)
+
+    /* Firebase change function */
 }
 
-function changeAchivment(done:boolean, name:string) {
+function changeAchievement(done:boolean, name:string) {
     for(let i = 0; i < achievements.value.achievement.length; i++) {
         if(achievements.value.achievement[i].name == name) {
             achievements.value.achievement[i].done = done
@@ -160,13 +173,13 @@ function changeAchivment(done:boolean, name:string) {
                 :name="achievement.name"
                 :done="achievement.done"
 
-                :onChange="changeAchivment"
+                :onChange="changeAchievement"
             />
         </div>
         
         <div class="buttons">
             <Button text="Avbryt" color="var(--red)" @click="editUserCancel"/>
-            <Button text="Lagre" color="var(--green)"/>
+            <Button text="Lagre" color="var(--green)"  @click="saveEditsToUser"/>
         </div>
     </div>
 </main>
