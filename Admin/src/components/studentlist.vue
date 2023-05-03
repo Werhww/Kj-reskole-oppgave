@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import moment from 'moment'
+import moment from 'moment';
 import { RouterLink } from 'vue-router'
 import Underline from './underline.vue'
 const props = defineProps<{

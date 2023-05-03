@@ -126,7 +126,7 @@ const allCourseTypes = ref<courseTypesProps[]>([
 /* Chats and chats messages */
 const chatMessages = ref<chatMessages[]>([
     {
-        instructorID: "1246145",
+        instructorID: "1",
         messages: [
             {
                 from: "instructor",
@@ -156,7 +156,7 @@ const chatMessages = ref<chatMessages[]>([
         ]
     },
     {
-        instructorID: "12214545",
+        instructorID: "12",
         messages: [
             {
                 from: "instructor",
@@ -181,7 +181,7 @@ const chatMessages = ref<chatMessages[]>([
         ]
     },
     {
-        instructorID: "12345",
+        instructorID: "123",
         messages: [
             {
                 from: "instructor",
