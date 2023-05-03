@@ -1,6 +1,18 @@
 import { ref, watch } from "vue";
+import { db } from "./firebase";
 import moment from "moment";
+import { collection, getDocs, doc } from "firebase/firestore"; 
 
+/* Firebase snapshots */
+const InstructorsSnapshot = await getDocs(collection(db, "instructors"))
+const PlacesSnapshot = await getDocs(collection(db, "places"))
+const CourseTypeSnapshot = await getDocs(collection(db, "courseTemplates"))
+
+const AchievementsGlobalSnapshot = await getDocs(collection(db, "achievementTemplates/Global/achievements"))
+
+AchievementsGlobalSnapshot.forEach((doc) => {
+    console.log(doc.id, " => ", doc.data());
+});
 /* Interfaces */
 interface CourseProps {
     course: string,
@@ -27,7 +39,7 @@ interface CourseProps {
 
 interface instructorsProps {
     name: string,
-    instructorID: string,
+    instructorId: string,
 }
 
 interface placesProps {
@@ -60,68 +72,23 @@ const commingCourses = ref<[] | any>([])/* Courses after current date */
 
 
 /* All instructors with name and ID */
-const allInstructors = ref<instructorsProps[]>([
-    {
-        name: "Leo",
-        instructorID: "1",
-    },
-    {
-        name: "Felix",
-        instructorID: "12",
-    },
-    {
-        name: "Trym",
-        instructorID: "123",
-    },
-    {
-        name: "Jones",
-        instructorID: "1234",
-    },
-    {
-        name: "Flekal",
-        instructorID: "12345",
-    }
-])
+const allInstructors = ref<instructorsProps[]>([])
 
 /* All places with address and name */
-const allPlaces = ref<placesProps[]>([
+const allPlaces = ref<placesProps[]>([])
+
+/* All course types */
+const allCourseTypes = ref<courseTypesProps[]>([])
+
+/* All achievements */
+const allAchievements = ref<[] | any>([
     {
-        name: "Kjøresenteret",
-        fullAddress: "Kjøresenteret, 7030 Trondheim"
-    },
-    {
-        name: "Kjøreskolen",
-        fullAddress: "Kjøreskolen, 7030 Trondheim"
+        global: [
+            "Kjøring i mørket",
+        ]
     }
 ])
 
-/* All course types */
-const allCourseTypes = ref<courseTypesProps[]>([
-    {
-        name: "Trafikalt grunnkurs",
-        price: 4500,
-        courseTypeID: "1",
-        DurationMinutes: 540
-    },
-    {
-        name: "Grunnleggende opplæringen",
-        price: 3000,
-        courseTypeID: "2",
-        DurationMinutes: 230
-    },
-    {
-        name: "Sikkerhetskurs i trafikk",
-        price: 2000,
-        courseTypeID: "3",
-        DurationMinutes: 540
-    },
-    {
-        name: "Kjøretime",
-        price: 950,
-        courseTypeID: "4",
-        DurationMinutes: 45    
-    }
-])
 
 /* Chats and chats messages */
 const chatMessages = ref<chatMessages[]>([
@@ -207,7 +174,6 @@ const chatMessages = ref<chatMessages[]>([
     },
 ])
 
-
 /* Sorter allcourses into previous and comming*/
 watch(allCourses, (item) => {
     const now = moment().format()
@@ -256,7 +222,7 @@ setTimeout(() => {
 
         studentID: "1234",
         courseID: "1",
-        instructorID: "1",
+        instructorID: "MtOxJEmrKzgMTLxf3hgw",
         courseTypeID: "4",
     },
     {
@@ -348,3 +314,28 @@ setTimeout(() => {
         courseTypeID: "4",
     }]
 }, 1000)
+
+/* Foreach loop through firebase snapshots*/
+InstructorsSnapshot.forEach((doc) => {
+    allInstructors.value?.push({
+
+        name: doc.data().name,
+        instructorId: doc.id
+    })
+})
+
+PlacesSnapshot.forEach((doc) => {
+    allPlaces.value?.push({
+        name: doc.data().name,
+        fullAddress: doc.data().fullAddress,
+    })
+})
+
+CourseTypeSnapshot.forEach((doc) => {
+    allCourseTypes.value?.push({
+        name: doc.data().name,
+        DurationMinutes: doc.data().DurationMinutes,
+        price: doc.data().price,
+        courseTypeID: doc.id
+    })
+})

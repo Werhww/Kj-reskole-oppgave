@@ -18,7 +18,7 @@ const props = defineProps<{
 
     allInstuctors: {
         name: string,
-        instructorID: string,
+        instructorId: string,
     }[]
 
     allPlaces: {
@@ -155,7 +155,7 @@ function calculateTime(courseMinutes:number, amount:number = editContent.value.a
             <div>
                 <p v-if="!edit">{{ instructor }}</p>
                 <select class="instructorEdit" v-model="editContent.instructorID" v-else>
-                    <option v-for="instructor in allInstuctors" :value="instructor.instructorID">{{ instructor.name }}</option>
+                    <option v-for="instructor in allInstuctors" :value="instructor.instructorId">{{ instructor.name }}</option>
                 </select>
                 <div class="place_time">
                     <a v-if="!edit" :href="'https://maps.google.com/?q=' + fullAddress" target="_blank">{{ fullAddress }}</a>

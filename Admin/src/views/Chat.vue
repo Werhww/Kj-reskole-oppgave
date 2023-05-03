@@ -48,7 +48,7 @@ function resize(el:any) {
     <Title text="Chat" color="var(--green)" />
     <section class="chat">
         <div class="chat_persons" ref="personWrapper" v-dragscroll> <!-- Chat persons -->
-            <ChatPersons v-for="item in chatPersons" :name="item.name" :instructor-i-d="item.instructorID" :open-chat="openChat" />
+            <ChatPersons v-for="item in chatPersons" :name="item.name" :instructor-i-d="item.instructorId" :open-chat="openChat" />
         </div>
         <div class="horisontal_Line"><!-- Horisontal line --></div>
         <div class="chat_messages"> <!-- Chat messages -->
