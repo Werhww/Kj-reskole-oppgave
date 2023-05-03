@@ -9,10 +9,8 @@ const PlacesSnapshot = await getDocs(collection(db, "places"))
 const CourseTypeSnapshot = await getDocs(collection(db, "courseTemplates"))
 
 const AchievementsGlobalSnapshot = await getDocs(collection(db, "achievementTemplates/Global/achievements"))
+const AchievementsSnapshot = await getDocs(collection(db, "achievementTemplates"))
 
-AchievementsGlobalSnapshot.forEach((doc) => {
-    console.log(doc.id, " => ", doc.data());
-});
 /* Interfaces */
 interface CourseProps {
     course: string,
@@ -81,13 +79,12 @@ const allPlaces = ref<placesProps[]>([])
 const allCourseTypes = ref<courseTypesProps[]>([])
 
 /* All achievements */
-const allAchievements = ref<[] | any>([
-    {
-        global: [
-            "Kjøring i mørket",
-        ]
-    }
-])
+const allAchievements = ref<[] | any>({
+    global: [],
+    A1: [],
+    A_A2: [],
+    B: []
+})
 
 
 /* Chats and chats messages */
@@ -198,6 +195,7 @@ export {
     allInstructors,
     allPlaces,
     allCourseTypes,
+    allAchievements,
     chatMessages
 }
 
@@ -338,4 +336,28 @@ CourseTypeSnapshot.forEach((doc) => {
         price: doc.data().price,
         courseTypeID: doc.id
     })
+})
+
+AchievementsGlobalSnapshot.forEach((doc) => {
+    allAchievements.value.global.push(doc.data().name)
+})
+
+AchievementsSnapshot.forEach((doc) => {
+    if (!doc.data().A1) return
+    const A1:[] = doc.data().A1
+    const A_A2:[] = doc.data().A_A2
+    const B:[] = doc.data().B
+
+    A1.forEach((name:any) => {
+        allAchievements.value.A1.push(name)
+    })
+
+    A_A2.forEach((name:any) => {
+        allAchievements.value.A_A2.push(name)
+    })
+
+    B.forEach((name:any) => {
+        allAchievements.value.B.push(name)
+    })
+
 })

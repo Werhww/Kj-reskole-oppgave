@@ -7,7 +7,7 @@ import CourseItem from '@/components/courseItem.vue';
 import Button from '@/components/button.vue';
 import Achievements from '@/components/achievement.vue';
 import AchievementEdit from '@/components/achievementEdit.vue';
-import { allCourses, allInstructors, allPlaces, allCourseTypes } from '@/firebase/store';
+import { allCourses, allInstructors, allPlaces, allCourseTypes, allAchievements } from '@/firebase/store';
 
 import moment from 'moment';
 import { ref, watch } from 'vue'
@@ -37,45 +37,20 @@ const user = ref({
     name: "Test",
     email: "mail",
     phone: "91205",
+    license: "A1",
 })
 
-const achievements = ref({
+interface achievements {
+    driveTime: number
+    achievement: {
+        name: string
+        done: boolean
+    }[]
+}
+
+const achievements = ref<achievements>({
     driveTime: 9,
-    achievement: [
-        {
-            name: "Trafikalt grunnkurs",
-            done: true
-        },
-        {
-            name: "Grunnleggende opplæringen",
-            done: true
-        },
-        {
-            name: "Sikkerhetskurs i trafikk",
-            done: true
-        },
-        {
-            name: "Trinnvurdering (trinn 2)",
-            done: false
-        },
-        {
-            name: "Trinnvurdering (trinn 3)",
-            done: false
-        },
-        {
-            name: "Sikkerhetskurs på vei",
-            done: false
-        },
-        
-        {
-            name: "Teorie prøven",
-            done: false
-        },
-        {
-            name: "Mørkekjøring",
-            done: false
-        },
-    ]
+    achievement: []
 })
 
 let oldUserData = JSON.parse(JSON.stringify(user.value))
@@ -112,6 +87,22 @@ function changeAchievement(done:boolean, name:string) {
     }
 }
 
+/* Achievements watcher */
+watch(user, (data) => {
+    const license = data.license
+    console.log(license)
+    console.log(allAchievements)
+
+    if(license == "A1") {
+        achievements.value.achievement = allAchievements.A1
+    }
+})
+
+
+/* testing stuff */
+setTimeout(() => {
+    user.value.name = "Test2"
+}, 2000)
 </script>
 
 <template>
