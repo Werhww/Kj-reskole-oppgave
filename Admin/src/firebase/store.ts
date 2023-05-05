@@ -1,7 +1,7 @@
 import { ref, watch } from "vue";
 import { db } from "./firebase";
 import moment from "moment";
-import { collection, getDocs, doc, onSnapshot, getDoc, where, query } from "firebase/firestore"; 
+import { collection, getDocs, doc, onSnapshot, getDoc, where, query, orderBy } from "firebase/firestore"; 
 
 const instructorRef = "PLEAK8uurOasSrtnXhlH"
 
@@ -14,7 +14,7 @@ const AchievementsGlobalSnapshot = await getDocs(collection(db, "achievementTemp
 
 /* firebase ref */
 const chatCollectionRef = collection(db, "chats");
-const chatCollectionQuery = query(chatCollectionRef, where("instructorId", "==", instructorRef))
+const chatCollectionQuery = query(chatCollectionRef, where("instructorId", "==", instructorRef), orderBy("datetime", "asc"))
 
 const usersCollectionRef = collection(db, "instructors", instructorRef, "students")
 
@@ -75,7 +75,6 @@ interface instructorUsers {
     license: string;
     nextCourse?: string;
 }
-
 
 /* all courses combined & sorter for previus courses and comming courses */
 const allCourses= ref<CourseProps[]>([])
@@ -334,17 +333,35 @@ onSnapshot(chatCollectionQuery,(querySnapshots:any) => {
         }
 
         onSnapshot(msgCollectionRef, (msgSnap:any) => {
+            let chatIndex:number = 0
+
+            for (let i = 0; i < chatMessages.value.length; i++) {
+                if (chatMessages.value[i].chatId === chatRef) {
+                    chatIndex = i
+                    break
+                } else {
+                    chatIndex = 500
+                }
+            }
+
+            let messages:any[] = []
+
             console.log('300 chat massegs snapshot')
             msgSnap.forEach((doc:any) => {
-                console.log('400 chat massegs foreach')
-                chatPush.messages.push({
+                console.log('400 chat massegs foreach')  
+                messages.push({
                     message: doc.data().text,
                     datetime: doc.data().datetime,
                     from : doc.data().from,
                 })
-
-                
             })
+            
+            if (chatIndex === 500) {
+                chatPush.messages.push(...messages)
+            } else {
+                chatMessages.value[chatIndex].messages = messages
+            }
+
         })        
         chatMessages.value.push(chatPush)
     })

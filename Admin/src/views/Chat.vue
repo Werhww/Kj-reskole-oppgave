@@ -41,6 +41,10 @@ function openChat(personId:string) {
     }
 }
 
+function chatDatesorter() {
+    
+}
+
 const newMessage = ref("")
 
 function resize(el:any) {
