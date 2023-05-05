@@ -1,15 +1,23 @@
 import { ref, watch } from "vue";
 import { db } from "./firebase";
 import moment from "moment";
-import { collection, getDocs, doc } from "firebase/firestore"; 
+import { collection, getDocs, doc, onSnapshot, getDoc, where, query } from "firebase/firestore"; 
+
+const instructorRef = "PLEAK8uurOasSrtnXhlH"
 
 /* Firebase snapshots */
 const InstructorsSnapshot = await getDocs(collection(db, "instructors"))
 const PlacesSnapshot = await getDocs(collection(db, "places"))
 const CourseTypeSnapshot = await getDocs(collection(db, "courseTemplates"))
-
-const AchievementsGlobalSnapshot = await getDocs(collection(db, "achievementTemplates/Global/achievements"))
 const AchievementsSnapshot = await getDocs(collection(db, "achievementTemplates"))
+const AchievementsGlobalSnapshot = await getDocs(collection(db, "achievementTemplates/Global/achievements"))
+
+/* firebase ref */
+const chatCollectionRef = collection(db, "chats");
+const chatCollectionQuery = query(chatCollectionRef, where("instructorId", "==", instructorRef))
+
+const usersCollectionRef = collection(db, "instructors", instructorRef, "students")
+
 
 /* Interfaces */
 interface CourseProps {
@@ -53,12 +61,19 @@ interface courseTypesProps {
 }
 
 interface chatMessages {
-    instructorID: string;
+    chatId: string;
     messages: {
         from: string;
         message: string;
         datetime: string;
     }[]
+}
+
+interface instructorUsers {
+    userId: string;
+    name: string;
+    license: string;
+    nextCourse?: string;
 }
 
 
@@ -86,90 +101,11 @@ const allAchievements = ref<[] | any>({
     B: []
 })
 
+const instructorsUsers = ref<instructorUsers[]>([])
+
 
 /* Chats and chats messages */
-const chatMessages = ref<chatMessages[]>([
-    {
-        instructorID: "1",
-        messages: [
-            {
-                from: "instructor",
-                message: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-                datetime: "2023-04-19T18:01:16+02:00"
-            },
-            {
-                from: "user",
-                message: "NO3345",
-                datetime: "2023-04-19T17:01:16+02:00"
-            },
-            {
-                from: "instructor",
-                message: "Hello",
-                datetime: "2023-04-19T15:01:16+02:00"
-            },
-            {
-                from: "user",
-                message: "Hello1234",
-                datetime: "2023-04-18T11:01:16+02:00"
-            },
-            {
-                from: "instructor",
-                message: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-                datetime: "2023-04-11T09:01:16+02:00"
-            },
-        ]
-    },
-    {
-        instructorID: "12",
-        messages: [
-            {
-                from: "instructor",
-                message: "Who is this",
-                datetime: "2023-04-19T12:01:16+02:00"
-            },
-            {
-                from: "instructor",
-                message: "Hello",
-                datetime: "2023-04-19T12:01:16+02:00"
-            },
-            {
-                from: "user",
-                message: "Hello",
-                datetime: "2023-04-19T12:01:16+02:00"
-            },
-            {
-                from: "user",
-                message: "NO",
-                datetime: "2023-04-19T12:01:16+02:00"
-            }
-        ]
-    },
-    {
-        instructorID: "123",
-        messages: [
-            {
-                from: "instructor",
-                message: "Who is this123",
-                datetime: "2023-04-19T12:01:16+02:00"
-            },
-            {
-                from: "instructor",
-                message: "Hellowqgqwg",
-                datetime: "2023-04-19T12:01:16+02:00"
-            },
-            {
-                from: "user",
-                message: "Helloqfeqt",
-                datetime: "2023-04-19T12:01:16+02:00"
-            },
-            {
-                from: "user",
-                message: "NOrrr",
-                datetime: "2023-04-19T12:01:16+02:00"
-            }
-        ]
-    },
-])
+const chatMessages = ref<chatMessages[]>([])
 
 /* Sorter allcourses into previous and comming*/
 watch(allCourses, (item) => {
@@ -196,7 +132,11 @@ export {
     allPlaces,
     allCourseTypes,
     allAchievements,
-    chatMessages
+    chatMessages,
+    instructorsUsers,
+    
+    /* For testing, simulates login user */
+    instructorRef,
 }
 
 /* Just for dev */
@@ -315,11 +255,15 @@ setTimeout(() => {
 
 /* Foreach loop through firebase snapshots*/
 InstructorsSnapshot.forEach((doc) => {
-    allInstructors.value?.push({
+    if(doc.id === instructorRef){
+        return
+    } else {
+        allInstructors.value?.push({
 
-        name: doc.data().name,
-        instructorId: doc.id
-    })
+            name: doc.data().name,
+            instructorId: doc.id
+        })
+    }
 })
 
 PlacesSnapshot.forEach((doc) => {
@@ -361,3 +305,48 @@ AchievementsSnapshot.forEach((doc) => {
     })
 
 })
+
+onSnapshot(usersCollectionRef, (students:any) => {
+    students.forEach(async (student:any) => {
+        const userRef = doc(db, "users", student.data().userId)
+        const userSnap = await getDoc(userRef)
+
+        instructorsUsers.value.push({
+            userId: userSnap.id,
+            name: userSnap.data()?.name,
+            license: userSnap.data()?.license,
+        })
+    })
+})
+
+onSnapshot(chatCollectionQuery,(querySnapshots:any) => {
+    console.log('100 chatCollectionQuery started')
+
+    querySnapshots.forEach((doc:any) => {
+        console.log('200 chatCollectionQuery top forEach snapshot started')
+
+        const chatRef = `${doc.data().userId}_${doc.data().instructorId}`
+        const msgCollectionRef = collection(db, `chats/${chatRef}/msg`)
+
+        let chatPush:chatMessages = {
+            chatId: chatRef,
+            messages: []
+        }
+
+        onSnapshot(msgCollectionRef, (msgSnap:any) => {
+            console.log('300 chat massegs snapshot')
+            msgSnap.forEach((doc:any) => {
+                console.log('400 chat massegs foreach')
+                chatPush.messages.push({
+                    message: doc.data().text,
+                    datetime: doc.data().datetime,
+                    from : doc.data().from,
+                })
+
+                
+            })
+        })        
+        chatMessages.value.push(chatPush)
+    })
+})
+

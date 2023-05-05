@@ -2,13 +2,13 @@
 import { ref } from 'vue'
 const prop = defineProps<{
     name: string;
-    instructorID: string;
-    openChat: (instructorID: string, $event:any) => void;
+    instructorId: string;
+    openChat: (instructorId: string) => void;
 }>()
 </script>
 
 <template>
-<span @click="openChat(prop.instructorID, $event)">
+<span :id="instructorId" @click="openChat(prop.instructorId)">
     {{ name }}
 </span>
 </template>

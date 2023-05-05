@@ -6,32 +6,20 @@ import CalenderDays from '@/components/calenderDays.vue';
 import CalenderItem from '@/components/calenderItem.vue';
 import CalenderOpenDay from '@/components/calenderOpenDay.vue';
 
+import { instructorsUsers } from "../firebase/store";
+import { allCourses } from "../firebase/store";
 
 import { ref, watch } from 'vue';
 import moment from 'moment';
-import { allCourses } from "../firebase/store";
+
+const users = ref(instructorsUsers)
 
 const currentDate = moment().format()
 
 const week = ref(moment().week())
 const calenderDays = ref(allCourses)
 
-interface courseProps {
-    isShowed: boolean
-
-    courseTitle: string
-    amount: number
-    student: string
-    comment: string
-    shortAdress: string
-    fullAdress: string
-    studentId: string
-    courseID: string
-    startTime: string
-    endTime: string
-}
-
-const showedCourse = ref<courseProps>({
+const showedCourse = ref({
     isShowed: false,
     courseTitle: "",
     amount: 5,
@@ -116,7 +104,7 @@ function removeHighlightCourse() {
                 <p>Hidden text</p><!-- This is hidden to even out teh bar -->
             </div>
             <div>
-                <Studentlist name="he213t123tllo" :next-course="currentDate" student-i-d="test1234"/>
+                <Studentlist v-for="user in users" :name="user.name" :next-course="currentDate" :student-i-d="user.userId"/>
             </div>
         </div>
     </section>

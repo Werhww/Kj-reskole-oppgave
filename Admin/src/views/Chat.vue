@@ -4,14 +4,10 @@ import { useRoute } from 'vue-router'; const route = useRoute()
 import Title from '@/components/title.vue';
 import ChatPersons from '@/components/chatPersons.vue';
 import ChatMessages from '@/components/chatMessage.vue';
-import { allInstructors, chatMessages } from '@/firebase/store';
-import { routeLocationKey, routerKey } from 'vue-router';
+import { allInstructors, chatMessages, instructorsUsers, instructorRef } from '@/firebase/store';
 
-if(route.params.studentID) {
-    console.log("Student")
-}
-
-const chatPersons = ref(allInstructors)
+const instructors = ref(allInstructors)
+const users = ref(instructorsUsers)
 
 const allChatMessages = ref(chatMessages)
 
@@ -20,16 +16,25 @@ const currentChat = ref<chatMessages>()
 const personWrapper = ref<HTMLElement>()
 
 /* Opens chat messages and highlights the open chat person in the side menu */
-function openChat(instructorID:string, $event:any) {
+function openChat(personId:string) {
     const personWrapperChildren = personWrapper.value?.children
+    const chatAmount = instructors.value.length + users.value.length
 
-    for (let i = 0; i < chatPersons.value.length; i++) {
+    const chatIdTester = `${personId}_${instructorRef}`
+
+    /* loop thougt all chatspersons and higtlight click one */
+    for (let i = 0; i < chatAmount; i++) {
         const person = personWrapperChildren?.item(i)
         person?.classList.contains("openChat") ? person.classList.remove("openChat") : null
-        $event.target.classList.add("openChat")
+
+        if (person?.id === personId) {
+            person?.classList.add("openChat")
+        }
     }
+
+    /* finds chatspersons chat */
     for (let i = 0; i < allChatMessages.value.length; i++) {
-        if (allChatMessages.value[i].instructorID === instructorID) {
+        if (allChatMessages.value[i].chatId === chatIdTester) {
             currentChat.value = allChatMessages.value[i]
             break
         }
@@ -42,13 +47,21 @@ function resize(el:any) {
     el.target.style.height = "18px"
     el.target.style.height = el.target.scrollHeight + "px"
 }
+
+if(route.params.studentID) {
+    const studentID = route.params.studentID
+    setTimeout(() => {
+        openChat(studentID.toString())
+    }, 200);
+}
 </script>
 <template>
 <main>
     <Title text="Chat" color="var(--green)" />
     <section class="chat">
         <div class="chat_persons" ref="personWrapper" v-dragscroll> <!-- Chat persons -->
-            <ChatPersons v-for="item in chatPersons" :name="item.name" :instructor-i-d="item.instructorId" :open-chat="openChat" />
+            <ChatPersons v-for="item in instructors" :name="item.name" :instructor-id="item.instructorId" :open-chat="openChat" />
+            <ChatPersons v-for="item in users" :name="item.name" :instructor-id="item.userId" :open-chat="openChat" />
         </div>
         <div class="horisontal_Line"><!-- Horisontal line --></div>
         <div class="chat_messages"> <!-- Chat messages -->
