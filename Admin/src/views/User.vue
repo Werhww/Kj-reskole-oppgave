@@ -1,16 +1,38 @@
 <script setup lang="ts">
-/* User id to get all info */
-/* $route.params.studentID */
 
+/* Components */
 import Title from '@/components/title.vue';
 import CourseItem from '@/components/courseItem.vue';
 import Button from '@/components/button.vue';
 import Achievements from '@/components/achievement.vue';
 import AchievementEdit from '@/components/achievementEdit.vue';
-import { allCourses, allInstructors, allPlaces, allCourseTypes, allAchievements } from '@/firebase/store';
 
 import moment from 'moment';
-import { ref, watch } from 'vue'
+import { useRoute } from 'vue-router'; const route = useRoute()
+import { ref, watch, computed } from 'vue'
+import { collection, getDocs, doc, onSnapshot, getDoc, where, query, orderBy } from "firebase/firestore"; 
+
+import { allInstructors, allPlaces, allCourseTypes, allAchievements } from '@/firebase/store';
+import { db } from '@/firebase/firebase';
+
+/* $route.params.studentID */
+const studentID = route.params.studentID
+
+const coursesRef = collection(db, "courses")
+
+const user:any = () => {
+    console.log("gelo")
+    const userDoc = getDoc(doc(db, "users", studentID.toString()))
+    console.log(userDoc)
+    console.log("gelo")
+    return userDoc
+}
+
+const usersCourses:any = computed(() => {
+    /* const q = query(coursesRef, where("studentId", "==", studentID), orderBy("date", "desc"))
+    const querySnapshot = getDocs(q)
+    console.log(querySnapshot) */
+})
 
 /* Open and close user edit page */
 const isUserEdit = ref(true)
@@ -33,13 +55,6 @@ function saveEditsToUser() {
     /* Firestore save funcion */
 }
 
-const user = ref({
-    name: "Test",
-    email: "mail",
-    phone: "91205",
-    license: "A1",
-})
-
 interface achievements {
     driveTime: number
     achievement: {
@@ -55,8 +70,6 @@ const achievements = ref<achievements>({
 
 let oldUserData = JSON.parse(JSON.stringify(user.value))
 let oldAchievementsData = JSON.parse(JSON.stringify(achievements.value))
-
-const usersCourses = ref(allCourses)
 
 function avmeldKurs(CourseID:string) {
     console.log("Avmeld kurs")
@@ -100,9 +113,7 @@ watch(user, (data) => {
 
 
 /* testing stuff */
-setTimeout(() => {
-    user.value.name = "Test2"
-}, 2000)
+
 </script>
 
 <template>

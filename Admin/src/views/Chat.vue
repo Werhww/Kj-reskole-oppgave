@@ -1,26 +1,33 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import { addDoc, doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { useRoute } from 'vue-router'; const route = useRoute()
+import moment from 'moment';
+
+import { chatMessages, chats, instructorRef, msgCollectionRef } from '@/firebase/store';
+import { db } from '@/firebase/firebase';
+
+/* Componnter */
 import Title from '@/components/title.vue';
 import ChatPersons from '@/components/chatPersons.vue';
 import ChatMessages from '@/components/chatMessage.vue';
-import { allInstructors, chatMessages, instructorsUsers, instructorRef } from '@/firebase/store';
-
-const instructors = ref(allInstructors)
-const users = ref(instructorsUsers)
 
 const allChatMessages = ref(chatMessages)
 
-const currentChat = ref<chatMessages>()
+const currentChat = ref<any>()
+const currentChatId = ref("")
 
 const personWrapper = ref<HTMLElement>()
 
 /* Opens chat messages and highlights the open chat person in the side menu */
-function openChat(personId:string) {
+async function openChat(personId:string) {
     const personWrapperChildren = personWrapper.value?.children
-    const chatAmount = instructors.value.length + users.value.length
+    const chatAmount = chats.value.length
 
-    const chatIdTester = `${personId}_${instructorRef}`
+    const chatId = `${personId}_${instructorRef}`
+    currentChatId.value = chatId
+
+    assingChat(chatId)
 
     /* loop thougt all chatspersons and higtlight click one */
     for (let i = 0; i < chatAmount; i++) {
@@ -31,19 +38,35 @@ function openChat(personId:string) {
             person?.classList.add("openChat")
         }
     }
-
-    /* finds chatspersons chat */
-    for (let i = 0; i < allChatMessages.value.length; i++) {
-        if (allChatMessages.value[i].chatId === chatIdTester) {
-            currentChat.value = allChatMessages.value[i]
-            break
-        }
-    }
 }
 
-function chatDatesorter() {
+function assingChat(chatId:string) {
+    currentChat.value = allChatMessages.value[chatId]
+}
+
+async function createChat(studentId:string) {
+    const chatId = `${studentId}_${instructorRef}`
+
+    const userDoc = await getDoc(doc(db, "users", studentId))
+    const userName = userDoc.data()?.name
     
+    const instructorDoc = await getDoc(doc(db, "instructors", instructorRef))
+    const instructorName = instructorDoc.data()?.name
+    
+    const chat = {
+        user: userName,
+        userId: studentId,
+        instructorChat: false,
+        instructorId: instructorRef,
+        instructor: instructorName,
+    }
+
+    setDoc(doc(db, "chats", chatId), chat)
 }
+
+watch(allChatMessages, () => {
+    assingChat(currentChatId.value)
+})
 
 const newMessage = ref("")
 
@@ -52,11 +75,45 @@ function resize(el:any) {
     el.target.style.height = el.target.scrollHeight + "px"
 }
 
+async function sendMessage() {
+    const message = newMessage.value
+    const chatId = currentChatId.value
+
+    const messageObject = {
+        chatId: chatId,
+        from: "instructor",
+        text: message,
+        timestamp: serverTimestamp(),
+        datetime: moment().format()
+    }
+
+    newMessage.value = ""
+    await addDoc(msgCollectionRef, messageObject)
+    
+}
+
 if(route.params.studentID) {
     const studentID = route.params.studentID
-    setTimeout(() => {
-        openChat(studentID.toString())
-    }, 200);
+    const chatsLenght = chats.value.length
+    let chatFound = false
+
+    for (let i = 0; i < chatsLenght; i++) {
+        const chat = chats.value[i]
+        if (chat.instructorId === studentID.toString()) {
+            chatFound = true
+            setTimeout(() => {
+                openChat(studentID.toString())
+            }, 50);
+            break
+        } else {
+            chatFound = false
+            continue
+        }
+    }
+
+    if (!chatFound) {
+        createChat(studentID.toString())
+    }
 }
 </script>
 <template>
@@ -64,18 +121,17 @@ if(route.params.studentID) {
     <Title text="Chat" color="var(--green)" />
     <section class="chat">
         <div class="chat_persons" ref="personWrapper" v-dragscroll> <!-- Chat persons -->
-            <ChatPersons v-for="item in instructors" :name="item.name" :instructor-id="item.instructorId" :open-chat="openChat" />
-            <ChatPersons v-for="item in users" :name="item.name" :instructor-id="item.userId" :open-chat="openChat" />
+            <ChatPersons v-for="item in chats" :name="item.chatName" :instructor-id="item.instructorId" :open-chat="openChat" />
         </div>
         <div class="horisontal_Line"><!-- Horisontal line --></div>
         <div class="chat_messages"> <!-- Chat messages -->
             <div class="messages" v-dragscroll:nochilddrag>
-                <ChatMessages v-for="item in currentChat?.messages" :from="item.from" :message="item.message" :datetime="item.datetime" />
+                <ChatMessages v-for="item in currentChat?.messages" :from="item.from" :message="item.text" :datetime="item.datetime" />
             </div>
             <div class="messageInput">
                 <textarea ref="messageInput" @input="resize($event)" maxlength="150" rows="1" v-model="newMessage"></textarea>
                 <div>
-                    <img src="../assets/MessageSendArrow.svg">
+                    <img @click="sendMessage" src="../assets/MessageSendArrow.svg">
                     <p>{{newMessage.length}}/150</p>
                 </div>
             </div>

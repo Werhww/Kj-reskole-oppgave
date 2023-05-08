@@ -7,7 +7,7 @@ import CalenderItem from '@/components/calenderItem.vue';
 import CalenderOpenDay from '@/components/calenderOpenDay.vue';
 
 import { instructorsUsers } from "../firebase/store";
-import { allCourses } from "../firebase/store";
+import {  } from "../firebase/store";
 
 import { ref, watch } from 'vue';
 import moment from 'moment';
@@ -17,7 +17,7 @@ const users = ref(instructorsUsers)
 const currentDate = moment().format()
 
 const week = ref(moment().week())
-const calenderDays = ref(allCourses)
+const calenderDays = ref<any>([])
 
 const showedCourse = ref({
     isShowed: false,

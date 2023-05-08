@@ -13,10 +13,7 @@ const AchievementsSnapshot = await getDocs(collection(db, "achievementTemplates"
 const AchievementsGlobalSnapshot = await getDocs(collection(db, "achievementTemplates/Global/achievements"))
 
 /* firebase ref */
-const chatCollectionRef = collection(db, "chats");
-const chatCollectionQuery = query(chatCollectionRef, where("instructorId", "==", instructorRef), orderBy("datetime", "asc"))
 
-const usersCollectionRef = collection(db, "instructors", instructorRef, "students")
 
 
 /* Interfaces */
@@ -60,25 +57,6 @@ interface courseTypesProps {
     DurationMinutes: number
 }
 
-interface chatMessages {
-    chatId: string;
-    messages: {
-        from: string;
-        message: string;
-        datetime: string;
-    }[]
-}
-
-interface instructorUsers {
-    userId: string;
-    name: string;
-    license: string;
-    nextCourse?: string;
-}
-
-/* all courses combined & sorter for previus courses and comming courses */
-const allCourses= ref<CourseProps[]>([])
-
 const previousCourses = ref<[] | any>([])/* Courses befor current date */
 const commingCourses = ref<[] | any>([])/* Courses after current date */
 
@@ -100,157 +78,6 @@ const allAchievements = ref<[] | any>({
     B: []
 })
 
-const instructorsUsers = ref<instructorUsers[]>([])
-
-
-/* Chats and chats messages */
-const chatMessages = ref<chatMessages[]>([])
-
-/* Sorter allcourses into previous and comming*/
-watch(allCourses, (item) => {
-    const now = moment().format()
-
-    item.forEach((course:any) => {
-        let test = moment(course.date).isAfter(now)
-        if (test) {
-            commingCourses.value.push(course)
-        } else {
-            course.paid = false
-            previousCourses.value.push(course)
-        }
-    })
-})
-
-
-/* Exporsts */
-export {
-    allCourses,
-    previousCourses,
-    commingCourses,
-    allInstructors,
-    allPlaces,
-    allCourseTypes,
-    allAchievements,
-    chatMessages,
-    instructorsUsers,
-    
-    /* For testing, simulates login user */
-    instructorRef,
-}
-
-/* Just for dev */
-setTimeout(() => {
-    allCourses.value = [{
-        course: 'Kjøretime (A1)',
-        startTime: "2021-09-13T03:00:00",
-        endTime: "2021-09-13T04:30:00",
-
-        shortAddress: 'Areneset',
-        fullAddress: 'Areneset 8, 5350 Bergen',
-
-        amount: 1,
-        price: 1000,
-        paid: undefined,
-
-        instructor: "Jonson Jones",
-        comment: "Bra kjørt, det blir bykjøring neste gang",
-
-        student:"Jonson Jones",
-
-        studentID: "1234",
-        courseID: "1",
-        instructorID: "MtOxJEmrKzgMTLxf3hgw",
-        courseTypeID: "4",
-    },
-    {
-        course: 'Traffikalt grunnkurs',
-        startTime: "2021-09-14T03:00:00",
-        endTime: "2021-09-14T04:30:00",
-
-        shortAddress: 'Areneset',
-        fullAddress: 'Areneset 8, 5350 Bergen',
-
-        amount: 1,
-        price: 1000,
-        paid: false,
-
-        instructor: "Jonson Jones",
-        comment: "Bra kjørt, det blir bykjøring neste gang",
-
-        student:"Jonson Jones",
-
-        studentID: "12345",
-        courseID: "12",
-        instructorID: "12",
-        courseTypeID: "4",
-    },
-    {
-        course: 'Kjøretime (A1)',
-        startTime: "2021-09-15T03:00:00",
-        endTime: "2021-09-15T04:30:00",
-
-        shortAddress: 'Areneset',
-        fullAddress: 'Areneset 8, 5350 Bergen',
-
-        amount: 1,
-        price: 1000,
-        paid: undefined,
-
-        instructor: "Jonson Jones",
-        comment: "",
-
-        student:"Jonson Jones",
-
-        studentID: "12346",
-        courseID: "123",
-        instructorID: "123",
-        courseTypeID: "4",
-    },
-    {
-        course: 'Traffikalt grunnkurs',
-        startTime: "2021-09-16T03:00:00",
-        endTime: "2021-09-16T04:30:00",
-
-        shortAddress: 'Areneset',
-        fullAddress: 'Areneset 8, 5350 Bergen',
-
-        amount: 1,
-        price: 1000,
-        paid: undefined,
-
-        instructor: "Jonson Jones",
-        comment: "",
-
-        student:"Jonson Jones",
-
-        studentID: "1234",
-        courseID: "12345",
-        instructorID: "1234",
-        courseTypeID: "4",
-    },
-    {
-        course: 'Traffikalt grunnkurs',
-        startTime: "2021-09-13T04:45:00",
-        endTime: "2021-09-13T06:30:00",
-
-        shortAddress: 'Areneset',
-        fullAddress: 'Areneset 8, 5350 Bergen',
-
-        amount: 1,
-        price: 1000,
-        paid: true,
-
-        instructor: "Jonson Jones",
-        comment: "",
-        
-        student:"Jonson Jones",
-        
-        studentID: "1234",
-        courseID: "12345",
-        instructorID: "12345",
-        courseTypeID: "4",
-    }]
-}, 1000)
 
 /* Foreach loop through firebase snapshots*/
 InstructorsSnapshot.forEach((doc) => {
@@ -305,65 +132,151 @@ AchievementsSnapshot.forEach((doc) => {
 
 })
 
-onSnapshot(usersCollectionRef, (students:any) => {
-    students.forEach(async (student:any) => {
-        const userRef = doc(db, "users", student.data().userId)
-        const userSnap = await getDoc(userRef)
 
+/* Instrucotrs users */
+interface instructorUsers {
+    userId: string;
+    name: string;
+    license: string;
+    nextCourse?: string;
+}
+
+const instructorsUsers = ref<instructorUsers[]>([])
+
+const usersCollectionRef = collection(db, "users")
+const usersQuery = query(usersCollectionRef, where("mainInstructor", "==", instructorRef))
+
+onSnapshot(usersQuery, (students:any) => {
+    instructorsUsers.value = []
+
+    students.forEach(async (student:any) => {
         instructorsUsers.value.push({
-            userId: userSnap.id,
-            name: userSnap.data()?.name,
-            license: userSnap.data()?.license,
+            userId: student.id,
+            name: student.data().name,
+            license: student.data().license,
         })
     })
 })
 
-onSnapshot(chatCollectionQuery,(querySnapshots:any) => {
-    console.log('100 chatCollectionQuery started')
+/* All Chat Reladted */
+const chatCollectionRef = collection(db, "chats")
+const msgCollectionRef = collection(db, 'chatMessages')
 
-    querySnapshots.forEach((doc:any) => {
-        console.log('200 chatCollectionQuery top forEach snapshot started')
+const chatCollectionQuery = query(chatCollectionRef, where("instructorId", "==", instructorRef))
+interface Chat {
+    id: string;
+    chatName: string;
+    instructorId: string;
+    studentId: string;
+}
 
-        const chatRef = `${doc.data().userId}_${doc.data().instructorId}`
-        const msgCollectionRef = collection(db, `chats/${chatRef}/msg`)
+interface Message {
+    text: string;
+    datetime: string;
+    from: string;
+}
 
-        let chatPush:chatMessages = {
-            chatId: chatRef,
-            messages: []
-        }
+interface ChatMessages {
+    chatId: string;
+    messages: Message[]
+}
 
-        onSnapshot(msgCollectionRef, (msgSnap:any) => {
-            let chatIndex:number = 0
+const chats = ref<Chat[]>([])
 
-            for (let i = 0; i < chatMessages.value.length; i++) {
-                if (chatMessages.value[i].chatId === chatRef) {
-                    chatIndex = i
-                    break
-                } else {
-                    chatIndex = 500
+const chatMessages = ref<any>()
+
+onSnapshot(chatCollectionQuery,(querySnapshot:any) => {
+    chats.value = querySnapshot.docs.map((doc:any) =>{
+        if(doc.instructorChat === true){
+            if(doc.data().instructorId === instructorRef){
+                return {
+                    id: doc.id,
+                    chatName: doc.data().user,
+                    instructorId: doc.data().userId,
+                }
+            } else {
+                return {
+                    id: doc.id,
+                    chatName: doc.data().instructor,
+                    instructorId: doc.data().instructorId,
                 }
             }
+        } else {
+            return {
+                id: doc.id,
+                chatName: doc.data().user,
+                instructorId: doc.data().userId,
+            }
+        }     
+    })
+    const messagesQuery = query(msgCollectionRef, where('chatId', 'in', chats.value.map((chat:any) => chat.id)), orderBy('timestamp', 'desc'))
 
-            let messages:any[] = []
+    onSnapshot(messagesQuery, (messagesSnapShot:any) => {
+        const chatMap: Record<string, ChatMessages> = {};
 
-            console.log('300 chat massegs snapshot')
-            msgSnap.forEach((doc:any) => {
-                console.log('400 chat massegs foreach')  
-                messages.push({
-                    message: doc.data().text,
-                    datetime: doc.data().datetime,
-                    from : doc.data().from,
-                })
-            })
-            
-            if (chatIndex === 500) {
-                chatPush.messages.push(...messages)
-            } else {
-                chatMessages.value[chatIndex].messages = messages
+        messagesSnapShot.docs.forEach((doc:any) => {
+            const chatId = doc.data().chatId
+
+            const message = {
+                text: doc.data().text,
+                datetime: doc.data().datetime,
+                from: doc.data().from,
             }
 
-        })        
-        chatMessages.value.push(chatPush)
+            if (!(chatId in chatMap)) {
+                chatMap[chatId] = { chatId, messages: [message] };
+            } else {
+                chatMap[chatId].messages.push(message);
+            }
+        })
+
+        chatMessages.value = chatMap;
     })
 })
 
+
+
+/* Exporsts */
+export {
+    previousCourses,
+    commingCourses,
+    allInstructors,
+    allPlaces,
+    allCourseTypes,
+    allAchievements,
+
+    chats,
+    chatMessages,
+    msgCollectionRef,
+
+    instructorsUsers,
+    
+    /* For testing, simulates login user */
+    instructorRef,
+}
+
+/* Just for dev */
+/* setTimeout(() => 
+    allCourses.value = [{
+        course: 'Kjøretime (A1)',
+        startTime: "2021-09-13T03:00:00",
+        endTime: "2021-09-13T04:30:00",
+
+        shortAddress: 'Areneset',
+        fullAddress: 'Areneset 8, 5350 Bergen',
+
+        amount: 1,
+        price: 1000,
+        paid: undefined,
+
+        instructor: "Jonson Jones",
+        comment: "Bra kjørt, det blir bykjøring neste gang",
+
+        student:"Jonson Jones",
+
+        studentID: "1234",
+        courseID: "1",
+        instructorID: "MtOxJEmrKzgMTLxf3hgw",
+        courseTypeID: "4",
+    }
+]}, 1000) */
