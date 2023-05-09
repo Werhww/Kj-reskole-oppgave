@@ -20,6 +20,8 @@ const studentID = (route.params.studentID).toString()
 
 const coursesRef = collection(db, "courses")
 
+const userquery = doc(db, "users", studentID)
+
 /* Get user data */
 interface user {
     name: string
@@ -28,13 +30,17 @@ interface user {
 }
 
 const user = ref<user | any>()
+let oldUserData:any
+let oldAchievementsData:any
 
-onMounted(
-    onSnapshot(doc(db, "users", studentID), (doc) => {
+onMounted(() => {
+    onSnapshot(userquery, (doc) => {
         if(doc.exists()) {
             user.value = doc.data()
+            oldUserData = JSON.parse(JSON.stringify(user.value))
         }
     })
+}
 )
 
 
@@ -72,8 +78,7 @@ const achievements = ref<achievements>({
     achievement: []
 })
 
-let oldUserData = JSON.parse(JSON.stringify(user.value))
-let oldAchievementsData = JSON.parse(JSON.stringify(achievements.value))
+
 
 function avmeldKurs(CourseID:string) {
     console.log("Avmeld kurs")
@@ -124,7 +129,7 @@ watch(user, (data) => {
 
 
 <main>
-    <Title :text="user.data().name" color="var(--red)"/>
+    <Title text="gfege" color="var(--red)"/>
     <div class="achievements" v-if="isUserEdit">
         <p>Kjørt {{ achievements.driveTime }} timer</p>
         <div>
@@ -174,7 +179,7 @@ watch(user, (data) => {
             <input type="text" v-model="user.phone">
             
         </div>
-        <p class="driventime" @click="test">Kjørt <input type="text" v-model="achievements.driveTime"> timer</p>
+        <p class="driventime">Kjørt <input type="text" v-model="achievements.driveTime"> timer</p>
         <div class="userAchievement">
             <AchievementEdit
                 v-for="achievement in achievements.achievement"
