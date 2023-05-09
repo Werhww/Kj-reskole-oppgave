@@ -9,30 +9,34 @@ import AchievementEdit from '@/components/achievementEdit.vue';
 
 import moment from 'moment';
 import { useRoute } from 'vue-router'; const route = useRoute()
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, onMounted } from 'vue'
 import { collection, getDocs, doc, onSnapshot, getDoc, where, query, orderBy } from "firebase/firestore"; 
 
 import { allInstructors, allPlaces, allCourseTypes, allAchievements } from '@/firebase/store';
 import { db } from '@/firebase/firebase';
 
 /* $route.params.studentID */
-const studentID = route.params.studentID
+const studentID = (route.params.studentID).toString()
 
 const coursesRef = collection(db, "courses")
 
-const user:any = () => {
-    console.log("gelo")
-    const userDoc = getDoc(doc(db, "users", studentID.toString()))
-    console.log(userDoc)
-    console.log("gelo")
-    return userDoc
+/* Get user data */
+interface user {
+    name: string
+    driveTime: number
+    license: string
 }
 
-const usersCourses:any = computed(() => {
-    /* const q = query(coursesRef, where("studentId", "==", studentID), orderBy("date", "desc"))
-    const querySnapshot = getDocs(q)
-    console.log(querySnapshot) */
-})
+const user = ref<user | any>()
+
+onMounted(
+    onSnapshot(doc(db, "users", studentID), (doc) => {
+        if(doc.exists()) {
+            user.value = doc.data()
+        }
+    })
+)
+
 
 /* Open and close user edit page */
 const isUserEdit = ref(true)
@@ -117,8 +121,10 @@ watch(user, (data) => {
 </script>
 
 <template>
+
+
 <main>
-    <Title :text="user.name" color="var(--red)"/>
+    <Title :text="user.data().name" color="var(--red)"/>
     <div class="achievements" v-if="isUserEdit">
         <p>Kjørt {{ achievements.driveTime }} timer</p>
         <div>
@@ -131,7 +137,7 @@ watch(user, (data) => {
         </div>
     </div>
     <div class="courses" v-if="isUserEdit">
-        <CourseItem 
+        <!-- <CourseItem 
             v-for="course in usersCourses"
 
             :course="course.course"
@@ -155,7 +161,7 @@ watch(user, (data) => {
             :allInstuctors="allInstructors"
             :allPlaces="allPlaces"
             :allCourseTypes="allCourseTypes"
-        />
+        /> -->
     </div>
     <div class="buttons" v-if="isUserEdit">
         <Button text="Rediger Bruker" color="var(--red)" @click="editUser"/>
@@ -168,7 +174,7 @@ watch(user, (data) => {
             <input type="text" v-model="user.phone">
             
         </div>
-        <p class="driventime">Kjørt <input type="text" v-model="achievements.driveTime"> timer</p>
+        <p class="driventime" @click="test">Kjørt <input type="text" v-model="achievements.driveTime"> timer</p>
         <div class="userAchievement">
             <AchievementEdit
                 v-for="achievement in achievements.achievement"
