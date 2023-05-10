@@ -1,10 +1,18 @@
 <script setup lang="ts">
-
+import { computed } from 'vue'
 const prop = defineProps<{ 
     name: string
-    done: boolean
+    achievementId: string
+    done?: boolean
 }>()
 
+const done = computed(() => {
+    if(prop.done) {
+        return true
+    } else {
+        return false
+    }
+})
 </script>
 
 <template>

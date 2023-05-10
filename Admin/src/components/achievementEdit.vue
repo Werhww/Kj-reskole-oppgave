@@ -1,20 +1,29 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 const prop = defineProps<{ 
     name: string
-    done: boolean
+    done?: boolean
+    achievementId: string
 }>()
+
+const done = computed(() => {
+    if(prop.done) {
+        return true
+    } else {
+        return false
+    }
+})
 
 const emit = defineEmits<{
-  (e: 'change', done: boolean, name:string): void
+  (e: 'change', done: boolean, name:string, achievementId:string): void
 }>()
 
-const doneEdit = ref(prop.done)
+const doneEdit = ref(done.value)
 
 function changeDone() {
     doneEdit.value = !doneEdit.value
 
-    return emit('change', doneEdit.value, prop.name)
+    return emit('change', doneEdit.value, prop.name, prop.achievementId)
 }
 </script>
 

@@ -18,30 +18,78 @@ import { db } from '@/firebase/firebase';
 /* $route.params.studentID */
 const studentID = (route.params.studentID).toString()
 
-const coursesRef = collection(db, "courses")
-
-const userquery = doc(db, "users", studentID)
 
 /* Get user data */
+const userquery = doc(db, "users", studentID)
+
 interface user {
     name: string
-    driveTime: number
+    drivetime: number
     license: string
+    mainInstructor: string
+    email: string
+    phone: string
 }
 
-const user = ref<user | any>()
-let oldUserData:any
-let oldAchievementsData:any
+const user = ref<user>({
+    name: "",
+    drivetime: 0,
+    license: "",
+    mainInstructor: "",
+    email: "",
+    phone: ""
+})
 
 onMounted(() => {
     onSnapshot(userquery, (doc) => {
         if(doc.exists()) {
-            user.value = doc.data()
-            oldUserData = JSON.parse(JSON.stringify(user.value))
+            user.value = doc.data() as user
         }
     })
+})
+
+
+/* Get acivement data */
+const achievementQuery = query(collection(db, "achievements"), where("userId", "==", studentID))
+
+interface achievements {
+    name: string
+    achievementId: string
+    done?: boolean
 }
-)
+
+const achievements = ref<achievements[]>([])
+
+onMounted(() => {
+    onSnapshot(achievementQuery, (achievement)=> {
+        achievement.forEach((achievement) => {
+            for(let i = 1; i < achievements.value.length; i++) {
+                if(achievements.value[i].achievementId === achievement.data().achievementId) {
+                    achievements.value[i].done = true
+                }
+            }
+        })
+    })
+})
+
+/* Achievements watcher */
+watch(user, (data) => {
+    const license = data.license
+
+    achievements.value = JSON.parse(JSON.stringify(allAchievements.value["Global"]))
+    if(license == "A1") {
+        achievements.value = achievements.value.concat(JSON.parse(JSON.stringify(allAchievements.value["A1"])))
+    } else if(license == "A_A2") {
+        achievements.value = achievements.value.concat(JSON.parse(JSON.stringify(allAchievements.value["A_A2"])))
+    } else if(license == "B") {
+        achievements.value = achievements.value.concat(JSON.parse(JSON.stringify(allAchievements.value["B"])))
+    } else {
+        achievements.value = [{name: "Ingen tilgjengelige achievements", achievementId: "0", done: false}]
+    }
+
+    console.log(achievements.value)
+    console.log(allAchievements.value)
+})
 
 
 /* Open and close user edit page */
@@ -51,33 +99,13 @@ function editUser() {
 }   
 
 function editUserCancel() {
-    user.value = oldUserData
-    achievements.value = oldAchievementsData
     isUserEdit.value = true
-
-    oldUserData = JSON.parse(JSON.stringify(user.value))
-    oldAchievementsData = JSON.parse(JSON.stringify(achievements.value))
-
 }
 
 function saveEditsToUser() {
     isUserEdit.value = true
     /* Firestore save funcion */
 }
-
-interface achievements {
-    driveTime: number
-    achievement: {
-        name: string
-        done: boolean
-    }[]
-}
-
-const achievements = ref<achievements>({
-    driveTime: 9,
-    achievement: []
-})
-
 
 
 function avmeldKurs(CourseID:string) {
@@ -101,42 +129,25 @@ function saveCourseChange(CourseID:string, editContent:any) {
     /* Firebase change function */
 }
 
+
 function changeAchievement(done:boolean, name:string) {
-    for(let i = 0; i < achievements.value.achievement.length; i++) {
-        if(achievements.value.achievement[i].name == name) {
-            achievements.value.achievement[i].done = done
-        }
-    }
+
 }
-
-/* Achievements watcher */
-watch(user, (data) => {
-    const license = data.license
-    console.log(license)
-    console.log(allAchievements)
-
-    if(license == "A1") {
-        achievements.value.achievement = allAchievements.A1
-    }
-})
-
-
-/* testing stuff */
-
 </script>
 
 <template>
 
 
 <main>
-    <Title text="gfege" color="var(--red)"/>
+    <Title :text="user.name" color="var(--red)"/>
     <div class="achievements" v-if="isUserEdit">
-        <p>Kjørt {{ achievements.driveTime }} timer</p>
+        <p>Kjørt {{ user.drivetime }} timer</p>
         <div>
             <Achievements 
-                v-for="achievement in achievements.achievement"
-                :name="achievement.name"
-                :done="achievement.done"
+                v-for="a in achievements"
+                :name="a.name"
+                :achievementId="a.achievementId"
+                :done="a.done"
                 class="achievementItem"
             />
         </div>
@@ -179,11 +190,12 @@ watch(user, (data) => {
             <input type="text" v-model="user.phone">
             
         </div>
-        <p class="driventime">Kjørt <input type="text" v-model="achievements.driveTime"> timer</p>
+        <p class="driventime">Kjørt <input type="text" v-model="user.drivetime"> timer</p>
         <div class="userAchievement">
             <AchievementEdit
-                v-for="achievement in achievements.achievement"
+                v-for="achievement in achievements"
                 :name="achievement.name"
+                :achievementId="achievement.achievementId"
                 :done="achievement.done"
 
                 :onChange="changeAchievement"

@@ -9,8 +9,7 @@ const instructorRef = "PLEAK8uurOasSrtnXhlH"
 const InstructorsSnapshot = await getDocs(collection(db, "instructors"))
 const PlacesSnapshot = await getDocs(collection(db, "places"))
 const CourseTypeSnapshot = await getDocs(collection(db, "courseTemplates"))
-const AchievementsSnapshot = await getDocs(collection(db, "achievementTemplates"))
-const AchievementsGlobalSnapshot = await getDocs(collection(db, "achievementTemplates/Global/achievements"))
+
 
 /* firebase ref */
 
@@ -70,13 +69,7 @@ const allPlaces = ref<placesProps[]>([])
 /* All course types */
 const allCourseTypes = ref<courseTypesProps[]>([])
 
-/* All achievements */
-const allAchievements = ref<[] | any>({
-    global: [],
-    A1: [],
-    A_A2: [],
-    B: []
-})
+
 
 
 /* Foreach loop through firebase snapshots*/
@@ -108,29 +101,35 @@ CourseTypeSnapshot.forEach((doc) => {
     })
 })
 
-AchievementsGlobalSnapshot.forEach((doc) => {
-    allAchievements.value.global.push(doc.data().name)
+/* All achievements */
+const AchievementsRef = collection(db, "achievementTemplates")
+interface achievementProps {
+    achievementId: string,
+    name: string,
+}
+
+const allAchievements = ref<{
+    [key: string]: achievementProps[]
+}>({
+    "A1": [],
+    "A_A2": [],
+    "B": [],
+    "Global": [],
 })
 
-AchievementsSnapshot.forEach((doc) => {
-    if (!doc.data().A1) return
-    const A1:[] = doc.data().A1
-    const A_A2:[] = doc.data().A_A2
-    const B:[] = doc.data().B
+for (const key in allAchievements.value) {
+    const querySnapshot = await getDocs(collection(AchievementsRef, key, "achievements"))
+    const docs = querySnapshot.docs
 
-    A1.forEach((name:any) => {
-        allAchievements.value.A1.push(name)
+    docs.map((doc) => {
+        allAchievements.value[key].push({
+            achievementId: doc.id,
+            name: doc.data().name,
+        })
     })
+}
 
-    A_A2.forEach((name:any) => {
-        allAchievements.value.A_A2.push(name)
-    })
 
-    B.forEach((name:any) => {
-        allAchievements.value.B.push(name)
-    })
-
-})
 
 
 /* Instrucotrs users */
@@ -248,7 +247,6 @@ export {
     chats,
     chatMessages,
     msgCollectionRef,
-
     instructorsUsers,
     
     /* For testing, simulates login user */
