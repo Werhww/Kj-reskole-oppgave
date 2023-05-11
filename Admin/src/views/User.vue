@@ -6,11 +6,12 @@ import CourseItem from '@/components/courseItem.vue';
 import Button from '@/components/button.vue';
 import Achievements from '@/components/achievement.vue';
 import AchievementEdit from '@/components/achievementEdit.vue';
+import newCoursePopup from '@/components/newCoursePopup.vue';
 
 import moment from 'moment';
 import { useRoute } from 'vue-router'; const route = useRoute()
 import { ref, watch, computed, onMounted } from 'vue'
-import { collection, getDocs, doc, onSnapshot, getDoc, where, query, orderBy } from "firebase/firestore"; 
+import { collection, setDoc, doc, onSnapshot, where, query, deleteDoc, updateDoc} from "firebase/firestore"; 
 
 import { allInstructors, allPlaces, allCourseTypes, allAchievements } from '@/firebase/store';
 import { db } from '@/firebase/firebase';
@@ -20,7 +21,7 @@ const studentID = (route.params.studentID).toString()
 
 
 /* Get user data */
-const userquery = doc(db, "users", studentID)
+const userRef = doc(db, "users", studentID)
 
 interface user {
     name: string
@@ -41,16 +42,28 @@ const user = ref<user>({
 })
 
 onMounted(() => {
-    onSnapshot(userquery, (doc) => {
+    onSnapshot(userRef, (doc) => {
         if(doc.exists()) {
             user.value = doc.data() as user
         }
     })
 })
 
+function updateUser() {
+    const { name, drivetime, license, mainInstructor, email, phone } = user.value
+
+    updateDoc(userRef, {
+        "name": name,
+        "drivetime": drivetime,
+        "email": email,
+        "phone": phone
+    })
+}
+
 
 /* Get acivement data */
-const achievementQuery = query(collection(db, "achievements"), where("userId", "==", studentID))
+const achievementRef = collection(db, "achievements")
+const achievementQuery = query(achievementRef, where("userId", "==", studentID))
 
 interface achievements {
     name: string
@@ -58,93 +71,210 @@ interface achievements {
     done?: boolean
 }
 
-const achievements = ref<achievements[]>([])
+const userAchievements = ref<achievements[]>([])
 
 onMounted(() => {
     onSnapshot(achievementQuery, (achievement)=> {
         achievement.forEach((achievement) => {
-            for(let i = 1; i < achievements.value.length; i++) {
-                if(achievements.value[i].achievementId === achievement.data().achievementId) {
-                    achievements.value[i].done = true
-                }
-            }
+            const achvIndex = findAchievement(achievement.data().achievementId)
+            userAchievements.value[achvIndex].done = true
         })
     })
 })
+
+interface changedAchievements {
+    userId: string
+    achievementId: string
+    docId: string
+    done: boolean
+}
+
+const changedAchievements = ref<changedAchievements[]>([])
+
+async function changeAchievement(done:boolean, name:string, id:string) {
+    const docId = `${id}_${studentID}`
+    changedAchievements.value.push({
+        userId: studentID,
+        achievementId: id,
+        docId: docId,
+        done: done
+    })
+}
+
+function startAchievementChange() {
+    for(let i = 0; i < changedAchievements.value.length; i++) {
+        const docData = changedAchievements.value[i]
+        if(docData.done) {
+            setDoc(doc(achievementRef, docData.docId), {
+                userId: docData.userId,
+                achievementId: docData.achievementId,
+            })
+        } else {
+            const achvIndex = findAchievement(docData.achievementId)
+            userAchievements.value[achvIndex].done = false
+            deleteDoc(doc(achievementRef, docData.docId))
+        }
+    }
+
+    changedAchievements.value = []
+}
+
+function findAchievement(achievementId:string) {
+    for(let i = 0; i < userAchievements.value.length; i++) {
+        if(userAchievements.value[i].achievementId === achievementId) {
+            return i
+        }
+    }
+    return -1
+}
 
 /* Achievements watcher */
 watch(user, (data) => {
     const license = data.license
 
-    achievements.value = JSON.parse(JSON.stringify(allAchievements.value["Global"]))
+    userAchievements.value = JSON.parse(JSON.stringify(allAchievements.value["Global"]))
     if(license == "A1") {
-        achievements.value = achievements.value.concat(JSON.parse(JSON.stringify(allAchievements.value["A1"])))
+        userAchievements.value = userAchievements.value.concat(JSON.parse(JSON.stringify(allAchievements.value["A1"])))
     } else if(license == "A_A2") {
-        achievements.value = achievements.value.concat(JSON.parse(JSON.stringify(allAchievements.value["A_A2"])))
+        userAchievements.value = userAchievements.value.concat(JSON.parse(JSON.stringify(allAchievements.value["A_A2"])))
     } else if(license == "B") {
-        achievements.value = achievements.value.concat(JSON.parse(JSON.stringify(allAchievements.value["B"])))
+        userAchievements.value = userAchievements.value.concat(JSON.parse(JSON.stringify(allAchievements.value["B"])))
     } else {
-        achievements.value = [{name: "Ingen tilgjengelige achievements", achievementId: "0", done: false}]
+        userAchievements.value = [{name: "Ingen tilgjengelige achievements", achievementId: "0", done: false}]
     }
-
-    console.log(achievements.value)
-    console.log(allAchievements.value)
 })
+
+/* Get course data */
+const courseRef = collection(db, "courses")
+const courseQuery = query(courseRef, where("userId", "==", studentID))
+
+interface course {
+    /* From DB */
+    instructorId: string
+    userId: string
+    courseTemplateId: string
+    placeId: string
+    courseId: string
+
+    endTime: string
+    startTime: string
+    comment: string
+    amount: number
+
+    paid: boolean
+    price: number
+    /* ********* */
+
+    courseName: string
+    instructor: string
+    fullAddress: string
+
+    courseTypeID: string
+}
+
+const usersCourses = ref<course[]>([])
+
+onMounted(()=>{
+    onSnapshot(courseQuery, (Courses) => {
+        usersCourses.value = []
+
+        Courses.forEach((course) => {
+            const courseData = course.data()
+            const courseTemplate:any = findCourse(courseData.courseTemplateId)
+            const instructor:any = findInstructor(courseData.instructorId)
+            const place:any = findPlace(courseData.placeId)
+
+            const courseTemplateData = {
+                ...courseData,
+                courseId: course.id,
+                courseName: courseTemplate.name,
+                courseTypeID: courseTemplate.courseTypeID,
+                instructor: instructor.name,
+                fullAddress: place.fullAddress
+            }
+
+
+            usersCourses.value.push(courseTemplateData as course)
+        })
+    })
+})
+
+function findCourse(courseId:string) {
+    for(let i = 0; i < allCourseTypes.value.length; i++) {
+        if(allCourseTypes.value[i].courseTypeID === courseId) {
+            return allCourseTypes.value[i]
+        }
+    }
+    return `error: ${courseId} course not found`
+}
+
+function findInstructor(instructorId:string) {
+    for(let i = 0; i < allInstructors.value.length; i++) {
+        if(allInstructors.value[i].instructorId === instructorId) {
+            return allInstructors.value[i]
+        }
+    }
+    return `error: ${instructorId} instructor not found`
+}
+
+function findPlace(placeId:string) {
+    for(let i = 0; i < allPlaces.value.length; i++) {
+        if(allPlaces.value[i].placeId === placeId) {
+            return allPlaces.value[i]
+        }
+    }
+    return `error: ${placeId} place not found`
+}
 
 
 /* Open and close user edit page */
+let oldData:user
+
 const isUserEdit = ref(true)
 function editUser() {
+    oldData = JSON.parse(JSON.stringify(user.value))
     isUserEdit.value = !isUserEdit.value
 }   
 
 function editUserCancel() {
     isUserEdit.value = true
+    user.value = oldData
+    changedAchievements.value = []
 }
 
 function saveEditsToUser() {
     isUserEdit.value = true
-    /* Firestore save funcion */
+    startAchievementChange()
+    if(oldData.name != user.value.name || oldData.email != user.value.email || oldData.phone != user.value.phone || oldData.drivetime != user.value.drivetime) {
+        updateUser()
+    }
 }
 
 
 function avmeldKurs(CourseID:string) {
-    console.log("Avmeld kurs")
-    console.log(CourseID)
-
-    /* Firebase change function */
+    deleteDoc(doc(db, "courses", CourseID))
 }
 
 function saveCourseComment(CourseID:string, comment:string) {
-    console.log("Save comment")
-    console.log(CourseID, comment)
-    
-    /* Firebase change function */
+    updateDoc(doc(db, "courses", CourseID), {
+        comment: comment
+    })
 }
 
 function saveCourseChange(CourseID:string, editContent:any) {
-    console.log("Save changes")
-    console.log(CourseID, editContent)
-
-    /* Firebase change function */
+    updateDoc(doc(db, "courses", CourseID), editContent)
 }
 
-
-function changeAchievement(done:boolean, name:string) {
-
-}
 </script>
 
 <template>
-
-
 <main>
     <Title :text="user.name" color="var(--red)"/>
     <div class="achievements" v-if="isUserEdit">
         <p>Kjørt {{ user.drivetime }} timer</p>
         <div>
             <Achievements 
-                v-for="a in achievements"
+                v-for="a in userAchievements"
                 :name="a.name"
                 :achievementId="a.achievementId"
                 :done="a.done"
@@ -153,23 +283,25 @@ function changeAchievement(done:boolean, name:string) {
         </div>
     </div>
     <div class="courses" v-if="isUserEdit">
-        <!-- <CourseItem 
+        <CourseItem 
             v-for="course in usersCourses"
 
-            :course="course.course"
+            :course="course.courseName"
             :amount="course.amount"
             :price="course.price"
             :instructor="course.instructor"
             :fullAddress="course.fullAddress"   
             :comment="course.comment"
             :paid="course.paid"
-            :courseTypeID="course.courseTypeID"
-
             :startTime="course.startTime"
             :endTime="course.endTime"
-            :courseID="course.courseID"
-            :instructorID="course.instructorID"
+            
+            :courseTypeID="course.courseTypeID"
+            :courseID="course.courseId"
+            :instructorID="course.instructorId"
+            :placeId="course.placeId"
 
+            
             :avmeldKurs="avmeldKurs"
             :saveComment="saveCourseComment"
             :saveChanges="saveCourseChange"
@@ -177,7 +309,7 @@ function changeAchievement(done:boolean, name:string) {
             :allInstuctors="allInstructors"
             :allPlaces="allPlaces"
             :allCourseTypes="allCourseTypes"
-        /> -->
+        />
     </div>
     <div class="buttons" v-if="isUserEdit">
         <Button text="Rediger Bruker" color="var(--red)" @click="editUser"/>
@@ -186,14 +318,13 @@ function changeAchievement(done:boolean, name:string) {
     <div class="editUser" v-else>
         <div class="userInfo">
             <input type="text" v-model="user.name">
-            <input type="text" v-model="user.email">
             <input type="text" v-model="user.phone">
-            
+            <input type="text" v-model="user.email">
         </div>
         <p class="driventime">Kjørt <input type="text" v-model="user.drivetime"> timer</p>
         <div class="userAchievement">
             <AchievementEdit
-                v-for="achievement in achievements"
+                v-for="achievement in userAchievements"
                 :name="achievement.name"
                 :achievementId="achievement.achievementId"
                 :done="achievement.done"
@@ -208,6 +339,7 @@ function changeAchievement(done:boolean, name:string) {
         </div>
     </div>
 </main>
+<newCoursePopup  />
 </template>
 
 <style scoped>
@@ -256,10 +388,12 @@ main {
     display: flex;
     gap: 3rem;
     justify-content: center;
+    flex-wrap: wrap;
 }
 
 .userInfo > input{
     font-size: 2rem;
+    flex: 1 1 5rem;
 }
 
 .editUser {

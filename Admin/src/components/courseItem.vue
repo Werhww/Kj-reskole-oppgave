@@ -24,6 +24,7 @@ const props = defineProps<{
     allPlaces: {
         name: string,
         fullAddress: string,
+        placeId: string
     }[]
 
     allCourseTypes: {
@@ -36,6 +37,7 @@ const props = defineProps<{
     /* IDs */
     courseID: string
     instructorID: string
+    placeId: string
 
     /* Functions */
     avmeldKurs: (CourseID:string) => void;
@@ -70,14 +72,13 @@ const dateEdit = ref(moment(props.startTime).format('yyyy-MM-DD'))
 const startEdit = ref(moment(props.startTime).format('HH:mm:ss.SSS'))
 
 const editContent = ref({
-    instructor: props.instructor,
-    instructorID: props.instructorID,
+    instructorId: props.instructorID,
     comment: newComment,
     paid: props.paid,
     startTime: props.startTime,
     endTime: props.endTime,
-    fullAddress: props.fullAddress,
-    courseTypeID: props.courseTypeID,
+    placeId: props.placeId,
+    courseTemplateId: props.courseTypeID,
     amount: props.amount,
     price: props.price
 })
@@ -90,16 +91,14 @@ function openEdit() {
 
 /* watches changes in edit content */
 watch(editContent.value, ()=>{
-    const courseType:any = findCourseType(editContent.value.courseTypeID)
+    const courseType:any = findCourseType(editContent.value.courseTemplateId)
     editContent.value.price = courseType.price * editContent.value.amount
     calculateTime(courseType.DurationMinutes)
-    
-    console.log("changes")
 })
 
 /* Watches changes in start time */
 watch(startEdit, ()=>{
-    const courseType:any = findCourseType(editContent.value.courseTypeID)
+    const courseType:any = findCourseType(editContent.value.courseTemplateId)
     calculateTime(courseType.DurationMinutes)
 })
 
@@ -132,7 +131,7 @@ function calculateTime(courseMinutes:number, amount:number = editContent.value.a
         <div class="content">
             <p  v-if="!edit">{{ course }} ({{ amount }})</p>
             <div v-else>
-                <select class="" v-model="editContent.courseTypeID">
+                <select class="" v-model="editContent.courseTemplateId">
                     <option v-for="course in allCourseTypes" :value="course.courseTypeID">{{ course.name }}</option>
                 </select>
                 <input type="number" v-model="editContent.amount">
@@ -154,13 +153,13 @@ function calculateTime(courseMinutes:number, amount:number = editContent.value.a
         <div class="mainContent">
             <div>
                 <p v-if="!edit">{{ instructor }}</p>
-                <select class="instructorEdit" v-model="editContent.instructorID" v-else>
+                <select class="instructorEdit" v-model="editContent.instructorId" v-else>
                     <option v-for="instructor in allInstuctors" :value="instructor.instructorId">{{ instructor.name }}</option>
                 </select>
                 <div class="place_time">
                     <a v-if="!edit" :href="'https://maps.google.com/?q=' + fullAddress" target="_blank">{{ fullAddress }}</a>
-                    <select v-else class="placeEdit" v-model="editContent.fullAddress">
-                        <option v-for="place in allPlaces" :value="place.fullAddress">{{ place.name }}</option>
+                    <select v-else class="placeEdit" v-model="editContent.placeId">
+                        <option v-for="place in allPlaces" :value="place.placeId">{{ place.name }}</option>
                     </select>
                     <p v-if="!edit">{{ start }} - {{ end }}</p>
                     <div v-else>

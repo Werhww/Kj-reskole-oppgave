@@ -10,41 +10,13 @@ const InstructorsSnapshot = await getDocs(collection(db, "instructors"))
 const PlacesSnapshot = await getDocs(collection(db, "places"))
 const CourseTypeSnapshot = await getDocs(collection(db, "courseTemplates"))
 
-
-/* firebase ref */
-
-
-
-/* Interfaces */
-interface CourseProps {
-    course: string,
-    startTime: string,
-    endTime: string,
-
-    shortAddress: string,
-    fullAddress: string,
-
-    amount: number,
-    price: number,
-    paid: boolean | undefined,
-
-    instructor: string,
-    comment: string
-
-    student: string
-
-    studentID: string
-    instructorID: string
-    courseID: string
-    courseTypeID: string
-}
-
 interface instructorsProps {
     name: string,
     instructorId: string,
 }
 
 interface placesProps {
+    placeId: string,
     name: string,
     fullAddress: string,
 }
@@ -87,6 +59,7 @@ InstructorsSnapshot.forEach((doc) => {
 
 PlacesSnapshot.forEach((doc) => {
     allPlaces.value?.push({
+        placeId: doc.id,
         name: doc.data().name,
         fullAddress: doc.data().fullAddress,
     })

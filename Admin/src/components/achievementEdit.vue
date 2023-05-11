@@ -29,9 +29,9 @@ function changeDone() {
 
 <template>
 <div class="achievement">
-    <p class="green" v-if="doneEdit">{{ name }}</p>
-    <p class="red" v-else>{{ name }}</p>
-    <input type="checkbox" @change="changeDone" :checked="doneEdit" :value="name">
+    <label :for="achievementId" class="green" v-if="doneEdit">{{ name }}</label>
+    <label :for="achievementId" class="red" v-else>{{ name }}</label>
+    <input :id="achievementId" type="checkbox" @change="changeDone" :checked="doneEdit" :value="name">
 </div> 
 </template>
 
@@ -45,7 +45,7 @@ function changeDone() {
     padding: 0.5rem;
 }
 
-p {
+label {
     font-size: 1.5rem;
 }
 
