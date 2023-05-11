@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-
-import { updateDoc } from 'firebase/firestore'
+import { ref, watch } from 'vue'
+import moment from 'moment'
+import { db } from '../firebase/firebase'
+import { setDoc, collection, doc } from 'firebase/firestore'
 
 const props = defineProps<{
     studentID: string
@@ -24,35 +25,111 @@ const props = defineProps<{
         DurationMinutes: number
     }[]
 
-    show: boolean
-
     close: () => void
 }>()
 
-const courseID = ref()
-const amount = ref()
-const instructorID = ref()
+const newCourse = ref({
+    amount: 1,
+    startTime: "",
+    endTime: "",
+    paid: false,
+    price: 0,
 
-/* amount: number
-startTime: string
-endTime: string
-paid: boolean
-price: number
+    userId: props.studentID,
+    placeId: "",
+    instructorId: "",
+    courseTemplateId: "",
+    comment: ""
+})
 
-userId: string
-placeId: string
-instructorId: string
-courseTemplateId: string */
+const msg = ref("Nytt kurs")
+
+const date = ref("")
+const start = ref("")
+const end = ref("--:-- --")
+
+const courseTemplateId = ref("")
+const amount = ref(1)
+
+
+/* Watches changes in start time */
+watch(start, ()=>{
+    try {
+        const courseType:any = findCourseType(newCourse.value.courseTemplateId)
+        calculateTime(courseType.DurationMinutes, newCourse.value.amount)
+    } catch {
+        msg.value = "Fyll ut alle feltene"
+        setTimeout(() => {
+            msg.value = "Nytt kurs"
+        }, 2000);
+    }
+
+})
+
+watch([courseTemplateId, amount], ()=> {
+    newCourse.value.courseTemplateId = courseTemplateId.value
+    const courseType:any = findCourseType(courseTemplateId.value)
+    
+    newCourse.value.amount = amount.value
+    newCourse.value.price = courseType.price * amount.value
+})
+
+function findCourseType(courseTypeID:string) {
+    for (let i = 0; i < props.allCourseTypes.length; i++) {
+        if (props.allCourseTypes[i].courseTypeID == courseTypeID) {       
+            return props.allCourseTypes[i]
+        }
+    }
+}
+
+function calculateTime(courseMinutes:number, amount:number) {
+    const minutes = courseMinutes * amount
+
+    const momentStartTime = moment(date.value + " " + start.value)
+    const endTime = moment(momentStartTime).add(minutes, 'minutes')
+    
+    
+
+    newCourse.value.startTime = momentStartTime.format('yyyy-MM-DDTHH:mm:ss')
+    newCourse.value.endTime = endTime.format('yyyy-MM-DDTHH:mm:ss')
+
+    end.value = endTime.format('HH:mm')
+
+    if(end.value == "Invalid date") {
+        throw new Error('Parameter is not a number!');
+    }
+}
+
+function saveCourse() {
+    if( newCourse.value.courseTemplateId == "" ||
+        newCourse.value.amount == 0 ||
+        newCourse.value.instructorId == "" ||
+        newCourse.value.placeId == "" ||
+        newCourse.value.startTime == "" ||
+        newCourse.value.endTime == "" ||
+        newCourse.value.price == 0 ||
+        newCourse.value.userId == "") {
+            
+        msg.value = "Fyll ut alle feltene"
+        setTimeout(() => {
+            msg.value = "Nytt kurs"
+        }, 2000);
+        return
+    }
+    
+    setDoc(doc(collection(db, "courses")), newCourse.value)
+    props.close()
+}
 
 </script>
 
 <template>
 <div class="wrapper">
-    <h1>Ny kurs</h1>
+    <h1>{{ msg }}</h1>
     <div>
         <div>
             <label for="courseName">Kurs</label>
-            <select id="courseName" v-model="courseID">
+            <select id="courseName" v-model="courseTemplateId">
                 <option v-for="course in allCourseTypes" :value="course.courseTypeID">{{ course.name }}</option>
             </select>
         </div>
@@ -64,30 +141,34 @@ courseTemplateId: string */
     <div>
         <div>
             <label for="instructor">Instructor</label>
-            <select id="instructor" v-model="instructorID">
+            <select id="instructor" v-model="newCourse.instructorId">
                 <option v-for="instructor in allInstuctors" :value="instructor.instructorId">{{ instructor.name }}</option>
             </select>
         </div>
         <div>
             <label for="place">Place</label>
-            <select id="place">
-                <option v-for="place in allPlaces" :value="place.fullAddress">{{ place.name }}</option>
+            <select id="place" v-model="newCourse.placeId">
+                <option v-for="place in allPlaces" :value="place.placeId">{{ place.name }}</option>
             </select>
         </div>
     </div>
     <div>
         <div>
             <label for="date">Date</label>
-            <input type="date" id="date">
+            <input type="date" id="date" v-model="date">
         </div>
         <div>
             <label for="time">Start time</label>
-            <input type="time" id="time">
+            <input type="time" id="time" v-model="start">
+        </div>
+        <div>
+            <p>End time</p>
+            <p>{{ end }}</p>
         </div>
     </div>
     <div class="buttons">
-        <button>Avbryt</button>
-        <button>Lagre</button>
+        <button @click="close">Avbryt</button>
+        <button @click="saveCourse">Lagre</button>
     </div>
 </div>
 <div class="background_blur"></div>
@@ -101,7 +182,7 @@ courseTemplateId: string */
     transform: translate(-50%, -50%);
 
     width: 100vw;
-    height: 100vh;
+    height: 100%;
     background-color: rgba(0, 0, 0, 0.4);
 }
 
@@ -129,10 +210,11 @@ courseTemplateId: string */
 
 .wrapper > div > div{
     display: flex;
+    flex-direction: column;
     gap: 0.3rem;
 }
 
-.wrapper label, .wrapper input, .wrapper select{
+.wrapper label, .wrapper input, .wrapper select, .wrapper p{
     font-size: 1.25rem;
 }
 

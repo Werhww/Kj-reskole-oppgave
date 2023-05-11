@@ -2,6 +2,7 @@
 import { ref, watch } from 'vue'
 import moment from 'moment';
 
+
 const props = defineProps<{
     course: string
     amount: number
@@ -68,7 +69,7 @@ function toggleDropdown(event:any) {
 
 /* comment value */
 const newComment = ref(props.comment)
-const dateEdit = ref(moment(props.startTime).format('yyyy-MM-DD'))
+const dateEdit = ref('')
 const startEdit = ref(moment(props.startTime).format('HH:mm:ss.SSS'))
 
 const editContent = ref({
@@ -101,6 +102,12 @@ watch(startEdit, ()=>{
     const courseType:any = findCourseType(editContent.value.courseTemplateId)
     calculateTime(courseType.DurationMinutes)
 })
+
+watch(dateEdit, ()=>{
+    const courseType:any = findCourseType(editContent.value.courseTemplateId)
+    calculateTime(courseType.DurationMinutes)
+})
+
 
 function findCourseType(courseTypeID:string) {
     for (let i = 0; i < props.allCourseTypes.length; i++) {

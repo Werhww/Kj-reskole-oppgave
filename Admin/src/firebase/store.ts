@@ -28,9 +28,6 @@ interface courseTypesProps {
     DurationMinutes: number
 }
 
-const previousCourses = ref<[] | any>([])/* Courses befor current date */
-const commingCourses = ref<[] | any>([])/* Courses after current date */
-
 
 /* All instructors with name and ID */
 const allInstructors = ref<instructorsProps[]>([])
@@ -46,15 +43,12 @@ const allCourseTypes = ref<courseTypesProps[]>([])
 
 /* Foreach loop through firebase snapshots*/
 InstructorsSnapshot.forEach((doc) => {
-    if(doc.id === instructorRef){
-        return
-    } else {
-        allInstructors.value?.push({
+    allInstructors.value?.push({
 
-            name: doc.data().name,
-            instructorId: doc.id
-        })
-    }
+        name: doc.data().name,
+        instructorId: doc.id
+    })
+
 })
 
 PlacesSnapshot.forEach((doc) => {
@@ -206,12 +200,119 @@ onSnapshot(chatCollectionQuery,(querySnapshot:any) => {
     })
 })
 
+/* Instrcors courses for calender */
+interface courseProps {
+    course: string,
+    startTime: string,
+    endTime: string,
+
+    shortAddress: string,
+    fullAddress: string,
+
+    amount: number,
+    price: number,
+    paid: boolean,
+
+    instructor: string,
+    comment: string,
+
+    student: string,
+
+    studentID: string,
+    courseID: string,
+    instructorID:  string,
+    courseTypeID: string,
+}
+const instructorCourses = ref<courseProps[]>([])
+
+const coursesCollectionRef = collection(db, "courses")
+const coursesQuery = query(coursesCollectionRef, where("instructorId", "==", instructorRef))
+
+onSnapshot(coursesQuery, async (courses:any) => {
+    
+    const allCourses: courseProps[] = []
+    courses.docs.map(async (doc:any) => {
+        const courseType = await findCourseTemplate(doc.data().courseTemplateId) as {name: string}
+        const place = await findplace(doc.data().placeId)
+        const instructor = await findInstructor(doc.data().instructorId)
+        const student = await findStudent(doc.data().userId)
+
+        allCourses.push({
+            course: courseType.name,
+            startTime: doc.data().startTime,
+            endTime: doc.data().endTime,
+
+            shortAddress: place.name,
+            fullAddress: place.fullAddress,
+
+            amount: doc.data().amount,
+            price: doc.data().price,
+            paid: doc.data().paid,
+
+            instructor: instructor.name,
+            comment: doc.data().comment,
+
+            student: student.name,
+
+            studentID: doc.data().userId,
+            courseID: doc.id,
+            instructorID: doc.data().instructorId,
+            courseTypeID: doc.data().courseTemplateId,
+
+        })
+    })
+
+    instructorCourses.value = allCourses
+
+    console.log(allCourses)
+    console.log(instructorCourses.value)
+})
+
+function findCourseTemplate(courseTypeID:string) {
+    return allCourseTypes.value.find((courseType) => courseType.courseTypeID === courseTypeID)
+}
+
+function findplace(placeId:string) {
+    const place = allPlaces.value.find((place) => place.placeId === placeId)
+
+    if(place) {
+        return place
+    } else {
+       return {
+            name: '',
+            fullAddress: '', 
+        }
+    }
+}
+
+function findInstructor(instructorId:string) {
+    const instructor  =allInstructors.value.find((instructor) => instructor.instructorId === instructorId)
+
+    if(instructor) {
+        return instructor
+    } else {
+        return {
+            name: '',
+            instructorId: '',
+        }
+    }
+}
+
+async function findStudent(studentId:string) {
+    const student = instructorsUsers.value.find((student) => student.userId === studentId)
+
+    if (student) {
+        return student
+    } else {
+        return (await getDoc(doc(usersCollectionRef, studentId))).data() as {name: string}
+    }
+}
+
+
 
 
 /* Exporsts */
 export {
-    previousCourses,
-    commingCourses,
     allInstructors,
     allPlaces,
     allCourseTypes,
@@ -221,6 +322,7 @@ export {
     chatMessages,
     msgCollectionRef,
     instructorsUsers,
+    instructorCourses,
     
     /* For testing, simulates login user */
     instructorRef,

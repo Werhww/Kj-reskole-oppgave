@@ -6,7 +6,7 @@ import CalenderDays from '@/components/calenderDays.vue';
 import CalenderItem from '@/components/calenderItem.vue';
 import CalenderOpenDay from '@/components/calenderOpenDay.vue';
 
-import { instructorsUsers } from "../firebase/store";
+import { instructorsUsers, instructorCourses } from "../firebase/store";
 import {  } from "../firebase/store";
 
 import { ref, watch } from 'vue';
@@ -17,7 +17,12 @@ const users = ref(instructorsUsers)
 const currentDate = moment().format()
 
 const week = ref(moment().week())
-const calenderDays = ref<any>([])
+
+const calenderCourses = ref(instructorCourses)
+
+watch([instructorCourses], () => {
+    console.log(calenderCourses.value)
+})
 
 const showedCourse = ref({
     isShowed: false,
@@ -50,14 +55,33 @@ watch(calenderDaysMonday, (newValue) => {
     calenderColumnWidth.value = width
 })
 
+let displayedCalenderDates = ref<string[] >([])
+let displayedCalenderFirstDate = ref<string>('')
+
 /* changes to next and previuse week */
 function nextWeek() {
     week.value = week.value + 1
+    displayedCalenderFirstDate.value = moment().week(week.value).day(1).format()
 }
 
 function prevWeek() {
     week.value = week.value - 1
+    displayedCalenderFirstDate.value = moment().week(week.value).day(1).format()
 }
+
+watch([displayedCalenderFirstDate], (date) => {
+    for (let i = 0; i < 5; i++) {
+        const day = moment(date[0]).day(i+1).format('dddD')
+        displayedCalenderDates.value[i] = day
+    }
+})
+
+function setDate() {
+    displayedCalenderFirstDate.value = moment().week(week.value).day(1).format()
+}
+
+setDate()
+
 
 const calenderContentWrapper = ref<HTMLDivElement | null>(null)
 
@@ -116,11 +140,8 @@ function removeHighlightCourse() {
         </div>
         <div>
             <div class="days_info"  ref="calenderDaysMonday">
-                <CalenderDays date="Man.15"/>
-                <CalenderDays date="Tir.15" />
-                <CalenderDays date="Ons.15" />
-                <CalenderDays date="Tor.15" />
-                <CalenderDays date="Fre.15" />
+                <CalenderDays v-for="i in displayedCalenderDates" :date="i"/>
+
             </div>
             <div class="calender" v-dragscroll:nochilddrag >
                 <div class="time" data-dragscroll>
@@ -131,7 +152,7 @@ function removeHighlightCourse() {
                 </div>
                 <div class="calender_content" ref="calenderContentWrapper" data-dragscroll>
                     <CalenderItem 
-                        v-for="day in calenderDays"
+                        v-for="day in calenderCourses"
                         :is-showed="false"
 
                         :open-course="openCourse"

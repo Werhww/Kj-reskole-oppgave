@@ -3,9 +3,14 @@ import Underline from './underline.vue';
 import Button from './button.vue';
 import moment from 'moment'
 import { ref, watch } from 'vue';
+import { updateDoc, doc, deleteDoc } from 'firebase/firestore';
+import { useRouter, useRoute } from 'vue-router'
+const route = useRoute()
+const router = useRouter()
+
+import { db } from '../firebase/firebase'
 
 const props = defineProps<{
-
     courseTitle: string
     amount: number
     student: string
@@ -28,6 +33,20 @@ const formatedDateTime = ref(moment(props.startTime).format("dddd DD MMMM HH.mm"
 const formatedEndTime = ref(moment(props.endTime).format("HH.mm"))
 
 const newComment = ref(props.comment)
+
+function saveComment() {
+    updateDoc(doc(db, "courses", props.courseID), {
+        comment: newComment.value
+    })
+}
+
+function deleteCourse() {
+    deleteDoc(doc(db, "courses", props.courseID))
+}
+
+function toStudentMessege() {
+    router.push("/chat/" + props.studentId)
+}
 </script>
 
 <template>
@@ -45,14 +64,14 @@ const newComment = ref(props.comment)
         <div>
             <div>
                 <p>Kommentar:</p>
-                <p>Lagre Kommentar</p>
+                <p @click="saveComment">Lagre Kommentar</p>
             </div>
             <textarea v-model="newComment" :maxlength="300"></textarea>
         </div>
     </div>
     <div class="buttons">
-        <Button text="Medling til elev" color="var(--green)"/>
-        <Button text="Avmeld" color="var(--red)"/>
+        <Button text="Medling til elev" color="var(--green)" @click="toStudentMessege"/>
+        <Button text="Avmeld" color="var(--red)"  @click="deleteCourse"/>
     </div>
 </section>
 </template>

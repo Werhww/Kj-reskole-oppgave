@@ -8,9 +8,8 @@ import Achievements from '@/components/achievement.vue';
 import AchievementEdit from '@/components/achievementEdit.vue';
 import newCoursePopup from '@/components/newCoursePopup.vue';
 
-import moment from 'moment';
 import { useRoute } from 'vue-router'; const route = useRoute()
-import { ref, watch, computed, onMounted } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { collection, setDoc, doc, onSnapshot, where, query, deleteDoc, updateDoc} from "firebase/firestore"; 
 
 import { allInstructors, allPlaces, allCourseTypes, allAchievements } from '@/firebase/store';
@@ -91,7 +90,7 @@ interface changedAchievements {
 
 const changedAchievements = ref<changedAchievements[]>([])
 
-async function changeAchievement(done:boolean, name:string, id:string) {
+function changeAchievement(done:boolean, name:string, id:string) {
     const docId = `${id}_${studentID}`
     changedAchievements.value.push({
         userId: studentID,
@@ -174,17 +173,17 @@ interface course {
 
 const usersCourses = ref<course[]>([])
 
-onMounted(()=>{
-    onSnapshot(courseQuery, (Courses) => {
+onMounted(async ()=>{
+    onSnapshot(courseQuery, async (Courses) => {
         usersCourses.value = []
 
-        Courses.forEach((course) => {
+        const coursePromises = Courses.docs.map(async (course:any) => {
             const courseData = course.data()
-            const courseTemplate:any = findCourse(courseData.courseTemplateId)
-            const instructor:any = findInstructor(courseData.instructorId)
-            const place:any = findPlace(courseData.placeId)
+            const courseTemplate:any = await findCourse(courseData.courseTemplateId)
+            const instructor:any = await findInstructor(courseData.instructorId)
+            const place:any = await findPlace(courseData.placeId)
 
-            const courseTemplateData = {
+            let courseTemplateData = {
                 ...courseData,
                 courseId: course.id,
                 courseName: courseTemplate.name,
@@ -194,8 +193,11 @@ onMounted(()=>{
             }
 
 
-            usersCourses.value.push(courseTemplateData as course)
-        })
+            return courseTemplateData as course
+       })
+
+       const courses = await Promise.all(coursePromises);
+        usersCourses.value = courses;
     })
 })
 
@@ -265,6 +267,12 @@ function saveCourseChange(CourseID:string, editContent:any) {
     updateDoc(doc(db, "courses", CourseID), editContent)
 }
 
+const newCourse = ref(false)
+
+function openCloseNewCourse() {
+    newCourse.value = !newCourse.value
+}
+
 </script>
 
 <template>
@@ -313,7 +321,7 @@ function saveCourseChange(CourseID:string, editContent:any) {
     </div>
     <div class="buttons" v-if="isUserEdit">
         <Button text="Rediger Bruker" color="var(--red)" @click="editUser"/>
-        <Button text="Legg til kurs" color="var(--green)"/>
+        <Button text="Legg til kurs" color="var(--green)" @click="openCloseNewCourse"/>
     </div>
     <div class="editUser" v-else>
         <div class="userInfo">
@@ -339,7 +347,17 @@ function saveCourseChange(CourseID:string, editContent:any) {
         </div>
     </div>
 </main>
-<newCoursePopup  />
+<newCoursePopup
+    v-if="newCourse"
+
+    :studentID="studentID"
+
+    :allInstuctors="allInstructors"
+    :allPlaces="allPlaces"
+    :allCourseTypes="allCourseTypes"
+
+    :close="openCloseNewCourse"
+/>
 </template>
 
 <style scoped>

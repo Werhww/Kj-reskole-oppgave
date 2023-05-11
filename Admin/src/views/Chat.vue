@@ -14,7 +14,12 @@ import ChatMessages from '@/components/chatMessage.vue';
 
 const allChatMessages = ref(chatMessages)
 
-const currentChat = ref<any>()
+interface Chat {
+    id: string
+    messages: any[]
+}
+
+const currentChat = ref<Chat>()
 const currentChatId = ref("")
 
 const personWrapper = ref<HTMLElement>()
