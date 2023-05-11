@@ -23,14 +23,8 @@ const props = defineProps<{
     endTime: string
 }>()
 
-
-watch(props, (newValue) => {
-    formatedDateTime.value = moment(newValue.startTime).format("dddd DD MMMM HH.mm")
-    formatedEndTime.value = moment(newValue.endTime).format("HH.mm")
-    newComment.value = newValue.comment
-})
-const formatedDateTime = ref(moment(props.startTime).format("dddd DD MMMM HH.mm"))
-const formatedEndTime = ref(moment(props.endTime).format("HH.mm"))
+const formatedDateTime = ref(moment(props.startTime).format("dddd DD MMMM HH:mm"))
+const formatedEndTime = ref(moment(props.endTime).format("HH:mm"))
 
 const newComment = ref(props.comment)
 
