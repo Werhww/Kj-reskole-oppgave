@@ -18,10 +18,68 @@ const currentDate = moment().format()
 
 const week = ref(moment().week())
 
-const calenderCourses = ref(instructorCourses)
+interface courseProps {
+    course: string,
+    startTime: string,
+    endTime: string,
 
-watch([instructorCourses], () => {
-    console.log(calenderCourses.value)
+    shortAddress: string,
+    fullAddress: string,
+
+    amount: number,
+    price: number,
+    paid: boolean,
+
+    instructor: string,
+    comment: string,
+
+    student: string,
+
+    studentID: string,
+    courseID: string,
+    instructorID:  string,
+    courseTypeID: string,
+}
+
+const curretWeekCourses = ref<courseProps[]>([])
+
+watch([instructorCourses, week], (newValue) => {
+    const courses = newValue[0]
+    
+
+    const currentWeekCourses:courseProps[] = []
+
+    for (let i = 0; i < courses.length; i++) {
+        const course = courses[i]
+        const courseStartTime = moment(course.startTime).format()
+        const courseEndTime = moment(course.endTime).format()
+
+
+        if (moment(courseStartTime).week() == week.value) {
+            currentWeekCourses.push({
+                course: course.course,
+                startTime: courseStartTime,
+                endTime: courseEndTime,
+                shortAddress: course.shortAddress,
+                fullAddress: course.fullAddress,
+                amount: course.amount,
+                price: course.price,
+                paid: course.paid,
+                instructor: course.instructor,
+                comment: course.comment,
+                student: course.student,
+                studentID: course.studentID,
+                courseID: course.courseID,
+                instructorID: course.instructorID,
+                courseTypeID: course.courseTypeID,
+            })
+
+            console.log('added')
+        }
+    }
+
+    curretWeekCourses.value = currentWeekCourses
+    console.log('sorted')
 })
 
 const showedCourse = ref({
@@ -152,7 +210,7 @@ function removeHighlightCourse() {
                 </div>
                 <div class="calender_content" ref="calenderContentWrapper" data-dragscroll>
                     <CalenderItem 
-                        v-for="day in calenderCourses"
+                        v-for="day in curretWeekCourses"
                         :is-showed="false"
 
                         :open-course="openCourse"
@@ -189,6 +247,8 @@ function removeHighlightCourse() {
                
                 :studentId="showedCourse.studentId"
                 :course-i-d="showedCourse.courseID"
+
+                :comment-changed="()=>{week = week}"
             />
         </div>
     </section>

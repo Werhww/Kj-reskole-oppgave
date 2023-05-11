@@ -21,6 +21,8 @@ const props = defineProps<{
     courseID: string
     startTime: string
     endTime: string
+
+    commentChanged: () => void
 }>()
 
 const formatedDateTime = ref(moment(props.startTime).format("dddd DD MMMM HH:mm"))
@@ -28,10 +30,11 @@ const formatedEndTime = ref(moment(props.endTime).format("HH:mm"))
 
 const newComment = ref(props.comment)
 
-function saveComment() {
-    updateDoc(doc(db, "courses", props.courseID), {
+async function saveComment() {
+    await updateDoc(doc(db, "courses", props.courseID), {
         comment: newComment.value
     })
+    props.commentChanged()
 }
 
 function deleteCourse() {

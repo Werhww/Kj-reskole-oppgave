@@ -39,8 +39,6 @@ const allPlaces = ref<placesProps[]>([])
 const allCourseTypes = ref<courseTypesProps[]>([])
 
 
-
-
 /* Foreach loop through firebase snapshots*/
 InstructorsSnapshot.forEach((doc) => {
     allInstructors.value?.push({
@@ -95,9 +93,6 @@ for (const key in allAchievements.value) {
         })
     })
 }
-
-
-
 
 /* Instrucotrs users */
 interface instructorUsers {
@@ -263,9 +258,6 @@ onSnapshot(coursesQuery, async (courses:any) => {
     })
 
     instructorCourses.value = allCourses
-
-    console.log(allCourses)
-    console.log(instructorCourses.value)
 })
 
 function findCourseTemplate(courseTypeID:string) {
