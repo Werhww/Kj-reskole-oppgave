@@ -3,17 +3,19 @@ import { db } from "./firebase";
 import { collection, getDocs, doc, onSnapshot, getDoc, where, query, orderBy } from "firebase/firestore";
 import { auth } from "./firebase";
 import { onAuthStateChanged } from 'firebase/auth';
-import { useRouter } from "vue-router";
-const router = useRouter()
 
 const instructorRef = ref("")
 
 onAuthStateChanged(auth, (user) => {
     if (user) {
-      console.log(auth)
-      instructorRef.value = user.uid;
-    } else {
-        router.push("/")
+        const uid = user.uid;
+        if(uid === "1RAh131ORqQPoF7m3E00Uwfj1rz1") {
+            return
+        } else {
+            instructorRef.value = user.uid;
+        }
+
+      
     }
 })
 
@@ -119,7 +121,7 @@ const usersCollectionRef = collection(db, "users")
 
 watch(instructorRef, (newValue)=>{
     if(newValue = "") {
-        router.push("/")
+
     } else {
         const usersQuery = query(usersCollectionRef, where("mainInstructor", "==", instructorRef))
 
@@ -165,7 +167,7 @@ const chatMessages = ref<any>()
 
 watch(instructorRef, (newValue)=>{
     if(newValue = "") {
-        router.push("/")
+
     } else {
         const chatCollectionQuery = query(chatCollectionRef, where("instructorId", "==", instructorRef))
 
@@ -289,7 +291,7 @@ async function findStudent(studentId:string) {
 
 watch(instructorRef, (newValue)=>{
     if(newValue = "") {
-        router.push("/")
+
     } else {
         const coursesQuery = query(coursesCollectionRef, where("instructorId", "==", instructorRef))
 

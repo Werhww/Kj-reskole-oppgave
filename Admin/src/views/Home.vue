@@ -7,7 +7,7 @@ import CalenderItem from '@/components/calenderItem.vue';
 import CalenderOpenDay from '@/components/calenderOpenDay.vue';
 
 import { instructorsUsers, instructorCourses } from "../firebase/store";
-import {  } from "../firebase/store";
+
 
 import { ref, watch } from 'vue';
 import moment from 'moment';

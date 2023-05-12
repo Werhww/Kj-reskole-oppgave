@@ -8,10 +8,19 @@ const router = useRouter()
 const mail = ref('')
 const password = ref('')
 
+const msg = ref('')
 
 async function login() {
-    await signInWithEmailAndPassword(auth, mail.value, password.value)
-    router.push('/')
+    try {
+        await signInWithEmailAndPassword(auth, mail.value, password.value)
+        router.push('/')
+    } catch(error) {
+        msg.value = `${error}`
+
+        setTimeout(()=>{
+            msg.value = ""
+        }, 3000)
+    }
 }
 </script>
 
@@ -27,6 +36,8 @@ async function login() {
         <input type="password" id="password" placeholder="Passord" v-model="password">
     </div>
     <button @click="login">Login</button>
+
+    <p>{{ msg }}</p>
 </main>
 </template>
 
@@ -47,6 +58,8 @@ main > div{
     flex-direction: column;
 
     gap: .3rem;
+
+    padding: auto;
 }
 
 h1 {
