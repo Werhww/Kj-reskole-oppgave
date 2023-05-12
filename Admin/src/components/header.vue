@@ -1,11 +1,28 @@
 <script setup lang="ts">
+import { auth } from '../firebase/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
+import { ref } from 'vue';
+
 const props = defineProps<{
     userName: string,
 }>()
+
+const admin = ref(false)
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    console.log(auth)
+    const uid = user.uid;
+    if(uid === "1RAh131ORqQPoF7m3E00Uwfj1rz1") {
+        admin.value = true
+    }
+  }
+})
 </script>
 
 <template>
 <header>
+    <router-link v-if="admin" to="/admin">admin</router-link>
     <router-link to="/chat"><img src="../assets/chat.svg"></router-link>
     <router-link to="/">{{ userName }}</router-link>
 </header>

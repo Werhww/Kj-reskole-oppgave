@@ -41,25 +41,25 @@ interface courseProps {
     courseTypeID: string,
 }
 
-const curretWeekCourses = ref<courseProps[]>([])
+const currentWeekCourses = ref<courseProps[]>([])
 
-watch([instructorCourses, week], (newValue) => {
-    const courses = newValue[0]
+watch([() => instructorCourses.value, week], ([newcourse, newweek]) => {
+    const courses = newcourse
+    const week = newweek
+
+    const sortedCourses:courseProps[] = []
     
+    console.log(newcourse)
+    console.log(newweek)
+    
+    courses.forEach((course) => {
+        const courseWeek = moment(course.startTime).week()
 
-    const currentWeekCourses:courseProps[] = []
-
-    for (let i = 0; i < courses.length; i++) {
-        const course = courses[i]
-        const courseStartTime = moment(course.startTime).format()
-        const courseEndTime = moment(course.endTime).format()
-
-
-        if (moment(courseStartTime).week() == week.value) {
-            currentWeekCourses.push({
+        if (courseWeek === week) {
+            sortedCourses.push({
                 course: course.course,
-                startTime: courseStartTime,
-                endTime: courseEndTime,
+                startTime: course.startTime,
+                endTime: course.endTime,
                 shortAddress: course.shortAddress,
                 fullAddress: course.fullAddress,
                 amount: course.amount,
@@ -73,12 +73,12 @@ watch([instructorCourses, week], (newValue) => {
                 instructorID: course.instructorID,
                 courseTypeID: course.courseTypeID,
             })
-
-            console.log('added')
         }
-    }
+        
+        console.log('added')    
+    })
 
-    curretWeekCourses.value = currentWeekCourses
+    currentWeekCourses.value = sortedCourses
     console.log('sorted')
 })
 
@@ -210,7 +210,7 @@ function removeHighlightCourse() {
                 </div>
                 <div class="calender_content" ref="calenderContentWrapper" data-dragscroll>
                     <CalenderItem 
-                        v-for="day in curretWeekCourses"
+                        v-for="day in currentWeekCourses"
                         :is-showed="false"
 
                         :open-course="openCourse"
