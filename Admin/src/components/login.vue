@@ -12,8 +12,8 @@ const msg = ref('')
 
 async function login() {
     try {
-        await signInWithEmailAndPassword(auth, mail.value, password.value)
         emits('login', mail.value, password.value)
+        await signInWithEmailAndPassword(auth, mail.value, password.value)
     } catch(error) {
         msg.value = `${error}`
 

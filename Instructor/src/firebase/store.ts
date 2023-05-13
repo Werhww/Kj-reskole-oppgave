@@ -175,9 +175,7 @@ function getChatsAndChatMesseges(id:string) {
         })
 
         const messagesQuery = query(msgCollectionRef, where('chatId', 'in', chats.value.map((chat:any) => chat.id)), orderBy('timestamp', 'desc'))
-        console.log(messagesQuery)
         onSnapshot(messagesQuery, (messagesSnapShot:any) => {
-            console.log(messagesSnapShot.docs)
             const chatMap: Record<string, ChatMessages> = {};
 
             messagesSnapShot.docs.forEach((doc:any) => {

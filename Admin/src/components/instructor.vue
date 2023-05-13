@@ -57,7 +57,6 @@ function addUser() {
 
             return
         }
-        
 
         updateDoc(doc(userRef, newUserValue.value), {
             mainInstructor: prop.id
@@ -147,6 +146,4 @@ function open() {
     text-decoration: underline;
     cursor: pointer;
 }
-
-
 </style>

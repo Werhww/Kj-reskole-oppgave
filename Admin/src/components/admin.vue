@@ -2,7 +2,7 @@
 import { signOut } from 'firebase/auth';
 import { auth, db } from '@/firebase/firebase';
 import { onMounted, ref } from 'vue';
-import { collection, doc, onSnapshot, query, updateDoc, where, getDocs} from 'firebase/firestore';
+import { collection, doc, onSnapshot, deleteDoc  } from 'firebase/firestore';
 import instructor from './instructor.vue';
 import users from './users.vue';
 import newInstructorPopup from './newInstructorPopup.vue';
@@ -70,6 +70,33 @@ const isInstuctor = ref(false)
 function addInstuctor() {
     isInstuctor.value = !isInstuctor.value
 }
+
+const isDeleteInstuctor = ref(false)
+const deleteInstructorText = ref("Fjern instructor")
+const deleteInstructorId = ref("400")
+
+async function deleteInstructor() {
+    if(isDeleteInstuctor.value) {
+        const deleteId = deleteInstructorId.value 
+
+        if(deleteId == "400") {
+            deleteInstructorText.value = "Fjern instructor"
+            isDeleteInstuctor.value = false
+            return
+        }
+
+        console.log(deleteInstructorId.value )
+
+        await deleteDoc(doc(collection(db, "instructors"), deleteId))
+
+        deleteInstructorText.value = "Fjern instructor"
+        isDeleteInstuctor.value = false
+    } else {
+
+        deleteInstructorText.value = "Fjern"
+        isDeleteInstuctor.value = true
+    }
+}
 </script>
 
 <template>
@@ -81,6 +108,13 @@ function addInstuctor() {
     <div class="instructors">
         <div class="ekstra_info">
            <h1>Instruktører</h1>
+           <div>
+                <p @click="deleteInstructor" class="add_instuctor">{{ deleteInstructorText }}</p>
+                <select v-if="isDeleteInstuctor" v-model="deleteInstructorId">
+                    <option value="400">Avbryt med fjern knappen</option>
+                    <option v-for="instructor in allInstructor" :value="instructor.id">{{ instructor.name }}</option>
+                </select>
+           </div>
            <p @click="addInstuctor" class="add_instuctor">Ny Instruktør</p>
         </div>
         

@@ -28,7 +28,6 @@ async function createUser() {
     await setDoc(doc(instructorRef, instructor.user.uid), {
         name: loginInfo.value.name
     })
-    console.log('user created')
 
     signInWithEmailAndPassword(auth, props.mail, props.password)
     emit('avbryt')
