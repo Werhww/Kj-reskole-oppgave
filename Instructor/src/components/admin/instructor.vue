@@ -53,11 +53,7 @@ function addUser() {
     if(newUser.value) {
         if(newUserValue.value == "400") {
             newUser.value = false
-            addUserText.value = "avbrut"
-
-            setTimeout(()=>{
-                addUserText.value = "ny bruker"
-            }, 1000)
+            addUserText.value = "ny bruker"
 
             return
         }
@@ -78,11 +74,7 @@ function deleteUser() {
     if(removeUser.value) {
         if(removeUserValue.value == "400") {
             removeUser.value = false
-            removeUserText.value = "avbrut"
-
-            setTimeout(()=>{
-                removeUserText.value = "fjern bruker"
-            }, 1000)
+            removeUserText.value = "fjern bruker"
             
             return
         }

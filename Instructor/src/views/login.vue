@@ -2,8 +2,10 @@
 import { auth } from '@/firebase/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter } from 'vue-router'
 const router = useRouter()
+
+const emits = defineEmits(['login'])
 
 const mail = ref('')
 const password = ref('')
@@ -11,6 +13,7 @@ const password = ref('')
 const msg = ref('')
 
 async function login() {
+    emits('login', mail.value, password.value)
     try {
         await signInWithEmailAndPassword(auth, mail.value, password.value)
         router.push('/')

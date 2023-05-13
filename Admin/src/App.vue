@@ -1,46 +1,47 @@
 <script setup lang="ts">
-import Header from './components/header.vue';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from './firebase/firebase';
-import { onMounted, ref } from 'vue';
-
-import login from './views/login.vue';
-import Admin from './views/admin.vue';
-
-const loggedIn = ref(false)
-const signInnPage = ref(true)
-const adminPage = ref(false)
-const name = ref<string | any>("")
-
-onMounted(()=>{
-    onAuthStateChanged(auth, (user)=> {
-        if(user) {
-            const uid = user.uid;
-            if(uid === "1RAh131ORqQPoF7m3E00Uwfj1rz1") {
-                adminPage.value = true
-                signInnPage.value = false
-            } else {
-                loggedIn.value = true
-                signInnPage.value = false
-                adminPage.value = false
-            }
-
-            name.value = user.displayName
-        } else {
-            loggedIn.value = false
-            signInnPage.value = true
-            adminPage.value = false
-        }
-    })
-})
-
+import HelloWorld from './components/HelloWorld.vue'
+import TheWelcome from './components/TheWelcome.vue'
 </script>
 
 <template>
-<Header :user-name="name" v-if="loggedIn"/>
+  <header>
+    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
 
+    <div class="wrapper">
+      <HelloWorld msg="You did it!" />
+    </div>
+  </header>
 
-<login v-if="signInnPage"/>
-<Admin v-if="adminPage" />
-<RouterView v-if="loggedIn"/>
+  <main>
+    <TheWelcome />
+  </main>
 </template>
+
+<style scoped>
+header {
+  line-height: 1.5;
+}
+
+.logo {
+  display: block;
+  margin: 0 auto 2rem;
+}
+
+@media (min-width: 1024px) {
+  header {
+    display: flex;
+    place-items: center;
+    padding-right: calc(var(--section-gap) / 2);
+  }
+
+  .logo {
+    margin: 0 2rem 0 0;
+  }
+
+  header .wrapper {
+    display: flex;
+    place-items: flex-start;
+    flex-wrap: wrap;
+  }
+}
+</style>
