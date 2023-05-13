@@ -15,7 +15,7 @@ const msg = ref('')
 async function login() {
     emits('login', mail.value, password.value)
     try {
-        await signInWithEmailAndPassword(auth, mail.value, password.value)
+        signInWithEmailAndPassword(auth, mail.value, password.value)
         router.push('/')
     } catch(error) {
         msg.value = `${error}`

@@ -3,7 +3,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './firebase/firebase';
 import login from './components/login.vue';
 import admin from './components/admin.vue';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 const loggedIn = ref(false)
 
@@ -17,17 +17,18 @@ function loginEmit(mail:string, password:string) {
   loginInfo.value.password = password
 }
 
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    const uid = user.uid;
-    if(uid == '1RAh131ORqQPoF7m3E00Uwfj1rz1') {
-      loggedIn.value = true
+onMounted(()=>{
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      const uid = user.uid;
+
+      if(uid == '1RAh131ORqQPoF7m3E00Uwfj1rz1') {
+        loggedIn.value = true
+      }
     } else {
       loggedIn.value = false
     }
-  } else {
-    loggedIn.value = false
-  }
+  })
 })
 </script>
 

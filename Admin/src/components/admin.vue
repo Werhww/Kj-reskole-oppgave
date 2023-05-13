@@ -14,21 +14,6 @@ const props = defineProps<{
     }
 }>()
 
-onMounted(()=>{
-    const mail = sessionStorage.getItem("mail")
-
-    if(props.loginInfo.mail == "") {
-        signOut(auth)
-    }
-
-    if(mail == null || mail != props.loginInfo.mail) {
-        sessionStorage.setItem("mail", props.loginInfo.mail)
-        sessionStorage.setItem("password", props.loginInfo.password)
-    }
-
-    
-})
-
 const instructorRef = collection(db, "instructors")
 
 interface instructors {
@@ -40,6 +25,8 @@ const allInstructor = ref<instructors[]>([])
 
 onMounted(()=>{
     onSnapshot(instructorRef ,(docs)=>{
+        allInstructor.value = []
+
         docs.docs.forEach((data)=>{
             allInstructor.value?.push({
                 name: data.data().name,

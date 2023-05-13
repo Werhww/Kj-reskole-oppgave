@@ -48,10 +48,7 @@ watch([() => instructorCourses.value, week], ([newcourse, newweek]) => {
     const week = newweek
 
     const sortedCourses:courseProps[] = []
-    
-    console.log(newcourse)
-    console.log(newweek)
-    
+
     courses.forEach((course) => {
         const courseWeek = moment(course.startTime).week()
 
@@ -73,13 +70,10 @@ watch([() => instructorCourses.value, week], ([newcourse, newweek]) => {
                 instructorID: course.instructorID,
                 courseTypeID: course.courseTypeID,
             })
-        }
-        
-        console.log('added')    
+        } 
     })
 
     currentWeekCourses.value = sortedCourses
-    console.log('sorted')
 })
 
 const showedCourse = ref({

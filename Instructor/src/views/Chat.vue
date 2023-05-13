@@ -29,7 +29,7 @@ async function openChat(personId:string) {
     const personWrapperChildren = personWrapper.value?.children
     const chatAmount = chats.value.length
 
-    const chatId = `${personId}_${instructorRef}`
+    const chatId = `${personId}_${instructorRef.value}`
     currentChatId.value = chatId
 
     assingChat(chatId)
@@ -49,20 +49,20 @@ function assingChat(chatId:string) {
     currentChat.value = allChatMessages.value[chatId]
 }
 
-async function createChat(studentId:string) {
-    const chatId = `${studentId}_${instructorRef}`
+async function createChat(studentId:string, ref:string) {
+    const chatId = `${studentId}_${ref}`
 
     const userDoc = await getDoc(doc(db, "users", studentId))
     const userName = userDoc.data()?.name
     
-    const instructorDoc = await getDoc(doc(db, "instructors", instructorRef))
+    const instructorDoc = await getDoc(doc(db, "instructors", ref))
     const instructorName = instructorDoc.data()?.name
     
     const chat = {
         user: userName,
         userId: studentId,
         instructorChat: false,
-        instructorId: instructorRef,
+        instructorId: ref,
         instructor: instructorName,
     }
 
@@ -117,7 +117,7 @@ if(route.params.studentID) {
     }
 
     if (!chatFound) {
-        createChat(studentID.toString())
+        createChat(studentID.toString(), instructorRef.value)
     }
 }
 </script>

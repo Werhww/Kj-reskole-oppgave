@@ -4,21 +4,6 @@ import { collection, getDocs, doc, onSnapshot, getDoc, where, query, orderBy } f
 import { auth } from "./firebase";
 import { onAuthStateChanged } from 'firebase/auth';
 
-const instructorRef = ref("")
-
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        const uid = user.uid;
-        if(uid === "1RAh131ORqQPoF7m3E00Uwfj1rz1") {
-            return
-        } else {
-            instructorRef.value = user.uid;
-        }
-
-      
-    }
-})
-
 /* Firebase snapshots */
 const InstructorsSnapshot = await getDocs(collection(db, "instructors"))
 const PlacesSnapshot = await getDocs(collection(db, "places"))
@@ -119,25 +104,21 @@ const instructorsUsers = ref<instructorUsers[]>([])
 
 const usersCollectionRef = collection(db, "users")
 
-watch(instructorRef, (newValue)=>{
-    if(newValue = "") {
+function getInstructorUsers(id: string) {
+    const usersQuery = query(usersCollectionRef, where("mainInstructor", "==", id))
 
-    } else {
-        const usersQuery = query(usersCollectionRef, where("mainInstructor", "==", instructorRef))
-
-        onSnapshot(usersQuery, (students:any) => {
-            instructorsUsers.value = []
-        
-            students.forEach(async (student:any) => {
-                instructorsUsers.value.push({
-                    userId: student.id,
-                    name: student.data().name,
-                    license: student.data().license,
-                })
+    onSnapshot(usersQuery, (students:any) => {
+        instructorsUsers.value = []
+    
+        students.forEach(async (student:any) => {
+            instructorsUsers.value.push({
+                userId: student.id,
+                name: student.data().name,
+                license: student.data().license,
             })
         })
-    }
-})
+    })
+}
 
 /* All Chat Reladted */
 const chatCollectionRef = collection(db, "chats")
@@ -165,16 +146,13 @@ const chats = ref<Chat[]>([])
 
 const chatMessages = ref<any>()
 
-watch(instructorRef, (newValue)=>{
-    if(newValue = "") {
+function getChatsAndChatMesseges(id:string) {
+    const chatCollectionQuery = query(chatCollectionRef, where("instructorId", "==", id))
 
-    } else {
-        const chatCollectionQuery = query(chatCollectionRef, where("instructorId", "==", instructorRef))
-
-       onSnapshot(chatCollectionQuery,(querySnapshot:any) => {
+    onSnapshot(chatCollectionQuery,(querySnapshot:any) => {
         chats.value = querySnapshot.docs.map((doc:any) =>{
             if(doc.instructorChat === true){
-                if(doc.data().instructorId === instructorRef){
+                if(doc.data().instructorId === id){
                     return {
                         id: doc.id,
                         chatName: doc.data().user,
@@ -195,9 +173,11 @@ watch(instructorRef, (newValue)=>{
                 }
             }     
         })
-        const messagesQuery = query(msgCollectionRef, where('chatId', 'in', chats.value.map((chat:any) => chat.id)), orderBy('timestamp', 'desc'))
 
+        const messagesQuery = query(msgCollectionRef, where('chatId', 'in', chats.value.map((chat:any) => chat.id)), orderBy('timestamp', 'desc'))
+        console.log(messagesQuery)
         onSnapshot(messagesQuery, (messagesSnapShot:any) => {
+            console.log(messagesSnapShot.docs)
             const chatMap: Record<string, ChatMessages> = {};
 
             messagesSnapShot.docs.forEach((doc:any) => {
@@ -219,8 +199,7 @@ watch(instructorRef, (newValue)=>{
             chatMessages.value = chatMap;
         })
     }) 
-    }
-})
+}
 
 /* Instrcors courses for calender */
 interface courseProps {
@@ -267,7 +246,7 @@ function findplace(placeId:string) {
 }
 
 function findInstructor(instructorId:string) {
-    const instructor  =allInstructors.value.find((instructor) => instructor.instructorId === instructorId)
+    const instructor = allInstructors.value.find((instructor) => instructor.instructorId === instructorId)
 
     if(instructor) {
         return instructor
@@ -289,48 +268,59 @@ async function findStudent(studentId:string) {
     }
 }
 
-watch(instructorRef, (newValue)=>{
-    if(newValue = "") {
+function getInstructorCourses(id:string) {
+    const coursesQuery = query(coursesCollectionRef, where("instructorId", "==", id))
 
-    } else {
-        const coursesQuery = query(coursesCollectionRef, where("instructorId", "==", instructorRef))
+    onSnapshot(coursesQuery, (courses:any) => {
 
-        onSnapshot(coursesQuery, (courses:any) => {
+        const allCourses: courseProps[] = []
+        courses.docs.map(async (doc:any) => {
+            const courseType = findCourseTemplate(doc.data().courseTemplateId) as {name: string}
+            const place = findplace(doc.data().placeId)
+            const instructor = findInstructor(doc.data().instructorId)
+            const student = await findStudent(doc.data().userId)
     
-            const allCourses: courseProps[] = []
-            courses.docs.map(async (doc:any) => {
-                const courseType = findCourseTemplate(doc.data().courseTemplateId) as {name: string}
-                const place = findplace(doc.data().placeId)
-                const instructor = findInstructor(doc.data().instructorId)
-                const student = await findStudent(doc.data().userId)
-        
-                allCourses.push({
-                    course: courseType.name,
-                    startTime: doc.data().startTime,
-                    endTime: doc.data().endTime,
-        
-                    shortAddress: place.name,
-                    fullAddress: place.fullAddress,
-        
-                    amount: doc.data().amount,
-                    price: doc.data().price,
-                    paid: doc.data().paid,
-        
-                    instructor: instructor.name,
-                    comment: doc.data().comment,
-        
-                    student: student.name,
-        
-                    studentID: doc.data().userId,
-                    courseID: doc.id,
-                    instructorID: doc.data().instructorId,
-                    courseTypeID: doc.data().courseTemplateId,
-        
-                })
+            allCourses.push({
+                course: courseType.name,
+                startTime: doc.data().startTime,
+                endTime: doc.data().endTime,
+    
+                shortAddress: place.name,
+                fullAddress: place.fullAddress,
+    
+                amount: doc.data().amount,
+                price: doc.data().price,
+                paid: doc.data().paid,
+    
+                instructor: instructor.name,
+                comment: doc.data().comment,
+    
+                student: student.name,
+    
+                studentID: doc.data().userId,
+                courseID: doc.id,
+                instructorID: doc.data().instructorId,
+                courseTypeID: doc.data().courseTemplateId,
+    
             })
-        
-            instructorCourses.value = allCourses
         })
+    
+        instructorCourses.value = allCourses
+    })
+}
+
+const instructorRef = ref("")
+
+onAuthStateChanged(auth, (user) => {
+    if(user) {
+        const uid = user.uid;
+        instructorRef.value = uid;
+        getInstructorUsers(uid)
+        getChatsAndChatMesseges(uid)
+        getInstructorCourses(uid)
+    } else {
+        console.log("No user")
+        instructorRef.value = ""
     }
 })
 

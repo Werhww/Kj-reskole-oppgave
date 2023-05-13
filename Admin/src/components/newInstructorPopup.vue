@@ -24,12 +24,11 @@ async function createUser() {
     updateProfile(instructor.user, {
         displayName: loginInfo.value.name
     })
-    signOut(auth)
 
-    setDoc(doc(instructorRef, instructor.user.uid), {
+    await setDoc(doc(instructorRef, instructor.user.uid), {
         name: loginInfo.value.name
     })
-
+    console.log('user created')
 
     signInWithEmailAndPassword(auth, props.mail, props.password)
     emit('avbryt')
