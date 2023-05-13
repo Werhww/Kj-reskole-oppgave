@@ -1,14 +1,26 @@
 import { ref, watch } from "vue";
+import { db, auth } from "./firebase";
 import moment from "moment";
+import { onAuthStateChanged } from "firebase/auth";
+
+
+
 
 const user = ref({
     payedCoursesSum: 5600,
     commingCoursesSum: 3400,
-
 });
 
 /* all achievements and time driven */
-const achievements = ref({
+interface achievements {
+    driveTime: number
+    achievement: {
+        name: string,
+        done: boolean
+    }[]
+}
+
+const achievements = ref<achievements>({
     driveTime: 9,
     achievement: [
         {
@@ -282,6 +294,14 @@ setTimeout(() => {
         comment: ""
     }]
 }, 1000)
+
+const userRef = ref('gGQAGRDNuxHaSmTkc45S')
+
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        userRef.value = user.uid
+    }
+})
 
 export {
     achievements,
