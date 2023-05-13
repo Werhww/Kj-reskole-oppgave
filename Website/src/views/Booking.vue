@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import Offer from "@/components/offer.vue"
 import Input from "@/components/input.vue"
-import { ref, computed, onMounted } from "vue"
+import { ref } from "vue"
+import { db, auth } from '@/firebase/firebase'
+import { collection, setDoc, doc } from "firebase/firestore"
+import { createUserWithEmailAndPassword } from "firebase/auth"
 
 const offers = [
   {
@@ -49,19 +52,68 @@ const Light_motocycle = ref(false)
 const Medium_heavy_motocycle = ref(false)
 const Heavy_motocycle = ref(false)
 
+/* Data til database */
+const formData = ref({
+  name: '',
+  age: '',
+  mail: '',
+  phone: '',
+  license: '',
+  trafical: false,
+  nightTraining: false,
+  mainInstructor: ""
+})
 
-function test() {
-  console.log(Fornavn.value)
-  console.log(Etternavn.value)
-  console.log(Alder.value)
-  console.log(Epost.value)
-  console.log(Telefon.value)
-  console.log(Trafical.value + " Trafical")
-  console.log(Night_Training.value + " Night_Training")
-  console.log(Personal_Car.value + " Personal_Car")
-  console.log(Light_motocycle.value + " Light_motocycle")
-  console.log(Medium_heavy_motocycle.value + " Medium_heavy_motocycle")
-  console.log(Heavy_motocycle.value + " Heavy_motocycle")
+const errorMsg = ref<any>('')
+
+const formSendt = ref(false)
+
+const userRef = collection(db, "users")
+
+
+async function sendForm() {
+  if(!Fornavn.value || !Etternavn.value || !Alder.value || !Epost.value || !Telefon.value) {
+    alert('Fyll inn kontakt info')
+    return
+  }
+
+  let license:string 
+
+  if(Heavy_motocycle.value == true) {
+    license = "A"
+  } else if(Medium_heavy_motocycle.value == true) {
+    license = "A2"
+  } else if(Light_motocycle.value == true) {
+    license = "A1"
+  } else if(Personal_Car.value == true) {
+    license = "B"
+  } else {
+    alert('Velg førerkort')
+    return
+  }
+
+  formData.value.name = Fornavn.value + " " + Etternavn.value
+  formData.value.age = Alder.value
+  formData.value.mail = Epost.value
+  formData.value.phone = Telefon.value
+  formData.value.license = license
+  formData.value.trafical = Trafical.value
+  formData.value.nightTraining = Night_Training.value
+  try {
+    const user = await createUserWithEmailAndPassword(auth, Epost.value, Telefon.value)
+    const userId = user.user.uid
+
+    setDoc(doc(userRef, userId), formData.value)
+
+    errorMsg.value = 'Form sendt!'
+  } catch (error) {
+    errorMsg.value = error
+
+    setTimeout(() => {
+      errorMsg.value = ''
+    }, 5000);
+  }
+
 }
 
 /* Toggels all license and change them to false */
@@ -124,7 +176,7 @@ function toggelLicense (e:any) {
 
 <template>
 <form
-@submit.prevent="test"
+@submit.prevent="sendForm"
 >
   <div class="container1">
     <h1>Kontaktinformasjon</h1>
@@ -157,9 +209,10 @@ function toggelLicense (e:any) {
   </div>
 
   <div class="Buttons">
-    <button type="submit" class="submit">Send Inn</button>
+    <button type="submit" class="submit" :disabled="formSendt">Send Inn</button>
     <button type="button" class="cancel" @click="cancel">Avbryt</button>
   </div>
+  <p>{{ errorMsg }}</p>
   
 </form>
 </template>

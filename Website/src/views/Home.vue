@@ -3,6 +3,9 @@ import Employee from '@/components/employee.vue'
 import Offer from '@/components/offer.vue'
 import Prices from '@/components/prices.vue'
 
+import { useRouter } from 'vue-router'
+const router = useRouter()
+
 const offers = [
   {
     imgLink: '/src/assets/offers/personbil.svg',
@@ -146,7 +149,7 @@ const motorcycle_prices = [
       <div class="bestill-text">
         <h1>Start å kjøre <span>nå!</span></h1>
         <p>Worem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.</p>
-        <button>Bestill time</button>
+        <button @click="router.push('/booking')">Bestill time</button>
       </div>
       <img src="../assets/Bestill.svg" alt="Bestill">
     </div>
