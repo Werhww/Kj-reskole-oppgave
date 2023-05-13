@@ -1,47 +1,41 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from './firebase/firebase';
+import login from './components/login.vue';
+import admin from './components/admin.vue';
+import { ref } from 'vue';
+
+const loggedIn = ref(false)
+
+const loginInfo = ref({
+  mail: "",
+  password: ""
+})
+
+function loginEmit(mail:string, password:string) {
+  loginInfo.value.mail = mail
+  loginInfo.value.password = password
+}
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    const uid = user.uid;
+    if(uid == '1RAh131ORqQPoF7m3E00Uwfj1rz1') {
+      loggedIn.value = true
+    } else {
+      loggedIn.value = false
+    }
+  } else {
+    loggedIn.value = false
+  }
+})
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+<login v-if="!loggedIn" v-on:login="loginEmit"/>
+<admin v-if="loggedIn" :login-info="loginInfo"/>
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
-}
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
 </style>

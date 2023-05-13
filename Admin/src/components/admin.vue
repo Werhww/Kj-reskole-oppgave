@@ -3,9 +3,9 @@ import { signOut } from 'firebase/auth';
 import { auth, db } from '@/firebase/firebase';
 import { onMounted, ref } from 'vue';
 import { collection, doc, onSnapshot, query, updateDoc, where, getDocs} from 'firebase/firestore';
-import instructor from '@/components/admin/instructor.vue';
-import users from '@/components/admin/users.vue';
-import newInstructorPopup from '@/components/admin/newInstructorPopup.vue';
+import instructor from './instructor.vue';
+import users from './users.vue';
+import newInstructorPopup from './newInstructorPopup.vue';
 
 const props = defineProps<{
     loginInfo: {
