@@ -3,9 +3,9 @@ import { ref } from 'vue'
 
 const props = defineProps<{
     courseTitle: string;
-    amount: string;
+    amount: number;
     date: string;
-    price: string;
+    price: number;
     paid?: boolean;
 
     /* Dropdown content */

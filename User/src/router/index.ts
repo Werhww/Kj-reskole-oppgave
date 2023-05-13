@@ -19,6 +19,11 @@ const router = createRouter({
       name: 'courses',
       component: () => import('../views/Courses.vue')
     },
+    {
+      path: '/login',
+      name: 'login',
+      component: () => import('../views/Login.vue')
+    }
   ],
   scrollBehavior(to, from, savedPosition) {
     if (to.hash) {

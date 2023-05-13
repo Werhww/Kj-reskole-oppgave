@@ -1,13 +1,20 @@
 <script setup lang="ts">
-
+import { auth } from '../firebase/firebase';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { ref } from 'vue';
 
 const props = defineProps<{
     userName: string,
 }>()
+
+function logout() {
+    signOut(auth)
+}
 </script>
 
 <template>
 <header>
+    <p @click="logout" class="signOut">Sign Out</p>
     <router-link to="/chat"><img src="../assets/chat.svg"></router-link>
     <router-link to="/">{{ userName }}</router-link>
 </header>
@@ -29,6 +36,17 @@ header a:last-child {
     color: white;
     font-family: 'Iceberg', cursive;
     text-decoration: none;
+}
+
+p {
+    align-self: center;
+}
+
+.signOut {  
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--grey);
+    cursor: pointer;
 }
 </style>
 

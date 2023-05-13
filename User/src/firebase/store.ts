@@ -4,8 +4,6 @@ import moment from "moment";
 import { onAuthStateChanged } from "firebase/auth";
 
 
-
-
 const user = ref({
     payedCoursesSum: 5600,
     commingCoursesSum: 3400,
