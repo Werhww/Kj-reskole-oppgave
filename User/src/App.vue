@@ -5,6 +5,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/firebase/firebase';
 import { useRouter } from 'vue-router';
 import { ref, watch } from 'vue';
+import { user } from './firebase/store'; 
 const router = useRouter()
 
 watch(router.currentRoute, () => {
@@ -16,21 +17,27 @@ watch(router.currentRoute, () => {
   }
 
 })
-
+const name = ref<string>('')
 const loggedIn = ref(false)
 
-onAuthStateChanged(auth, (user) => {
-  if (user) {
+watch(user, (newValue) => {
+  name.value = newValue.name
+})
+
+onAuthStateChanged(auth, (users) => {
+  if (users) {
     router.push('/')
     loggedIn.value = true
+    name.value = user.value.name
   } else {
     router.push('/login')
+    loggedIn.value = false
   }
 })
 </script>
 
 <template>
-  <Header user-name="Leo" v-if="loggedIn"/>
+  <Header :user-name="name" v-if="loggedIn"/>
 
   <RouterView />
 </template>

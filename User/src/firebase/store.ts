@@ -1,312 +1,374 @@
 import { ref, watch } from "vue";
-import { db, auth } from "./firebase";
 import moment from "moment";
-import { onAuthStateChanged } from "firebase/auth";
+import { onSnapshot, collection, doc, getDocs, query, where, orderBy } from "firebase/firestore";
+import { confirmPasswordReset, onAuthStateChanged,  } from "firebase/auth";
 
+import { db, auth } from "./firebase";
 
-const user = ref({
-    payedCoursesSum: 5600,
-    commingCoursesSum: 3400,
-});
+const userRef = ref("");
+
+/* All places */
+interface PlaceProps {
+    fullAddress: string,
+    name: string,
+    placeId: string,
+}
+const allPlaces = ref<PlaceProps[]>([])
+
+const allPlaceDocs = getDocs(collection(db, "places"))
+
+allPlaceDocs.then((querySnapshot) => {
+    querySnapshot.forEach((doc) => {
+        allPlaces.value.push({
+            fullAddress: doc.data().fullAddress,
+            name: doc.data().name,
+            placeId: doc.id,
+        })
+    })
+})
+
+/* All course templates */
+interface courseTemplateProps {
+    name: string,
+    templateId: string,
+    price: number,
+    license: string,
+    DurationMinutes: number,
+}
+
+const allCourseTemplates = ref<courseTemplateProps[]>([])
+
+const allCourseTemplateDocs = getDocs(collection(db, "courseTemplates"))
+
+allCourseTemplateDocs.then((querySnapshot) => {
+    querySnapshot.forEach((doc) => {
+        allCourseTemplates.value.push({
+            name: doc.data().name,
+            templateId: doc.id,
+            price: doc.data().price,
+            license: doc.data().license,
+            DurationMinutes: doc.data().DurationMinutes,
+        })
+    })
+})
+
+/* All instructors */
+interface instructorProps {
+    name: string,
+    instructorId: string,
+}
+
+const allInstructors = ref<instructorProps[]>([])
+
+const allInstructorDocs = getDocs(collection(db, "instructors"))
+
+allInstructorDocs.then((querySnapshot) => {
+    querySnapshot.forEach((doc) => {
+        allInstructors.value.push({
+            name: doc.data().name,
+            instructorId: doc.id,
+        })
+    })
+})
+
+interface UserProps {
+    userId: string,
+    name: string,
+    drivetime: string,
+    license: string,
+    mainInstructor: string,
+}
+
+const user = ref<UserProps>({
+    userId: "",
+    name: "",
+    drivetime: "0",
+    license: "",
+    mainInstructor: "",
+})
+
+const extraData = ref({
+    payedSum: 0,
+    unpaidSum: 0,
+})
+
+const achievementFetch = ref(false)
+
+async function getUserData() {
+    const userDoc = doc(db, "users", userRef.value)
+
+    onSnapshot(userDoc, (doc) => {
+        user.value.userId = doc.id
+        user.value.name = doc.data()?.name
+        user.value.drivetime = doc.data()?.drivetime
+        user.value.license = doc.data()?.license
+        user.value.mainInstructor = doc.data()?.mainInstructor
+
+        if(achievementFetch) {
+            getAchievements()
+            feachCourses()
+            getChatsAndChatMesseges()
+            achievementFetch.value = true
+        }
+    })
+}
 
 /* all achievements and time driven */
 interface achievements {
-    driveTime: number
-    achievement: {
-        name: string,
-        done: boolean
-    }[]
+    name: string,
+    done: boolean,
+    id: string,
 }
 
-const achievements = ref<achievements>({
-    driveTime: 9,
-    achievement: [
-        {
-            name: "Trafikalt grunnkurs",
-            done: true
-        },
-        {
-            name: "Grunnleggende opplæringen",
-            done: true
-        },
-        {
-            name: "Sikkerhetskurs i trafikk",
-            done: true
-        },
-        {
-            name: "Trinnvurdering (trinn 2)",
-            done: false
-        },
-        {
-            name: "Trinnvurdering (trinn 3)",
-            done: false
-        },
-        {
-            name: "Sikkerhetskurs på vei",
-            done: false
-        },
-        
-        {
-            name: "Teorie prøven",
-            done: false
-        },
-        {
-            name: "Mørkekjøring",
-            done: false
-        },
-    ]
-})
+const achievements = ref<achievements[]>([])
+
+const AchievementsRef = collection(db, "achievementTemplates")
+
+async function getAchievements() {
+    const achievementKey = user.value.license
+
+    const achievementsDoc = query(collection(db, "achievements"), where("userId", "==", userRef.value))
+    const licenseAchievements = await getDocs(collection(AchievementsRef, achievementKey, "achievements"))
+    const globalAchievements = await getDocs(collection(db, "achievementTemplates", "Global", "achievements"))
+
+    let allAchievements:any[] = []
+
+    function addTheRest() {
+        licenseAchievements.forEach((licenseDoc) => {
+            let alreadyDone = false
+
+            allAchievements.forEach((achievement:any) => {
+                if (licenseDoc.id == achievement.id) {
+                    alreadyDone = true
+                }
+            })
+
+            if (alreadyDone) {
+                return
+            } else {
+                const achievementData = {
+                    name: licenseDoc.data().name,
+                    done: false, // Set "done" as false for remaining achievements
+                    id: licenseDoc.id,
+                };
+
+                allAchievements.push(achievementData);
+            }
+          });
+      
+          globalAchievements.forEach((globalDoc) => {
+            let alreadyDone = false
+
+            allAchievements.forEach((achievement:any) => {
+                if (globalDoc.id == achievement.id) {
+                    alreadyDone = true
+                }
+            })
+
+            if (alreadyDone) {
+                return
+            } else {
+                const achievementData = {
+                    name: globalDoc.data().name,
+                    done: false, // Set "done" as false for remaining achievements
+                    id: globalDoc.id,
+                };
+                
+                allAchievements.push(achievementData);
+            }
+        });
+
+        achievements.value = allAchievements
+    }
+
+
+    onSnapshot(achievementsDoc, (querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+            licenseAchievements.forEach((licenseDoc) => {
+                if (doc.data().achievementId == licenseDoc.id) {
+                    const achievementData = {
+                      name: licenseDoc.data().name,
+                      done: true,
+                      id: licenseDoc.id,
+                    };
+                    allAchievements.push(achievementData);
+                }          
+            })
+            globalAchievements.forEach((globalDoc) => {
+                if (doc.data().achievementId == globalDoc.id) {
+                    const achievementData = {
+                      name: globalDoc.data().name,
+                      done: true,
+                      id: globalDoc.id,
+                    };
+                    allAchievements.push(achievementData);
+                }
+            })
+        })
+
+        addTheRest()
+    })
+}
+
 
 /* all courses combined & sorter for previus courses and comming courses */
 interface CourseProps {
-    course: string,
-    time: string,
-    date: string,
+    courseTemplateId: string,
+    instructorId: string,
+    placeId: string,
 
-    shortAddress: string,
-    fullAddress: string,
-
+    startTime: string,
+    endTime: string,
     amount: number,
-    price: number,
-    paid: boolean | undefined,
 
-    instructor: string,
-    comment: string
+    price: number,
+    paid: boolean,
+
+    comment: string,
 }
 
 const allCourses= ref<CourseProps[]>([])
 
-const previousCourses = ref<[] | any>([])
+const previousCourses = ref<CourseProps[]>([])
 
-const commingCourses = ref<[] | any>([])
+const commingCourses = ref<CourseProps[]>([])
 
-watch(allCourses, (item) => {
-    const now = moment().format()
+function feachCourses() {
+    const coursesRef = collection(db, "courses")
 
-    item.forEach((course:any) => {
-        let test = moment(course.date).isAfter(now)
-        if (test) {
-            commingCourses.value.push(course)
-        } else if (!test) {
+    const q = query(coursesRef, where("userId", "==", userRef.value))
+
+    const querySnapshot = getDocs(q)
+
+    querySnapshot.then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+            allCourses.value.push({
+                courseTemplateId: doc.data().courseTemplateId,
+                instructorId: doc.data().instructorId,
+                placeId: doc.data().placeId,
+
+                startTime: doc.data().startTime,
+                endTime: doc.data().endTime,
+                amount: doc.data().amount,
+
+                price: doc.data().price,
+                paid: doc.data().paid,
+
+                comment: doc.data().comment,
+            })
+        })
+
+        sortCourses()
+    })
+}
+
+function sortCourses() {
+    allCourses.value.forEach((course) => {
+
+        const today = moment(course.startTime).isBefore()
+
+        if (today) {
             previousCourses.value.push(course)
+        } else {
+            commingCourses.value.push(course)
         }
     })
-})
-
-/* Chats and chats messages */
-interface instructorsProps {
-    name: string,
-    instructorID: string,
-    isActive: boolean
 }
 
-interface chatMessages {
-    instructorID: string;
-    messages: {
-        from: string;
-        message: string;
-        datetime: string;
-    }[]
+/* All Chat Reladted */
+const chatCollectionRef = collection(db, "chats")
+const msgCollectionRef = collection(db, 'chatMessages')
+
+interface Chat {
+    id: string;
+    chatName: string;
+    instructorId: string;
+    studentId: string;
 }
 
-const instructors = ref<instructorsProps[]>([
-    {
-        name: "Leo",
-        instructorID: "1246145",
-        isActive: true
-    },
-    {
-        name: "Felix",
-        instructorID: "12214545",
-        isActive: false
-    },
-    {
-        name: "Trym",
-        instructorID: "12345",
-        isActive: false
-    },
-    {
-        name: "Trym",
-        instructorID: "12345",
-        isActive: false
-    }
-])
+interface Message {
+    text: string;
+    datetime: string;
+    from: string;
+}
 
-const chatMessages = ref<chatMessages[]>([
-    {
-        instructorID: "1246145",
-        messages: [
-            {
-                from: "instructor",
-                message: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-                datetime: "2023-04-19T18:01:16+02:00"
-            },
-            {
-                from: "user",
-                message: "NO3345",
-                datetime: "2023-04-19T17:01:16+02:00"
-            },
-            {
-                from: "instructor",
-                message: "Hello",
-                datetime: "2023-04-19T15:01:16+02:00"
-            },
-            {
-                from: "user",
-                message: "Hello1234",
-                datetime: "2023-04-18T11:01:16+02:00"
-            },
-            {
-                from: "instructor",
-                message: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-                datetime: "2023-04-11T09:01:16+02:00"
-            },
-        ]
-    },
-    {
-        instructorID: "12214545",
-        messages: [
-            {
-                from: "instructor",
-                message: "Who is this",
-                datetime: "2023-04-19T12:01:16+02:00"
-            },
-            {
-                from: "instructor",
-                message: "Hello",
-                datetime: "2023-04-19T12:01:16+02:00"
-            },
-            {
-                from: "user",
-                message: "Hello",
-                datetime: "2023-04-19T12:01:16+02:00"
-            },
-            {
-                from: "user",
-                message: "NO",
-                datetime: "2023-04-19T12:01:16+02:00"
-            }
-        ]
-    },
-    {
-        instructorID: "12345",
-        messages: [
-            {
-                from: "instructor",
-                message: "Who is this123",
-                datetime: "2023-04-19T12:01:16+02:00"
-            },
-            {
-                from: "instructor",
-                message: "Hellowqgqwg",
-                datetime: "2023-04-19T12:01:16+02:00"
-            },
-            {
-                from: "user",
-                message: "Helloqfeqt",
-                datetime: "2023-04-19T12:01:16+02:00"
-            },
-            {
-                from: "user",
-                message: "NOrrr",
-                datetime: "2023-04-19T12:01:16+02:00"
-            }
-        ]
-    },
-])
+interface ChatMessages {
+    chatId: string;
+    messages: Message[]
+}
 
-setTimeout(() => {
-    allCourses.value = [{
-        course: 'Kjøretime (A1)',
-        time: "15.30 - 17.30",
-        date: "2023-04-19T19:26:03+02:00",
+const chats = ref<Chat[]>([])
 
-        shortAddress: 'Areneset',
-        fullAddress: 'Areneset 8, 5350 Bergen',
+const chatMessages = ref<any>()
 
-        amount: 1,
-        price: 1000,
-        paid: undefined,
+function getChatsAndChatMesseges() {
+    const chatCollectionQuery = query(chatCollectionRef, where("userId", "==", userRef.value))
 
-        instructor: "Jonson Jones",
-        comment: "Bra kjørt, det blir bykjøring neste gang"
-    },
-    {
-        course: 'Traffikalt grunnkurs',
-        time: "15.30 - 17.30",
-        date: "2023-04-10T19:26:03+02:00",
+    onSnapshot(chatCollectionQuery,(querySnapshot:any) => {
+        querySnapshot.docs.forEach((doc:any) =>{
+            chats.value.push({
+                id: doc.id,
+                chatName: doc.data().instructor,
+                instructorId: doc.data().instructorId,
+                studentId: doc.data().userId,
+            })
+        })
 
-        shortAddress: 'Areneset',
-        fullAddress: 'Areneset 8, 5350 Bergen',
+        const messagesQuery = query(msgCollectionRef, where('chatId', 'in', chats.value.map((chat:any) => chat.id)), orderBy('timestamp', 'desc'))
+        onSnapshot(messagesQuery, (messagesSnapShot:any) => {
+            const chatMap: Record<string, ChatMessages> = {};
 
-        amount: 1,
-        price: 1000,
-        paid: false,
+            messagesSnapShot.docs.forEach((doc:any) => {
+                const chatId = doc.data().chatId
 
-        instructor: "Jonson Jones",
-        comment: "Bra kjørt, det blir bykjøring neste gang"
-    },
-    {
-        course: 'Kjøretime (A1)',
-        time: "15.30 - 17.30",
-        date: "2023-04-18T19:26:03+02:00",
+                const message = {
+                    text: doc.data().text,
+                    datetime: doc.data().datetime,
+                    from: doc.data().from,
+                }
 
-        shortAddress: 'Areneset',
-        fullAddress: 'Areneset 8, 5350 Bergen',
+                if (!(chatId in chatMap)) {
+                    chatMap[chatId] = { chatId, messages: [message] };
+                } else {
+                    chatMap[chatId].messages.push(message);
+                }
+            })
 
-        amount: 1,
-        price: 1000,
-        paid: undefined,
+            chatMessages.value = chatMap;
+        })
+    }) 
+}
 
-        instructor: "Jonson Jones",
-        comment: ""
-    },
-    {
-        course: 'Traffikalt grunnkurs',
-        time: "15.30 - 17.30",
-        date: "2023-04-15T19:26:03+02:00",
-
-        shortAddress: 'Areneset',
-        fullAddress: 'Areneset 8, 5350 Bergen',
-
-        amount: 1,
-        price: 1000,
-        paid: undefined,
-
-        instructor: "Jonson Jones",
-        comment: ""
-    },
-    {
-        course: 'Traffikalt grunnkurs',
-        time: "15.30 - 17.30",
-        date: "2023-04-11T19:26:03+02:00",
-
-        shortAddress: 'Areneset',
-        fullAddress: 'Areneset 8, 5350 Bergen',
-
-        amount: 1,
-        price: 1000,
-        paid: true,
-
-        instructor: "Jonson Jones",
-        comment: ""
-    }]
-}, 1000)
-
-const userRef = ref('gGQAGRDNuxHaSmTkc45S')
-
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth,async (user) => {
     if (user) {
         userRef.value = user.uid
+
+        getUserData()
+    } else {
+        console.log("no user")
     }
 })
 
 export {
+    allPlaces,
+    allCourseTemplates,
+    allInstructors,
+
     achievements,
-    allCourses,
     previousCourses,
     commingCourses,
+    
+    allCourses,
+
+    chats,
+    chatMessages,
+    userRef,
+    msgCollectionRef,
+
+    extraData,
     user,
-    instructors,
-    chatMessages
+}
+
+export type {
+    CourseProps
 }

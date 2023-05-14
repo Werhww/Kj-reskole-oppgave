@@ -1,37 +1,57 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import { addDoc, doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
+import moment from 'moment';
+
+import { chatMessages, chats, userRef, msgCollectionRef } from '@/firebase/store';
+import { db } from '@/firebase/firebase';
+
+/* Componnter */
 import Title from '@/components/title.vue';
 import ChatPersons from '@/components/chatPersons.vue';
 import ChatMessages from '@/components/chatMessage.vue';
-import { instructors, chatMessages } from '@/firebase/store';
-
-const chatPersons = ref(instructors)
 
 const allChatMessages = ref(chatMessages)
 
+interface Chat {
+    id: string
+    messages: any[]
+}
 
-const currentChat = ref<chatMessages>()
+const currentChat = ref<Chat>()
+const currentChatId = ref("")
 
 const personWrapper = ref<HTMLElement>()
 
 /* Opens chat messages and highlights the open chat person in the side menu */
-function openChat(instructorID:string, $event:any) {
-    console.log($event.target)
-
+function openChat(personId:string) {
     const personWrapperChildren = personWrapper.value?.children
+    const chatAmount = chats.value.length
 
-    for (let i = 0; i < chatPersons.value.length; i++) {
+    const chatId = `${userRef.value}_${personId}`
+    currentChatId.value = chatId
+
+    assingChat(chatId)
+
+    /* loop thougt all chatspersons and higtlight click one */
+    for (let i = 0; i < chatAmount; i++) {
         const person = personWrapperChildren?.item(i)
         person?.classList.contains("openChat") ? person.classList.remove("openChat") : null
-        $event.target.classList.add("openChat")
-    }
-    for (let i = 0; i < allChatMessages.value.length; i++) {
-        if (allChatMessages.value[i].instructorID === instructorID) {
-            currentChat.value = allChatMessages.value[i]
-            break
+
+        if (person?.id === personId) {
+            person?.classList.add("openChat")
         }
     }
 }
+
+function assingChat(chatId:string) {
+    currentChat.value = allChatMessages.value[chatId]
+}
+
+
+watch(allChatMessages, () => {
+    assingChat(currentChatId.value)
+})
 
 const newMessage = ref("")
 
@@ -39,23 +59,40 @@ function resize(el:any) {
     el.target.style.height = "18px"
     el.target.style.height = el.target.scrollHeight + "px"
 }
+
+async function sendMessage() {
+    const message = newMessage.value
+    const chatId = currentChatId.value
+
+    const messageObject = {
+        chatId: chatId,
+        from: "user",
+        text: message,
+        timestamp: serverTimestamp(),
+        datetime: moment().format()
+    }
+
+    newMessage.value = ""
+    await addDoc(msgCollectionRef, messageObject)
+    
+}
 </script>
 <template>
 <main>
     <Title text="Chat" color="var(--green)" />
     <section class="chat">
         <div class="chat_persons" ref="personWrapper" v-dragscroll> <!-- Chat persons -->
-            <ChatPersons v-for="item in chatPersons" :name="item.name" :instructor-i-d="item.instructorID" :open="item.isActive" :open-chat="openChat" />
+            <ChatPersons v-for="item in chats" :name="item.chatName" :instructor-id="item.instructorId" :open-chat="openChat" />
         </div>
         <div class="horisontal_Line"><!-- Horisontal line --></div>
         <div class="chat_messages"> <!-- Chat messages -->
             <div class="messages" v-dragscroll:nochilddrag>
-                <ChatMessages v-for="item in currentChat?.messages" :from="item.from" :message="item.message" :datetime="item.datetime" />
+                <ChatMessages v-for="item in currentChat?.messages" :from="item.from" :message="item.text" :datetime="item.datetime" />
             </div>
             <div class="messageInput">
                 <textarea ref="messageInput" @input="resize($event)" maxlength="150" rows="1" v-model="newMessage"></textarea>
                 <div>
-                    <img src="../assets/MessageSendArrow.svg">
+                    <img @click="sendMessage" src="../assets/MessageSendArrow.svg">
                     <p>{{newMessage.length}}/150</p>
                 </div>
             </div>

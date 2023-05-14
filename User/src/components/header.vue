@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { auth } from '../firebase/firebase';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { ref } from 'vue';
+import { signOut } from 'firebase/auth';
 
 const props = defineProps<{
     userName: string,

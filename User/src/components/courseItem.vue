@@ -1,18 +1,38 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import moment from 'moment'
 
 const props = defineProps<{
-    courseTitle: string;
-    amount: number;
-    date: string;
-    price: number;
-    paid?: boolean;
+    courseData: {
+        courseTemplateId: string,
+        instructorId: string,
+        placeId: string,
 
-    /* Dropdown content */
-    instructor?: string;
-    place?: string;
-    time?: string;
-    comment?: string;
+        startTime: string,
+        endTime: string,
+        amount: number,
+
+        price: number,
+        paid: boolean,
+
+        comment: string,
+    }
+
+    allPlaces: {
+        placeId: string,
+        name: string,
+        fullAddress: string,
+    }[],
+
+    allCourseTemplates: {
+        templateId: string,
+        name: string,
+    }[],
+
+    allInstructors: {
+        instructorId: string,
+        name: string,
+    }[],
 }>()
 
 const isDropdownOpen = ref(false)
@@ -28,6 +48,22 @@ function toggleDropdown() {
     }
 }
 
+const courseTitle = computed(() => props.allCourseTemplates.find(course => course.templateId === props.courseData.courseTemplateId)?.name)
+const place = computed(() => props.allPlaces.find(place => place.placeId === props.courseData.placeId)?.fullAddress)
+const instructor = computed(() => props.allInstructors.find(instructor => instructor.instructorId === props.courseData.instructorId)?.name)
+
+const date = computed(() => {
+    return moment(props.courseData.startTime).format('ddd.DD')
+
+})
+
+const time = computed(() => {
+    const fromTime = moment(props.courseData.startTime).format('HH:mm')
+    const toTime = moment(props.courseData.endTime).format('HH:mm')
+
+    return `${fromTime} - ${toTime}`
+})
+
 </script>
 
 <template>
@@ -36,13 +72,12 @@ function toggleDropdown() {
     <div class="top" @click="toggleDropdown"> 
         <!-- Content -->
         <div class="content">
-            <p>{{ courseTitle }} ({{ amount }})</p>
+            <p>{{ courseTitle }} ({{ courseData.amount }})</p>
             <p>{{ date }}</p>
             <div class="top_Price">
-                <p>{{ price }} kr</p>
-                <img v-if="paid == undefined" class="payment_hidden" src="../assets/Course_Unpaid.svg" draggable="false">
-                <img v-else-if="paid == false" src="../assets/Course_Unpaid.svg" alt="Unpaid">
-                <img v-else src="../assets/Course_Paid.svg" alt="Paid">
+                <p>{{ courseData.price }} kr</p>
+                <img v-if="courseData.paid == undefined" class="payment_hidden" src="../assets/Course_Unpaid.svg" draggable="false">
+                <img v-else src="../assets/Course_Unpaid.svg" alt="Unpaid">
             </div>
         </div>
         <div class="hover"><!-- Light gray hover transion --></div>
@@ -57,15 +92,15 @@ function toggleDropdown() {
                 <p>{{ time }}</p>
             </div>
             <div class="content_Price">
-                <img v-if="paid == undefined" class="payment_hidden" src="../assets/Course_Unpaid.svg" draggable="false">
-                <img v-else-if="paid == false" src="../assets/Course_Unpaid.svg" alt="Unpaid">
-                <img v-else src="../assets/Course_Paid.svg" alt="Paid">
-                <p>Pris: {{ price }} kr</p> 
+                <img v-if="courseData. paid == undefined" class="payment_hidden" src="../assets/Course_Unpaid.svg" draggable="false">
+                <img v-else src="../assets/Course_Unpaid.svg" alt="Unpaid">
+                <p>Pris: {{ courseData.price }} kr</p> 
             </div>
         </div>
         <div class="comment">
             <p>Kommentar:</p>
-            <p>{{ comment }}</p>
+
+            <p>{{ courseData.comment }}</p>
         </div>
         
     </div>

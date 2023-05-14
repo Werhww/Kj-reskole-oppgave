@@ -1,21 +1,49 @@
 <script setup lang="ts">
 import Underline from "@/components/underline.vue";
 import Button from "./button.vue";
+import { computed } from "vue";
+import moment from "moment";
 
 const props = defineProps<{
-    nameofday: string ,
+    courseData: {
+        courseTemplateId: string,
+        instructorId: string,
+        placeId: string,
 
-    course: string,
-    time: string,
-    date: string,
+        startTime: string,
+        endTime: string,
+        amount: number,
 
-    fullAddress: string,
+        price: number,
+        paid: boolean,
 
-    amount: number,
+        comment: string,
+    }
 
-    instructor: string,
-    comment: string
+    allCourseTemplates: {
+        templateId: string,
+        name: string,
+    }[],
+
+    allPlaces: {
+        placeId: string,
+        name: string,
+        fullAddress: string,
+    }[],
+
+    allInstructors: {
+        instructorId: string,
+        name: string,
+    }[],
 }>();
+const { courseTemplateId, instructorId, placeId, startTime, endTime, amount, price, paid, comment } = props.courseData
+
+const course = computed(() => props.allCourseTemplates.find(course => course.templateId === courseTemplateId)?.name);
+const place = computed(() => props.allPlaces.find(place => place.placeId === placeId)?.fullAddress);
+const instructor = computed(() => props.allInstructors.find(instructor => instructor.instructorId === instructorId)?.name);
+
+const fromDate = moment(startTime).format('dddd.Do MMM YYYY HH:mm');
+const toDate = moment(endTime).format('HH:mm');
 
 </script>
 
@@ -23,17 +51,9 @@ const props = defineProps<{
 <section>
     <h1>{{ course }} ({{ amount }})</h1>
     <Underline color="var(--green)" />
-    <p> {{ nameofday }}  , {{ date }}  , {{ time }} </p>
+    <p>{{ fromDate }} - {{ toDate }}</p>
     <p>{{ instructor }}</p>
-    <a :href="'https://maps.google.com/?q=' + fullAddress" target="_blank" >{{ fullAddress }}</a>
-    <iframe
-        width="600"
-        height="400"
-        frameborder="0" style="border:0"
-        referrerpolicy="no-referrer-when-downgrade"
-        :src="'https://www.google.com/maps/embed/v1/place?key=AIzaSyDlI2n6RDHhq9KgWZYbWjiR3OWuIDJOV2s&q=' + fullAddress"
-        allowfullscreen>
-    </iframe>
+    <a :href="'https://maps.google.com/?q=' + place" target="_blank" >{{ place }}</a>
     <p>Kommentar:</p>
     <p>{{ comment }}</p>
     <div>

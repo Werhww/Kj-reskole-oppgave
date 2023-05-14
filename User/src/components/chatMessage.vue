@@ -9,10 +9,10 @@ const props = defineProps<{
 }>()
 
 const messageFrom = computed(() => {
-    if (props.from === 'instructor') {
-        return false
-    } else {
+    if (props.from === 'user') {
         return true
+    } else {
+        return false
     }
 })
 
@@ -22,7 +22,7 @@ const time = computed(() => {
     if (weekAgo) {
         return moment(props.datetime).format('MMMM Do  - HH:mm')
     } else {
-        return moment(props.datetime).isBefore(timeNow, 'day') ? moment(props.datetime).format('dddd HH:mm') : moment(props.datetime).format('HH:mm')
+        return moment(props.datetime).isBefore(timeNow, 'day') ? moment(props.datetime).format('dddd - HH:mm') : `Today - ${moment(props.datetime).format('HH:mm')}`
     }
 })
 </script>
@@ -46,16 +46,14 @@ const time = computed(() => {
 
 <!-- For the diffrent types -->
 <style scoped>
-.fromUser {
-    align-self: end;
-}
 
 .messageUser {
     background-color: var(--green);
     color: white;
 }
 
-.timeUser {
+.timeUser, 
+.fromUser {
     align-self: end;
 }
 
@@ -91,6 +89,7 @@ const time = computed(() => {
 
 .time {
     display: flex;
+    flex-direction: row;
 }
 
 @media only screen and (max-width: 900px) {

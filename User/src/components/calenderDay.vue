@@ -1,19 +1,82 @@
 <script setup lang="ts">
+import moment from 'moment';
+import { computed } from 'vue';
+
 const props = defineProps<{
-    dateDay: string,
-    course: string,
-    time: string,
-    shortAddress: string,
-    fullAddress: string,
+    startTime: string,
+    endTime: string,
+
+    courseTemplateId: string,
+    placeId: string,
+
+    allPlaces: {
+        placeId: string,
+        name: string,
+        fullAddress: string,
+    }[],
+
+    allCourseTemplates: {
+        templateId: string,
+        name: string,
+    }[],
+
+    allCoursData : {
+        courseTemplateId: string,
+        instructorId: string,
+        placeId: string,
+
+        startTime: string,
+        endTime: string,
+        amount: number,
+
+        price: number,
+        paid: boolean,
+
+        comment: string,
+    }
+    
 }>()
+
+const emit = defineEmits(['open'])
+
+const course = computed(() => props.allCourseTemplates.find(course => course.templateId === props.courseTemplateId)?.name);
+
+const place = computed(() => props.allPlaces.find(place => place.placeId === props.placeId));
+
+const date = computed(() => {
+    const test = moment(props.startTime).format('ddd.DD')
+    if (test === 'Invalid date') {
+        return ''
+    } else {
+        return test
+    }
+})
+
+const timeFrom = computed(() => {
+    const test = moment(props.startTime).format('HH:mm')
+    if (test === 'Invalid date') {
+        return ''
+    } else {
+        return test
+    }
+})
+
+const timeTo = computed(() => {
+    const test = moment(props.endTime).format('HH:mm')
+    if (test === 'Invalid date') {
+        return ''
+    } else {
+        return test
+    }
+})
 </script>
 
 <template>
-<div class="content">
-    <p>{{ dateDay }}</p>
+<div class="content" @click="$emit('open', allCoursData)">
+    <p>{{ date }}</p>
     <p>{{ course }}</p>
-    <p>{{ time }}</p>
-    <a :href="'https://maps.google.com/?q=' + fullAddress" target="_blank">{{ shortAddress }}</a>
+    <p>{{ timeFrom }} - {{ timeTo }}</p>
+    <a :href="'https://maps.google.com/?q=' + place?.fullAddress" target="_blank">{{ place?.name }}</a>
 </div>
 </template>
 

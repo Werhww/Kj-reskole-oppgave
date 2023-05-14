@@ -5,9 +5,7 @@ import Achievement from "@/components/achievement.vue";
 import { ref } from "vue";
 import moment from 'moment';
 
-import { commingCourses, previousCourses, achievements } from "../firebase/store";
-
-const Achievements = ref(achievements);
+import { commingCourses, previousCourses, achievements, user, allCourseTemplates, allInstructors, allPlaces } from "../firebase/store";
 
 const PreviousCourses = ref(previousCourses)
 
@@ -35,7 +33,7 @@ function payNow() {
                     <p>Dato</p>
                     <p class="info_price">Pris</p>
                 </span>
-                <CourseItem v-for="item in PreviousCourses" :instructor="item.instructor" :place="item.fullAddress" :time="item.time" :comment="item.comment" :course-title="item.course" :amount="item.amount" :date="moment(item.date).format('DD.MM.YYYY')" :price="item.price" :paid="item.paid" />
+                <CourseItem v-for="item in PreviousCourses" :course-data="item" :all-course-templates="allCourseTemplates" :all-instructors="allInstructors" :all-places="allPlaces" />
             </div>
         </div>
         <div class="course_content">
@@ -46,18 +44,17 @@ function payNow() {
                     <p>Dato</p>
                     <p class="info_price">Pris</p>
                 </span>
-                <CourseItem v-for="item in CommingCourses" :instructor="item.instructor" :place="item.fullAddress" :time="item.time" :comment="item.comment" :course-title="item.course" :amount="item.amount" :date="moment(item.date).format('DD.MM.YYYY')" :price="item.price" :paid="item.paid" />
+                <CourseItem v-for="item in CommingCourses" :course-data="item" :all-course-templates="allCourseTemplates" :all-instructors="allInstructors" :all-places="allPlaces" />
             </div>
         </div>
     </section>
     <section class="container">
         <Title text="Prestasjonene" color="var(--green)" anchor-i-d="achievements" />
         <div class="driveTime">
-            <p>Du har kjørt</p>
-            <p>{{ Achievements.driveTime }} timer</p>
+            <p>Du har kjørt {{ user.drivetime }} timer</p>
         </div>
         <div class="achievements">
-            <Achievement v-for="i in Achievements.achievement" :name="i.name" :done="i.done" />
+            <Achievement v-for="i in achievements" :name="i.name" :done="i.done" />
         </div>
     </section>
 </main>

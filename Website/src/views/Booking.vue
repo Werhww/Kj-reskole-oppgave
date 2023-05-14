@@ -61,7 +61,8 @@ const formData = ref({
   license: '',
   trafical: false,
   nightTraining: false,
-  mainInstructor: ""
+  mainInstructor: "",
+  drivetime: "0",
 })
 
 const errorMsg = ref<any>('')
