@@ -269,8 +269,10 @@ function sortCourses() {
 
         if (today) {
             previousCourses.value.push(course)
+            extraData.value.payedSum += course.price
         } else {
             commingCourses.value.push(course)
+            extraData.value.unpaidSum += course.price
         }
     })
 }

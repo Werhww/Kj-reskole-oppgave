@@ -3,7 +3,7 @@ import { auth } from '../firebase/firebase';
 import { signOut } from 'firebase/auth';
 
 const props = defineProps<{
-    userName: string,
+    userName: string | null,
 }>()
 
 function logout() {

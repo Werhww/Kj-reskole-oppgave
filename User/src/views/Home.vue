@@ -6,10 +6,8 @@ import CalenderShowedCourse from '@/components/calenderShowedCourse.vue';
 import moment from 'moment';
 import { allCourses, achievements, user, extraData, allPlaces, allCourseTemplates, allInstructors } from '../firebase/store';
 import type { CourseProps } from '../firebase/store';
-
-watch(allCourses, () => {
-    asingCourseToDay()
-})
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '@/firebase/firebase';
 
 /* Get current and is the week counter */
 const week = ref(moment().isoWeek())
@@ -108,11 +106,15 @@ function asingCourseToDay() {
     clearAllDays()
 
     for(let item of courses.value) {
-        const dayOfWeek = moment(item.startTime).day() - 1
-        const currentWeekDay = moment().week(week.value).day() - 1
+        for(let i = 1; i < 6; i++) {
+            const currentWeekDay = moment().week(week.value).day(i).format('YYYY-MM-DDTHH:mm:ss')
+            const isSameDay = moment(currentWeekDay).isSame(item.startTime, 'day')
 
-        weekValues.value[dayOfWeek] = item
+            if(isSameDay) {
+                weekValues.value[i - 1] = item
+            }
 
+        }
     }
 }
 
@@ -168,8 +170,13 @@ function sortAchievements() {
     }
 }
 
-sortAchievements()
-asingCourseToDay()
+watch(allCourses, () => {
+    asingCourseToDay()
+})
+
+setTimeout(() => {
+    asingCourseToDay()
+}, 1000)
 </script>
 
 <template>

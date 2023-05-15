@@ -4,7 +4,7 @@ import Input from "@/components/input.vue"
 import { ref } from "vue"
 import { db, auth } from '@/firebase/firebase'
 import { collection, setDoc, doc } from "firebase/firestore"
-import { createUserWithEmailAndPassword } from "firebase/auth"
+import { createUserWithEmailAndPassword, updateCurrentUser, updateProfile } from "firebase/auth"
 
 const offers = [
   {
@@ -102,6 +102,11 @@ async function sendForm() {
   formData.value.nightTraining = Night_Training.value
   try {
     const user = await createUserWithEmailAndPassword(auth, Epost.value, Telefon.value)
+    updateProfile(user.user, {
+      displayName: Fornavn.value + " " + Etternavn.value
+    })
+
+
     const userId = user.user.uid
 
     setDoc(doc(userRef, userId), formData.value)

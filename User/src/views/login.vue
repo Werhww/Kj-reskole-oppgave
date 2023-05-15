@@ -2,6 +2,8 @@
 import { auth } from '@/firebase/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+const router = useRouter()
 
 const emits = defineEmits(['login'])
 
